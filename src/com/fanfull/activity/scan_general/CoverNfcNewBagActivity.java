@@ -78,7 +78,7 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 	private final static int MSG_CHECK_BAG_START = 0x1002;// 开始读袋锁
 	private final int MSG_CHECK_BAG_FAILED = 0x1000;
 	private final static int MSG_CHECK_BAG_SUCCESS = 0x1001;
-	
+
 	private final static int MSG_NET_CHECK_START = 0x1005;// 开始服务器校验
 	private final static int MSG_COVER_NET_SUCCESS = 0x1009;
 	private final static int MSG_COVER_NET_FAILED = 0x1010;
@@ -93,7 +93,7 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 	private final int STEP_CHECK_BAG = 1;
 	private final int STEP_NET_CHECK = 3;
 	private final int STEP_UPDATE_BAG = 5;
-	
+
 	private final int STEP_COVER_OVER = 6;
 
 	private int mStep = STEP_CHECK_BAG;
@@ -164,9 +164,9 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		mTypeOp = getIntent().getIntExtra(TYPE_OP.KEY_TYPE, TYPE_OP.COVER_BAG);
 		findView();
-		
+
 		mBagIdBuf = new byte[12];
-		
+
 		/** 第1 读袋码，以及验证是否启用 */
 		mCheckBagTask = new CheckBagTask();
 		/** 第2 发送封签事件给前置 得到时间等信息 */
@@ -697,7 +697,7 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 						OLEDOperation.getInstance().close();
 					}
 					isFirstScan = false;
-				}   
+				}
 				break;
 			case SHOW_LOCK_RESULT:// 111
 
@@ -759,7 +759,8 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 					t++;
 					LogsUtil.d(TAG,
 							ArrayUtils.bytes2HexString(UHFOperation.sEPC));
-					if ((UHFOperation.sEPC[0] & 0xFF) != 0x85) { // 85开头的EPC是标牌
+					if ((UHFOperation.sEPC[0] & 0xFF) != 0x85 // 85开头的EPC是标牌
+							&& (UHFOperation.sEPC[0] & 0xFF) != 0x05) { // 05开头的EPC有可能是袋锁epc或附近已封袋的袋锁
 						readEPCSuccess = true;
 						break;
 					}

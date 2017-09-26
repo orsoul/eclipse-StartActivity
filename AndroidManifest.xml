@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.fanfull.fff"
     android:versionCode="2"
-    android:versionName="v1.1.1" >
+    android:versionName="v1.1.2" >
 
     <!-- android:sharedUserId="android.uid.system" -->
     <uses-permission android:name="android.permission.SHUTDOWN" />

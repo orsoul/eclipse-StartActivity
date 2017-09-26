@@ -5,6 +5,9 @@ package com.mvp.center;
  */
 
 public interface TimeListener {
+	
+	boolean b = false;
+	
     void onFinish(long time);
 
     void onFailure(int flag);
