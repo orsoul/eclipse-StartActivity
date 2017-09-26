@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <!-- scan_content -->
+	<include layout="@layout/activity_scan_bunch_content"/>
+
+	
+    <!-- 扫描任务       默认隐藏 -->
+	<include layout="@layout/activity_scan_bunch_task"/>
+	
+</FrameLayout>

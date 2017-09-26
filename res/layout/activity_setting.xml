@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:title="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <com.fanfull.view.ActivityHeadItemView
+        android:id="@+id/v_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="设置中心"
+        title:showImage="true" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/lighter_gray" />
+
+            <com.fanfull.view.ViewSettingItem
+                android:id="@+id/v_setting_check_oldbag"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:text="使用旧袋" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/lighter_gray" />
+
+            <com.fanfull.view.ViewSettingItem
+                android:id="@+id/v_setting_prescan_enable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:text="启用预扫描" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/lighter_gray" />
+
+            <com.fanfull.view.ViewSettingItem
+                android:id="@+id/v_setting_check_lot_door"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:text="多道天线" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/lighter_gray" />
+
+            <com.fanfull.view.ViewSettingItem
+                android:id="@+id/v_setting_check_bunch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="启用扫捆"
+                android:visibility="gone" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/lighter_gray" />
+
+            <com.fanfull.view.ViewSettingItem
+                android:id="@+id/v_setting_item_small"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="辅助屏幕" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/lighter_gray" />
+
+            <com.fanfull.view.ViewSettingItem
+                android:id="@+id/v_setting_fingerPrint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="启用指纹" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/lighter_gray" />
+
+            <com.fanfull.view.ViewSettingItem
+                android:id="@+id/v_setting_check_login"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:text="登录复核" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/lighter_gray" />
+
+            <TextView
+                android:id="@+id/tv_setting_item_ip"
+                style="@style/tv_setting_item"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:text="IP设置"
+                android:textColor="#E6E8FA" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/lighter_gray" />
+
+            <TextView
+                android:id="@+id/tv_setting_item_set_power"
+                style="@style/tv_setting_item"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:text="功率设置"
+                android:textColor="#E6E8FA" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/lighter_gray" />
+
+            <TextView
+                android:id="@+id/tv_setting_item_init_bag"
+                style="@style/tv_setting_item"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:text="初始化基金袋"
+                android:textColor="#E6E8FA"
+                android:visibility="gone" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/lighter_gray" />
+
+            <TextView
+                android:id="@+id/tv_setting_item_manager_friger"
+                style="@style/tv_setting_item"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:text="指纹管理"
+                android:textColor="#E6E8FA" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/lighter_gray" />
+
+            <TextView
+                android:id="@+id/tv_setting_item_shutdown"
+                style="@style/tv_setting_item"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:text="自动关机"
+                android:textColor="#E6E8FA" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/lighter_gray" />
+
+            <TextView
+                android:id="@+id/tv_setting_item_manager_log"
+                style="@style/tv_setting_item"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:text="错误日志"
+                android:textColor="#E6E8FA" />
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

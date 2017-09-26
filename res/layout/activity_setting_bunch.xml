@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        style="@style/tv_title"
+        android:text="扫捆设置" />
+
+    <CheckBox
+        android:id="@+id/cb_activity_setting_bunch_open_bunch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="10dp"
+        android:text="未启用批量扫捆"
+        android:textColor="#ff0000" />
+
+    <com.orsoul.view.NumberInputer
+        android:id="@+id/v_activity_setting_bunch_num"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="10dp"
+        android:gravity="center_vertical" />
+
+    <LinearLayout
+        android:layout_marginTop="30dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/btn_activity_setting_bunch_save"
+            style="@style/activity_btn"
+            android:text="保存" />
+
+        <Button
+            android:id="@+id/btn_activity_setting_bunch_cancel"
+            style="@style/activity_btn"
+            android:layout_marginLeft="20dp"
+            android:text="取消" />
+    </LinearLayout>
+
+</LinearLayout>

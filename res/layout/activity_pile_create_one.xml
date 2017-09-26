@@ -1,0 +1,44 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:title="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+    <com.fanfull.view.ActivityHeadItemView
+        android:id="@+id/v_one_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="申 请 权 限"
+        title:showImage="true" >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="200dp"
+            android:layout_marginTop="4dp"
+            android:src="@drawable/re_scan"
+            android:visibility="gone" />
+    </com.fanfull.view.ActivityHeadItemView>
+    <LinearLayout 
+        android:layout_below="@id/v_one_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <Button 
+            android:layout_height="50dp"
+            android:layout_width="match_parent"
+            android:id="@+id/btn_pile_create_1"
+           	android:background="@drawable/selector_item_general_list"
+            android:layout_marginTop="10dp"
+            android:textSize="18sp"
+            android:textColor="@android:color/black"
+            android:text="扫描袋"
+            android:visibility="gone"
+           />
+        <ListView
+            android:id="@+id/pile_one_List"
+            android:layout_marginTop="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+</RelativeLayout>

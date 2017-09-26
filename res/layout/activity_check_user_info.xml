@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:title="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+       <LinearLayout
+      android:id="@+id/v_title_info_linear"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical" >
+
+      
+	  <com.fanfull.view.ActivityHeadItemView
+	      android:id="@+id/v_title"
+	      android:layout_width="match_parent"
+	      android:layout_height="wrap_content"
+	      android:text="指纹或刷卡验证"
+	      title:showImage="true" />
+
+  </LinearLayout>
+
+       
+   <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="35dp"
+        android:background="@drawable/shape_scan_uhf"
+        android:focusable="true"
+        android:focusableInTouchMode="true" >
+
+        <TextView
+            android:id="@+id/tv_check_user"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@android:color/transparent"
+            android:drawableLeft="@drawable/user_id_account"
+            android:drawablePadding="10dp"
+            android:gravity="center_vertical"
+            android:textColor="@color/gainsboro"
+            android:hint="点击扫描IC卡"
+            android:textColorHint="@color/white"
+            android:paddingBottom="8dp"
+            android:paddingLeft="15dp"
+            android:paddingTop="8dp"
+            android:textSize="20sp" />
+
+    </FrameLayout>
+
+    <!-- editText 设置了inputType 和 gravity 不为 left,hint不显示, 需加上 android:ellipsize="start"  
+        android:gravity="center"-->
+
+    <EditText
+        android:id="@+id/et_check_psw"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="15dp"
+        android:ellipsize="start"
+        android:focusableInTouchMode="false"
+        android:hint="请输入密码"
+        android:inputType="numberPassword"
+        android:textColorHint="@color/white"
+        android:lines="1"
+        android:maxLength="6"
+        android:password="true"
+        android:textSize="20sp" 
+        android:paddingBottom="8dp"
+        android:paddingLeft="15dp"
+        android:paddingTop="8dp"
+        android:drawablePadding="10dp"
+        android:drawableLeft="@drawable/user_password"
+        android:textColor="@color/gainsboro"
+        android:imeOptions="actionGo"
+        android:background="@drawable/shape_scan_uhf"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="30dp"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/btn_checkinfo_ok"
+            style="@style/activity_btn"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="验  证" />
+
+        <Button
+            android:id="@+id/btn_checkinfo_cancel"
+            style="@style/activity_btn"
+            android:layout_width="0dp"
+            android:layout_marginLeft="20dp"
+            android:layout_weight="1"
+            android:text="退  出" />
+    </LinearLayout>
+       
+<!--     <TextView
+        android:layout_marginTop="10dp"
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="33dp"
+        android:textSize="22sp"
+        android:text="请验证指纹信息  " />
+
+    <Button
+        android:id="@+id/btn_check_finger_cancel"
+        style="@style/activity_btn"
+        android:layout_width="100dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="100dp"
+         android:layout_marginLeft="60dp"
+        android:text="退出" />
+
+    <TextView
+        android:id="@+id/check_finger_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/check_finger_status"
+        android:layout_marginTop="52dp"
+        android:textColor="@color/red"
+         android:layout_marginLeft="40dp"
+        android:text="当前未通过,请按手指" /> -->
+
+</LinearLayout>

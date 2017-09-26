@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:title="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <com.fanfull.view.OutStoreTaskInputerView
+            android:id="@+id/v_out_store_100"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="0dp"
+            android:layout_marginTop="0dp"
+            android:text="佰圆"
+            android:textColor="#ffffff" />
+
+        <com.fanfull.view.OutStoreTaskInputerView
+            android:id="@+id/v_out_store_50"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="伍拾"
+            android:textColor="#ffffff" />
+
+        <com.fanfull.view.OutStoreTaskInputerView
+            android:id="@+id/v_out_store_20"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="贰拾"
+            android:textColor="#ffffff" />
+
+        <com.fanfull.view.OutStoreTaskInputerView
+            android:id="@+id/v_out_store_10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="壹拾"
+            android:textColor="#ffffff" />
+
+        <com.fanfull.view.OutStoreTaskInputerView
+            android:id="@+id/v_out_store_5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="伍圆"
+            android:textColor="#ffffff" />
+
+        <com.fanfull.view.OutStoreTaskInputerView
+            android:id="@+id/v_out_store_1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="壹圆"
+            android:textColor="#ffffff" />
+    </LinearLayout>
+
+</ScrollView>

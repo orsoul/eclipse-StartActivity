@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:title="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+    
+      <LinearLayout
+        android:id="@+id/v_title_info_linear"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+        
+	   <com.fanfull.view.ActivityHeadItemView
+       android:id="@+id/v_title"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:text="交接信息"
+       title:showImage="true" 
+       android:src="@drawable/back"/>
+
+    </LinearLayout>
+ 
+        
+    <LinearLayout 
+        android:id="@+id/v_text"
+        android:layout_marginTop="5dp"
+        android:layout_width="match_parent"
+    	android:layout_height="wrap_content" 
+    	android:layout_below="@+id/v_title_info_linear"
+    	android:orientation="horizontal">
+		<TextView 
+    		android:id="@+id/taskid"
+    		android:textSize="15sp"
+    		android:layout_width="60dp"
+    		android:layout_height="wrap_content"
+    		android:textColor="@color/sliverwhite"
+    		android:gravity="center"
+    		android:text="功  能"
+    		/>
+		<TextView 
+		    android:id="@+id/taskaddr"
+    		android:layout_width="0dp"
+    		android:layout_height="wrap_content"
+    		android:layout_weight="1"
+    		android:textSize="15sp"
+    		android:gravity="center_horizontal"
+    		android:text="地 点/人员"
+    		/>
+		<TextView 
+    		android:id="@+id/task"
+    		android:layout_width="0dp"
+    		android:layout_height="wrap_content"
+    		android:textSize="15sp"
+    		android:layout_weight="1"
+    		android:text="时  间"
+    		android:gravity="center_horizontal"
+    		android:textColor="@color/sliverwhite"/>
+	</LinearLayout>
+	    <View
+	         android:id="@+id/v_view"
+	        android:layout_below="@+id/v_text"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/lighter_gray"  />
+        <LinearLayout 
+        android:id="@+id/v_coverBagItemView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/btn"
+        android:layout_below="@+id/v_view"
+        android:layout_marginBottom="10dp"
+        android:orientation="vertical"
+        >
+	    <ListView
+	        android:id="@+id/exchange_listView1"
+	        android:layout_width="wrap_content"
+	        android:dividerHeight="2dp"
+	        android:layout_height="wrap_content" >
+	    </ListView>
+      </LinearLayout>
+      
+    <LinearLayout
+        android:id="@+id/btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/btn_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/button_shape"
+            android:text="扫描" />
+
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="15dp"
+            android:background="@drawable/button_shape"
+            android:text="退出" />
+    </LinearLayout>
+
+
+</RelativeLayout>

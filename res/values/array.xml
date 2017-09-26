@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="bagModel">
+        <item>- 请 选 择 券 别 -</item>
+        <item>纸100元(200万-5.5)</item>
+        <item>纸50元(100万-5.5)</item>
+        <item>纸20元(40万-5.5)</item>
+        <item>纸10元(20万-5.5)</item>
+        <item>纸5元(10万-5.5)</item>
+        <item>纸1元(2万-5.5)</item>
+<!--         <item>纸100元(400万-5.5)</item>
+        <item>纸2元(4万-5.5)</item>
+        <item>纸5角(2.5万-5.5)</item>
+        <item>纸1角(0.5万-5.5)</item> -->
+    </string-array>
+    <string-array name="moneyModel">
+        <item>清分</item>
+        <item>未清分</item>
+        <item>复点</item>
+        <item>未复点</item>
+    </string-array>
+    <string-array name="moneyType">
+        <item>完整</item>
+        <item>残损</item>
+    </string-array>
+</resources>

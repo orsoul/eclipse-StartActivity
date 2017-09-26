@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:title="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#99CCCC"
+    android:orientation="vertical" >
+
+    <com.fanfull.view.ActivityHeadItemView
+        android:id="@+id/v_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="入库任务选择"
+        title:showImage="true" >
+        <Button
+            android:layout_height="40dp"
+            android:layout_width="wrap_content"
+            android:id="@+id/btn_cancel"
+            android:layout_gravity="right"
+            android:text="新建批"/>
+       </com.fanfull.view.ActivityHeadItemView>
+
+    <ListView
+        android:id="@+id/lv_in_out_store_task"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollingCache="false"
+        android:cacheColorHint="#99CCCC"
+        android:layout_marginTop="5dp" >
+    </ListView>
+
+</LinearLayout>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:title="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <com.fanfull.view.ActivityHeadItemView
+        android:id="@+id/v_changebag_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/changbag"
+        title:showImage="true" />
+
+    <LinearLayout
+        android:id="@+id/v_coverBagItemView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:layout_below="@+id/v_changebag_title"
+        android:orientation="vertical" >
+
+        <com.fanfull.view.CoverBagItemView
+            android:id="@+id/v_show1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="扫描袋锁" />
+
+        <com.fanfull.view.CoverBagItemView
+            android:id="@+id/v_show2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="扫描袋锁" />
+
+        <com.fanfull.view.CoverBagItemView
+            android:id="@+id/v_show3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="信息校验"
+            android:visibility="visible" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/btn_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/button_shape"
+            android:text="扫描" />
+
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="20dp"
+            android:background="@drawable/button_shape"
+            android:text="取消 " />
+    </LinearLayout>
+
+</RelativeLayout>

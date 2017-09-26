@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <RelativeLayout
+        android:id="@+id/opertation_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="#FFFFFC"
+        android:visibility="visible" >
+		<TextView android:id="@+id/text_quit"
+    		android:layout_height="22dp"
+    		android:textColor="#0033CC"
+    		android:layout_width="fill_parent"
+    		android:layout_alignParentRight="true"
+    		android:gravity="right"
+    		android:layout_marginRight="3dp"
+    		android:text="@string/back_to_lastpage"/>
+         <Button
+            android:id="@+id/general_scan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="80dp"
+            android:text="@string/scan"
+             android:background="@drawable/button"
+             />
+
+        <Button
+            android:id="@+id/lot_scan"
+            android:layout_alignParentBottom="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="80dp"
+             android:layout_marginBottom="15dp"
+             android:text="@string/lot_scan"
+             android:background="@drawable/button"
+            />
+
+        <Button
+            android:id="@+id/check_btn"
+            android:layout_below="@id/general_scan"
+            android:layout_alignParentLeft="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="13dp"
+             android:layout_marginLeft="30dp" 
+             android:text="@string/check"
+             android:background="@drawable/button"/>
+        <Button
+            android:id="@+id/set_btn"
+         	android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+           android:layout_marginRight="30dp"
+            android:layout_marginTop="13dp"
+            android:layout_below="@id/general_scan" 
+            android:text="@string/setting"
+            android:background="@drawable/button" />
+        
+    </RelativeLayout>
+
+    
+
+</RelativeLayout>

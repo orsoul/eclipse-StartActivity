@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:title="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+     >
+
+        <LinearLayout
+	        android:id="@+id/v_title_info_linear"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="vertical" >
+	
+	        
+		   <com.fanfull.view.ActivityHeadItemView
+	        android:id="@+id/v_title"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="入	库"
+	        title:showImage="true" />
+	
+	    </LinearLayout>
+   
+
+    <LinearLayout
+        android:id="@+id/v_saomiao_num"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/v_title_info_linear"
+        android:layout_marginTop="15dp"
+        android:orientation="horizontal" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_below="@+id/v_title"
+            android:orientation="vertical" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:text="计划数量:"
+                android:textSize="18sp"
+                android:textColor="@color/sliverwhite" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:text="完成总数量:"
+                android:textSize="18sp"
+                android:textColor="@color/sliverwhite" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:text="个人扫描数:"
+                android:textSize="18sp"
+                android:textColor="@color/sliverwhite" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/tv_in_store_ez_plan_num"
+                style="@style/tv_coverbag"
+                android:text="-" />
+
+            <TextView
+                android:id="@+id/tv_in_store_ez_total_num"
+                style="@style/tv_coverbag"
+                android:text="0" />
+
+            <TextView
+                android:id="@+id/tv_in_store_ez_person_num"
+                style="@style/tv_coverbag"
+                android:text="0" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_in_store_ez_lock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="5dp"
+            android:drawableTop="@drawable/button_lock"
+            android:text="锁定批" 
+            android:textColor="@color/sliverwhite"/>
+        <!-- Button
+            android:id="@+id/btn_in_store_ez_lock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="20dp"
+            android:clickable="true"
+            android:drawableTop="@drawable/button_lock"
+            android:gravity="center"
+            android:text="锁定批 "
+            android:textColor="@drawable/selector_coverbag_lock"
+            android:textSize="12sp" /-->
+    </LinearLayout>
+
+    <LinearLayout 
+        android:id="@+id/v_coverBagItemView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/v_saomiao_num"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        >
+	    <com.fanfull.view.CoverBagItemView
+	        android:id="@+id/v_in_store_ez_epc_show"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_marginLeft="5dp"
+	        
+	        android:text="扫描袋锁" />
+	
+	    <com.fanfull.view.CoverBagItemView
+	        android:id="@+id/v_in_store_ez_barcode_show"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_marginLeft="5dp"
+	        android:text="扫描条码" />
+	  <com.fanfull.view.CoverBagItemView
+	        android:id="@+id/v_cover_oldbag_show3"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_marginLeft="5dp"
+	        android:visibility="gone"
+	        android:text="信息校验" />
+	    <TextView
+	        android:id="@+id/in_out_store_no_match"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="center_horizontal"
+	        android:layout_marginLeft="5dp"
+	        android:textSize="16sp"
+	        android:textColor="@color/red"
+	        android:text="当前条码与封袋条码不一致" />
+	    
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/btn_in_store_ez_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/button_shape"
+            android:text="扫 描" />
+
+        <Button
+            android:id="@+id/btn_in_store_ez_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="15dp"
+            android:background="@drawable/button_shape"
+            android:text="取 消 " />
+    </LinearLayout>
+
+</RelativeLayout>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:title="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <com.fanfull.view.ActivityHeadItemView
+        android:id="@+id/v_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="完整劵出库"
+        title:showImage="true" />
+    
+    
+            <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_marginTop="15dp"
+                android:layout_marginLeft="15dp"
+            android:layout_height="40dp" >
+
+            <TextView
+                android:id="@+id/tv_value_bank"
+                 android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:background="#fff"
+                android:ellipsize="end"
+                android:gravity="left|center"
+                android:hint="工商银行"
+                android:paddingLeft="10dp"
+                android:layout_marginRight="75dp"
+                android:singleLine="true"
+                android:textColor="#ff000000"
+                android:textSize="18dp" >
+            </TextView>
+
+            <LinearLayout
+                android:id="@+id/bt_dropdown_diqu"
+                 android:layout_width="60dp"
+                android:layout_height="match_parent"
+                android:background="#fff"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="15dp"
+                android:gravity="center"
+                android:onClick="onClick" >
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="15dp"
+                    android:background="@drawable/down_arrow" />
+            </LinearLayout>
+        </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <CheckBox
+            android:id="@+id/cb_out_store_wz"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="完整券" />
+
+        <CheckBox
+            android:id="@+id/cb_out_store_qf"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:checked="true"
+            android:text="已清分" />
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/et_out_store_total"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:focusable="false"
+        android:gravity="center"
+        android:hint="输入币种/袋数"
+        android:inputType="none"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:textColor="#99FF0000" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/btn_out_store_ok"
+            style="@style/activity_btn"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:enabled="false"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:text="确  定" />
+
+        <Button
+            android:id="@+id/btn_out_store_cancel"
+            style="@style/activity_btn"
+            android:layout_width="0dp"
+            android:layout_marginLeft="20dp"
+            android:layout_weight="1"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:text="取  消" />
+    </LinearLayout>
+
+</LinearLayout>

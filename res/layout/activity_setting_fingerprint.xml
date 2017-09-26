@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:title="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+   <com.fanfull.view.ActivityHeadItemView
+     android:id="@+id/v_title"
+     android:layout_width="match_parent"
+     android:layout_height="wrap_content"
+     android:text="@string/finger_setting"
+     title:showImage="true">
+     </com.fanfull.view.ActivityHeadItemView>
+     
+       <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="vertical"
+        android:background="@drawable/corners_bg">
+  <LinearLayout 
+         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+        
+    <TextView
+         android:layout_marginLeft="20dp"
+        android:id="@+id/tv_setting_item_set_id"
+         style="@style/tv_setting_item"
+         android:layout_width="0dp"
+        android:layout_weight="0.2"
+         android:drawableRight="@null"
+          android:gravity="center"
+        android:text="ID" />
+
+     <TextView
+        android:id="@+id/tv_setting_item_set_name"
+        style="@style/tv_setting_item"
+        android:layout_width="0dp"
+        android:layout_weight="0.6"
+         android:gravity="center"
+     	android:drawableRight="@null"
+     	android:textSize="14sp"
+        android:text="用户" />
+     
+     <TextView
+        android:id="@+id/tv_setting_item_set_version"
+        style="@style/tv_setting_item"
+         android:layout_width="0dp"
+        android:layout_weight="0.2"
+        android:gravity="center"
+        android:drawableRight="@null"
+        android:text="版本" />
+	 </LinearLayout>
+
+     <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/lighter_gray" />    
+   <ListView
+       android:id="@+id/finger_list"
+       android:layout_width="match_parent"
+       android:scrollingCache="false"
+        android:cacheColorHint="#ffffff"
+       android:layout_height="135dp" >
+   </ListView>
+   
+        <TextView 
+        android:id="@+id/tv_finger_added"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/red"
+        android:textSize="25sp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:visibility="gone"
+        android:text="继续加第三个指纹"/>
+        
+       <LinearLayout
+        android:layout_marginTop="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal" >
+
+<!--         <Button
+            android:id="@+id/btn_setting_add_finger"
+            style="@style/activity_btn"
+            android:text="增加" />
+        <Button
+            android:id="@+id/btn_setting_update_finger"
+            style="@style/activity_btn"
+            android:visibility="gone"
+            android:text="修改" /> -->
+         <!-- Button
+         android:id="@+id/btn_setting_del_finger"
+         android:layout_marginLeft="20dp"
+         style="@style/activity_btn"
+         android:visibility="gone"
+         android:text="删除指纹" /-->
+         <Button
+         android:id="@+id/btn_setting_up_from_server_finger"
+         android:layout_marginLeft="20dp"
+         style="@style/activity_btn"
+         android:text="检查更新" />
+             
+         <Button
+         android:id="@+id/btn_setting_empty_finger"
+         android:layout_marginLeft="20dp"
+         style="@style/activity_btn"
+         android:text="删除" />
+
+     
+    </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

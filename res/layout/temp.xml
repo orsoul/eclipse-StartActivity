@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <!-- scan_content -->
+    <RelativeLayout
+        android:id="@+id/scan_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+		<!-- activity head -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFA500" >
+
+            <TextView
+                android:id="@+id/tv_item_activity_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/scan_bunch"
+                android:textSize="25sp" />
+
+            <ImageView
+                android:id="@+id/im_item_activity_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="15dp"
+                android:src="@drawable/back" />
+        </RelativeLayout>
+        
+        <!-- 计划数量 -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp" >
+
+            <TextView
+                android:id="@+id/scan_plansum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:text="计划数量："
+                android:textSize="20sp"
+                android:textStyle="normal" />
+
+            <TextView
+                android:id="@+id/scan_planamount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/scan_plansum"
+                android:text="0"
+                android:textColor="#ff0000"
+                android:textSize="20sp"
+                android:textStyle="normal" />
+        </RelativeLayout>
+        <!-- 扫描数量 -->
+
+        <RelativeLayout
+            android:id="@+id/plan_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp" >
+
+            <TextView
+                android:id="@+id/real_sum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:text="实际数量："
+                android:textSize="20sp"
+                android:textStyle="normal" />
+
+            <TextView
+                android:id="@+id/real_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/real_sum"
+                android:text="000"
+                android:textColor="#ff0000"
+                android:textSize="20sp"
+                android:textStyle="normal" />
+        </RelativeLayout>
+        <!-- 扫描捆码 -->
+
+
+        <!-- 扫描TID -->
+
+        <Button
+            android:id="@+id/scan_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="80dp"
+            android:background="@drawable/button_shape"
+            android:text="@string/sure" />
+    </RelativeLayout>
+
+    <!-- 扫描任务 -->
+
+    <RelativeLayout
+        android:id="@+id/task_content_scan"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" >
+
+        <TextView
+            android:id="@+id/scan_tv1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:text="请选择任务"
+            android:textSize="20dip" />
+
+        <ListView
+            android:id="@+id/scan_list_task"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv1" >
+        </ListView>
+    </RelativeLayout>
+
+</RelativeLayout>

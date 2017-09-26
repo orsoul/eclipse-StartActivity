@@ -1,0 +1,495 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.fanfull.fff"
+    android:versionCode="2"
+    android:versionName="v1.1.1" >
+
+    <!-- android:sharedUserId="android.uid.system" -->
+    <uses-permission android:name="android.permission.SHUTDOWN" />
+
+    <uses-sdk
+        android:minSdkVersion="10"
+        android:targetSdkVersion="10" />
+
+    <permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+
+    <!-- 判断Activity是否在前台需要 -->
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <!-- 熄屏亮屏  android.Manifest.permission.DEVICE_POWER -->
+
+    <application
+        android:name="com.fanfull.base.BaseApplication"
+        android:allowBackup="true"
+        android:icon="@drawable/logo"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name="com.fanfull.activity.StartActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.fanfull.activity.LoginActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+        <!-- 一UploadBagIdActivity -->
+        <activity
+            android:name="com.fanfull.activity.UploadBagIdActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+        <!-- 一般扫描界面 -->
+        <activity
+            android:name="com.fanfull.activity.GeneralActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+        <!-- 主操作界面 -->
+        <activity
+            android:name="com.fanfull.activity.MainActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+        <!-- fengdai ruku,chuku,yanfeng -->
+        <!-- 扫捆的封签页面 -->
+        <activity
+            android:name="com.fanfull.activity.scan_general_oldbag.CIOActivity4oldBag"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+
+        <!-- 权限展示页面 -->
+        <activity
+            android:name="com.fanfull.activity.PermissionActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+        <activity
+            android:name="com.fanfull.activity.scan_general_oldbag.OpenBag4OldBag"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+
+        <!-- 任务列表 -->
+        <activity
+            android:name="com.fanfull.activity.InStorePickTask"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:screenOrientation="landscape" >
+        </activity>
+        <!-- 遥控预扫描 -->
+        <activity
+            android:name="com.fanfull.activity.PreScanYkActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+        <activity
+            android:name="com.fanfull.activity.PreScanActivity"
+            android:label="@string/title_activity_pre_scan"
+            android:launchMode="singleTask" >
+        </activity>
+        <!-- 鄂州入库 -->
+        <activity
+            android:name="com.fanfull.activity.InStore4ez"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:screenOrientation="landscape" >
+        </activity>
+        <!-- 鄂州入库 -->
+        <activity
+            android:name="com.fanfull.activity.scan_general_oldbag.IOStore4OldBagActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:screenOrientation="landscape" >
+        </activity>
+        <!-- 设置页面 -->
+        <activity
+            android:name="com.fanfull.activity.setting.SettingCenterActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+        <!-- 更改IP页面 -->
+        <activity
+            android:name="com.fanfull.activity.setting.SettingIPActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+        <!-- 遥控设置 -->
+        <activity
+            android:name="com.fanfull.activity.SettingYkActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+        <!-- 指纹设置 -->
+        <activity
+            android:name="com.fanfull.activity.setting.SettingFingerPrintActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+        <!-- 熄灭屏幕后显示界面 -->
+        <activity
+            android:name="com.fanfull.activity.ScreenOnActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:theme="@style/Act_Transparent" >
+        </activity>
+
+        <!-- 更换 -->
+        <activity
+            android:name="com.fanfull.activity.scan_general.ChangeBagMainActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+        <!-- 查询 -->
+        <activity
+            android:name="com.fanfull.activity.CheckPower"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+
+        <!-- 批量 -->
+        <activity
+            android:name="com.fanfull.activity.scan_lot.LotMainActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+
+        <!-- 批量 任务 -->
+        <activity
+            android:name="com.fanfull.task.LotInOutStoreTask"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+
+        <!-- 批量清点 -->
+        <activity
+            android:name="com.fanfull.activity.LotCount"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+        <!-- 批量入库 -->
+        <activity
+            android:name="com.fanfull.activity.scan_lot.LotScanActivity"
+            android:label="@string/app_name"
+            android:launchMode="standard" >
+        </activity>
+        <!-- 批量出库 -->
+        <activity
+            android:name="com.fanfull.activity.scan_lot.LotOutBank"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+        <!-- 扫描旧条码 -->
+        <activity
+            android:name="com.fanfull.activity.changebag.OldBarView"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+        <!-- 重新封袋 -->
+        <activity
+            android:name="com.fanfull.activity.changebag.RecoverView"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+        <!-- 扫捆设置页面 -->
+        <activity
+            android:name="com.fanfull.activity.setting.SettingScanBunchActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+        <!-- 功率设置页面 -->
+        <activity
+            android:name="com.fanfull.activity.setting.SettingPowerActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+        <!-- 扫捆页面 -->
+        <activity
+            android:name="com.fanfull.activity.scan_general.ScanBunchActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+        <!-- 遥控操作 -->
+        <activity
+            android:name="com.fanfull.activity.YkActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+        <!-- 初始化青岛基金袋 -->
+        <activity
+            android:name="com.fanfull.activity.InitBag4qdActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+        <!-- 初始化鄂州基金袋 -->
+        <activity
+            android:name="com.fanfull.activity.InitBag4ezActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+        <!-- 基金袋基本操作 -->
+        <activity
+            android:name="com.fanfull.activity.BagBaseOperation"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+        <!-- 更换原因 -->
+        <activity
+            android:name="com.fanfull.activity.scan_general.ChangeBagActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+        <!-- 验封 -->
+        <activity
+            android:name="com.fanfull.activity.scan_general_oldbag.CheckCoverBagActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+
+        <!-- 启用空袋 -->
+        <activity
+            android:name="com.fanfull.activity.other.EnableNFCEmptyBagActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+
+        <!-- 注销空袋 -->
+        <activity
+            android:name="com.fanfull.activity.other.DisEnableNFCEmptyBagActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+
+        <!-- 新锁封袋操作 -->
+        <activity
+            android:name="com.fanfull.activity.scan_general.CoverNfcNewBagActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+
+        <!-- 新锁出入库操作 -->
+        <activity
+            android:name="com.fanfull.activity.scan_general.IOStoreNfcActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+
+        <!-- 新锁开袋操作 -->
+        <activity
+            android:name="com.fanfull.activity.scan_general.OpenNfcNewBagActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+
+        <!-- 新锁验封操作 -->
+        <activity
+            android:name="com.fanfull.activity.other.CheckNfcCoverBagActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+
+        <!-- 新锁初始化操作 -->
+        <activity
+            android:name="com.fanfull.activity.other.InitNewBagActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+
+        <!-- 新锁初始化空袋管理 -->
+        <activity
+            android:name="com.fanfull.activity.other.NfcEmptyBagManagerActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+
+        <!-- 新锁初始化操作 -->
+        <activity
+            android:name="com.fanfull.activity.other.InitNewBagActivityTwo"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+
+        <!-- 新锁初始化操作-25 -->
+        <activity
+            android:name="com.fanfull.activity.other.InitNfcBagActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+
+        <!-- 新锁读交接信息-25 -->
+        <activity
+            android:name="com.fanfull.activity.other.ReadExachangeInfoActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+
+        <!-- 新锁搜索报警的袋子信息-25 -->
+        <activity
+            android:name="com.fanfull.activity.other.SearchDevicesActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+        <activity
+            android:name="com.fanfull.activity.setting.SettingShutDownActivity"
+            android:label="@string/title_activity_setting_shut_down"
+            android:launchMode="singleTask" >
+        </activity>
+        <!-- 新锁阅读错误日志信息-25 -->
+        <activity
+            android:name="com.fanfull.activity.setting.SettingLogActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+
+        <!-- 遥控界面-25 -->
+        <activity
+            android:name="com.fanfull.activity.scan_lot.YkInstoreActivity"
+            android:label="@string/app_name"
+            android:launchMode="standard" >
+        </activity>
+
+        <!-- 出库处理 -->
+        <activity
+            android:name="com.fanfull.activity.other.OutStoreInputTask"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+        <activity
+            android:name="com.fanfull.activity.other.ReadInstoreInfoActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
+
+        <!-- 核对用户信息-25 -->
+        <activity
+            android:name="com.fanfull.activity.CheckUserInfoActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/Act_Transparent" >
+        </activity>
+        <!-- android:theme="@style/Act_Transparent" -->
+
+
+        <!-- 遥控出库 -->
+        <activity
+            android:name="com.fanfull.activity.scan_general.YkOutstoreActivityctivity"
+            android:launchMode="singleTask"
+            android:theme="@style/Act_Transparent" >
+        </activity>
+
+        <!-- 复制EPC -->
+        <activity
+            android:name="com.fanfull.activity.other.CopyEpcActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/Act_Transparent" >
+        </activity>
+        <activity
+            android:name="com.mvp.center.CenterActivity"
+            android:launchMode="singleTask" >
+        </activity>
+        <activity
+            android:name="com.mvp.baglink.BagLinkActivity"
+            android:launchMode="singleTask" >
+        </activity>
+        <activity
+            android:name="com.mvp.screenlink.ScreenLinkActivity"
+            android:launchMode="singleTask" >
+        </activity>
+        <activity
+            android:name="com.mvp.refreshscreen.RefreshScreenActivity"
+            android:launchMode="singleTask" >
+        </activity>
+        <activity
+            android:name="com.mvp.pilecreate.PileCreateActivity"
+            android:launchMode="singleTask" >
+        </activity>
+        <activity
+            android:name="com.mvp.baglink1.BagLinkActivity"
+            android:launchMode="singleTask" >
+        </activity>
+        <activity
+            android:name="com.fanfull.activity.manage_store.PickPileActivity"
+            android:label="@string/title_activity_pick_pile" >
+        </activity>
+        <activity
+            android:name="com.fanfull.activity.scan_lot.PickDoorActivity"
+            android:label="@string/title_activity_pick_door" >
+        </activity>
+
+        <!-- 关闭 APP的 service -->
+        <service android:name="com.fanfull.background.TimeoutService" >
+        </service>
+        <!-- 屏幕开关监听的 service -->
+        <service android:name="com.fanfull.background.BackgroundService" >
+        </service>
+        <service android:name="com.mvp.center.ConnectService" >
+        </service>
+        <activity
+            android:name="com.mvp.bagLink2.BagLinkActivity"
+            android:launchMode="singleTask" >
+        </activity>
+        <activity
+            android:name="com.mvp.bagLinkCenter.BagLinkCenterActivity"
+            android:launchMode="singleTask" />
+        <activity
+            android:name="com.mvp.center.option.CenterOptionActivity"
+            android:launchMode="singleTask" >
+        </activity>
+        <activity
+            android:name="com.mvp.pileCreate1.PileCreateOneActivity"
+            android:launchMode="singleTask" >
+        </activity>
+        
+        <!-- 开机启动广播 -->
+        <receiver android:name="com.fanfull.background.BootBroadcastReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+
+                <category android:name="android.intent.category.HOME" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name="com.fanfull.activity.scan_general.QueryBagCirculationActivity"
+            android:label="@string/title_activity_query_bag_circulation" >
+        </activity>
+        
+        <activity
+            android:name="com.mvp.screenManage.ScreenManageActivity"
+            android:launchMode="singleTask">
+        </activity>
+        <activity
+            android:name="com.mvp.pilecreate2.PileCreateTwoActivity"
+            android:launchMode="singleTask" >
+        </activity>
+        <activity
+            android:name="com.mvp.bagLink3.BagLinkActivity"
+            android:launchMode="singleTask" >
+        </activity>
+        <activity
+            android:name="com.mvp.hand.HandOperActivity"
+            android:launchMode="singleTask" />
+        <activity
+            android:name="com.mvp.hand.InitScreenActivity"
+            android:launchMode="singleTask" />
+        <activity
+            android:name="com.mvp.hand.RefreshScreenActivity"
+            android:launchMode="singleTask" />
+    </application>
+
+</manifest>

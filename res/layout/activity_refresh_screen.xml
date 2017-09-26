@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:title="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <com.fanfull.view.ActivityHeadItemView
+        android:id="@+id/v_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="刷新屏信息"
+        title:showImage="true" >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="200dp"
+            android:layout_marginTop="4dp"
+            android:src="@drawable/re_scan"
+            android:visibility="gone" />
+    </com.fanfull.view.ActivityHeadItemView>
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="45dp"
+        android:orientation="vertical" >
+
+        <Button
+            android:id="@+id/scan_bag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/button"
+            android:focusable="true"
+            android:focusableInTouchMode="false"
+            android:text="扫描袋" />
+
+        <Button
+            android:id="@+id/scan_screen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button"
+            android:focusable="true"
+            android:layout_marginTop="5dp"
+            android:focusableInTouchMode="false"
+            android:text="扫描屏" />
+
+        <Button
+            android:id="@+id/refresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/button"
+            android:focusable="true"
+            android:focusableInTouchMode="false"
+            android:text="刷新屏" />
+    </LinearLayout>
+
+</RelativeLayout>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:title="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/scan_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <!-- scan_content -->
+    <com.fanfull.view.ActivityHeadItemView
+        android:id="@+id/v_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/scan_bunch"
+        title:showImage="true" />
+
+    <!-- 计划数量 -->
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/scan_plansum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_margin="8dp"
+            android:text="计划数量："
+            android:textSize="15sp"
+            android:textStyle="normal" 
+            android:textColor="@color/sliverwhite"/>
+
+        <TextView
+            android:id="@+id/scan_planamount"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerInParent="true"
+            android:background="#00FFB603"
+            android:gravity="center"
+            android:text="20"
+            android:textColor="#99ff0000"
+            android:textSize="20sp"/>
+
+    </RelativeLayout>
+
+    <!-- 已扫数量 -->
+
+    <RelativeLayout
+        android:id="@+id/plan_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/real_sum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="8dp"
+            android:text="已扫描："
+            android:textSize="15sp"
+            android:textStyle="normal"
+            android:textColor="@color/sliverwhite" />
+
+        <TextView
+            android:id="@+id/real_amount"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_centerInParent="false"
+            android:layout_toRightOf="@id/real_sum"
+            android:layout_marginLeft="5dp"
+            android:background="#99FFB603"
+            android:gravity="center"
+            android:text="-"
+            android:textColor="#ffffff"
+            android:textSize="70sp" />
+
+        <TextView
+            android:id="@+id/tv_scanbunch_activity_lock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="5dp"
+            android:drawableTop="@drawable/button_lock"
+            android:text="锁定批" 
+            android:textColor="@color/sliverwhite"/>
+
+    </RelativeLayout>
+
+    <com.orsoul.view.MyProgressBar
+        android:id="@+id/pb_scanbunch_activity"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="20dp" />
+
+    <Button
+        android:id="@+id/scan_ok"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/button_shape"
+        android:gravity="center"
+        android:text="@string/sure" />
+
+</LinearLayout>

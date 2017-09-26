@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:title="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <com.fanfull.view.ActivityHeadItemView
+        android:id="@+id/v_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="屏初始化"
+        title:showImage="true" >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="200dp"
+            android:layout_marginTop="4dp"
+            android:src="@drawable/re_scan"
+            android:visibility="gone" />
+    </com.fanfull.view.ActivityHeadItemView>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="45dp" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="10dp" >
+
+            <Spinner
+                android:id="@+id/bizhong"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:entries="@array/bagModel" />
+
+            <RadioGroup
+                android:id="@+id/leixing"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <RadioButton
+                    android:id="@+id/wanzheng"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:checked="true"
+                    android:text="完整" />
+
+                <RadioButton
+                    android:id="@+id/cansun"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="残损" />
+            </RadioGroup>
+
+            <ImageView android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/brown"/>
+            
+            <RadioGroup
+                android:id="@+id/leixing2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <RadioButton
+                    android:id="@+id/yiqingfen"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="已清分" />
+
+                <RadioButton
+                    android:id="@+id/weiqingfen"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="未清分" />
+
+                <RadioButton
+                    android:id="@+id/yifudian"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="已复点" />
+
+                <RadioButton
+                    android:id="@+id/weifudian"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="未复点" />
+            </RadioGroup>
+
+            <ImageView android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/brown"/>
+            
+            <RadioGroup
+                android:id="@+id/version"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <RadioButton
+                    android:id="@+id/sitao"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:checked="true"
+                    android:text="第四套" />
+
+                <RadioButton
+                    android:id="@+id/wutao"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="第五套" />
+            </RadioGroup>
+
+            
+            <RadioGroup
+                android:id="@+id/version1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <RadioButton
+                    android:id="@+id/baling"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:checked="true"
+                    android:text="80版" />
+
+                <RadioButton
+                    android:id="@+id/jiuling"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="90版" />
+                
+                <RadioButton
+                    android:id="@+id/jiuliu"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="96版" />
+            </RadioGroup>
+            <RadioGroup
+                android:id="@+id/version2"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <RadioButton
+                    android:id="@+id/jiujiu"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:checked="true"
+                    android:text="99版" />
+
+                <RadioButton
+                    android:id="@+id/lingwu"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="05版" />
+                
+                <RadioButton
+                    android:id="@+id/yiwu"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="15版" />
+            </RadioGroup>            
+            <Button
+                android:id="@+id/init"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="初始化" />
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

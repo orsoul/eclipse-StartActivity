@@ -1,0 +1,675 @@
+package com.fanfull.op;
+
+import android.util.Log;
+
+import com.fanfull.utils.ArrayUtils;
+import com.fanfull.utils.LogsUtil;
+
+/**
+ *
+ */
+public class UHFOperation extends BaseOperation {
+    /** epc区 */
+    public static final int MB_EPC = 1;
+    /** tid区 */
+    public static final int MB_TID = 2;
+    /** use区 */
+    public static final int MB_USE = 3;
+    /** 用于存储epc区数据 */
+    public static final byte[] sEPC = new byte[12];
+
+    private final static String CHOOSED_SERIAL = "/dev/s3c2410_serial2";
+    private final static int CHOOSED_BUAD = 115200;
+
+    /** 获取当前设备发射功率 */
+    private final static byte[] CMD_GET_POWER = new byte[]{(byte) 0xA5,
+            (byte) 0x5A, 0x00, 0x08, (byte) 0x12, 0x1A, 0x0d, 0x0A};
+    /** 设置发射功率 14byte */
+    private final static byte[] CMD_SET_POWER = new byte[]{(byte) 0xA5, 0x5A,
+            0x00, 0x0E, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0D,
+            0x0A,};
+    /** 单次寻标签 命令; [5] = 帧类型 = 0x80 [6,7] timeOut, 时间到或寻到标签 回传应答帧 */
+    private final static byte[] CMD_FAST_READ_EPC = new byte[]{(byte) 0xa5,
+            (byte) 0x5a, 0x00, 0x0a, (byte) 0x80, 0x00, 0x64, (byte) 0xee,
+            0x0d, 0x0a};
+    /** 快速读取 TID */
+    private final static byte[] CMD_FAST_READ_TID = new byte[]{(byte) 0xA5,
+            (byte) 0x5A, 0x00, 0x0C, (byte) 0x8E, 0x00, 0x00, 0x00, 0x12, 0x00,
+            0x0D, 0x0A};
+    //    单例模式
+    private static final UHFOperation instance = new UHFOperation();
+    /** EPC区大小 12byte */
+    private final int EPC_LEN = 12;
+    /** 超高频 最大 读写功率 30 */
+    private final int MAX_POWER = 30;
+    /** 超高频 最小 读写功率 5 */
+    private final int MIN_POWER = 5;
+    private byte[] read_more = new byte[]{(byte) 0xa5, (byte) 0x5a, 0x00,
+            0x0a, (byte) 0x82, 0x00, 0x00, (byte) 0x00, 0x0d, 0x0a};
+    private byte[] stop_read_more = new byte[]{(byte) 0xa5, (byte) 0x5a,
+            0x00, 0x08, (byte) 0x8c, (byte) 0x84, 0x0d, 0x0a};
+    private byte[] read_more_time = new byte[]{(byte) 0xA5, (byte) 0x5A,
+            0x00, 0x0D, (byte) 0x3C, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0D,
+            0x0A};
+    private byte[] buf = new byte[100];
+    private int len;
+    private int count = 0;// 记录读卡数
+    
+    
+    
+
+    // TODO
+
+    private UHFOperation() {}
+
+    public static UHFOperation getInstance() { return instance; }
+
+    @Override
+    public int open(boolean isReinit) {
+        if (isOpen() && !isReinit) {
+            LogsUtil.d(TAG, "open() : openned");
+            return 0;
+        }
+
+        HARDWARE.openGPIO();
+//        HARDWARE.setGPIO(0, 2);
+        HARDWARE.setGPIO(0, 3);
+
+        fd = HARDWARE.openSerialPort(CHOOSED_SERIAL, CHOOSED_BUAD, 8, 1);
+        LogsUtil.d(TAG, "init : fd = " + fd);
+
+        return fd;
+    }
+
+    @Override
+    public boolean isOpen() {
+        return -1 != fd;
+    }
+
+    /**
+     * @return void 返回类型
+     *
+     * @exception
+     * @Title: close
+     * @Description: 退出
+     */
+    @Override
+    public void close() {
+        HARDWARE.setGPIO(1, 3);
+        HARDWARE.setGPIO(1, 2);
+        HARDWARE.closeGPIO();
+
+        HARDWARE.close(fd);
+        fd = -1;
+    }
+
+    /**
+     * 读超高频，无过滤
+     *
+     * @param mb          读取数据 的 区, 1 表示 EPC， 2 表示 TID， 3 表示user
+     * @param sa          读取 数据的 起始地址, 单位 字（字长: 2byte）
+     * @param readDataLen 读取 数据 的长度, 单位 字节, 应选择 偶数
+     * @param runTime     执行时间, 设为0只读1次
+     *
+     * @return 读到的数据，读取失败返回null
+     */
+    public byte[] readUHFInTime(int mb, int sa, int readDataLen, long runTime) {
+        return readUHFInTime(mb, sa, readDataLen, runTime, null, 0, 0);
+    }
+
+    /**
+     * 读超高频，无过滤
+     *
+     * @param mb          读取数据 的 区, 1 表示 EPC， 2 表示 TID， 3 表示user
+     * @param sa          读取 数据的 起始地址, 单位 字（字长: 2byte）
+     * @param readDataLen 读取 数据 的长度, 单位 字节, 应选择 偶数
+     * @param runTime     执行时间, 设为0只读1次
+     * @param filter      过滤数据
+     * @param mmb         过滤的区
+     * @param msa         过滤的起始地址, 单位 字
+     *
+     * @return 读到的数据，读取失败返回null
+     */
+    public byte[] readUHFInTime(int mb, int sa, int readDataLen, long runTime,
+                                byte[] filter, int mmb, int msa) {
+
+        HARDWARE.setGPIO(0, 2);
+
+        if (null == filter) {
+            filter = new byte[0];
+        }
+        
+        int totalLen = 22 + filter.length;
+
+        byte[] cmd_read = new byte[totalLen];
+
+        // 帧头
+        cmd_read[0] = (byte) 0xA5;
+        cmd_read[1] = (byte) 0x5A;
+        // 帧长度
+        if (0xff < totalLen) {
+            cmd_read[2] = (byte) (totalLen >> 8);
+        } else {
+            cmd_read[2] = (byte) 0x00;
+        }
+        cmd_read[3] = (byte) totalLen;
+        // 帧类型
+        cmd_read[4] = (byte) 0x84;
+        // 密码
+        cmd_read[5] = (byte) 0x00;
+        cmd_read[6] = (byte) 0x00;
+        cmd_read[7] = (byte) 0x00;
+        cmd_read[8] = (byte) 0x00;
+
+        // MMB 为启动过滤操作的 bank 号， 0x01 表示 EPC， 0x02 表示 TID， 0x03
+        // 表示USR，其他值为非法值；//01
+        cmd_read[9] = (byte) mmb;
+
+        // MSA启动过滤操作的起始地址, 单位为 bit // 20
+        int bitMsa = msa << 4;
+        if (0xff < bitMsa) {
+            cmd_read[10] = (byte) (bitMsa >> 8);
+        } else {
+            cmd_read[10] = (byte) 0x00;
+        }
+        cmd_read[11] = (byte) bitMsa;
+
+        // MDL过滤的数据长度, 单位为 bit // 60
+        int bitLen = filter.length << 3;
+        if (0xff < bitLen) {
+            cmd_read[12] = (byte) (bitLen >> 8);
+        } else {
+            cmd_read[12] = (byte) 0x00;
+        }
+        cmd_read[13] = (byte) bitLen;
+
+        // 要读的EPC号
+        int epcLen = filter.length;
+//        for (int i = 0; i < epcLen; i++) {
+//            cmd_read[14 + i] = filter[i];
+//        }
+        System.arraycopy(filter, 0, cmd_read, 14, epcLen);
+
+        // MB // 0x02
+        cmd_read[epcLen + 14] = (byte) mb;
+
+        // 写入起始位置
+        if (0xff < sa) {
+            cmd_read[15 + epcLen] = (byte) (sa >> 8);
+        } else {
+            cmd_read[15 + epcLen] = (byte) 0x00;
+        }
+        cmd_read[16 + epcLen] = (byte) sa;
+
+        // 读取数据的长度,单位 字
+        int dataLenWord = readDataLen >> 1;// 把 字节长度 转为 字长度
+        if (0xff < dataLenWord) {
+            cmd_read[17 + epcLen] = (byte) (dataLenWord >> 8);
+        } else {
+            cmd_read[17 + epcLen] = (byte) 0x00;
+        }
+        cmd_read[18 + epcLen] = (byte) dataLenWord;
+
+        cmd_read[epcLen + 19] = (byte) 0x00; // 校验位
+        for (int i = 2; i < totalLen - 3; i++) {
+            cmd_read[epcLen + 19] ^= cmd_read[i];
+        }
+        // 帧尾
+        cmd_read[epcLen + 20] = 0x0D;
+        cmd_read[epcLen + 21] = 0x0A;
+
+        byte[] reVal = null;
+        byte[] buf = new byte[readDataLen + 12];// 12byte 存储其他回复信息
+
+        long time = System.currentTimeMillis();
+        do {
+            int len = runCmd(cmd_read, buf);
+
+            LogsUtil.d(TAG, "readUHFInTime(" + mb + ") len=12:" + (len - readDataLen));
+            if (buf[4] == (byte) 0x85 && buf[5] == 0x01) {
+                reVal = new byte[readDataLen];
+//                for (int i = 0; i < reVal.length; i++) {
+//                    reVal[i] = buf[9 + i];
+//                }
+                System.arraycopy(buf, 9, reVal, 0, reVal.length);
+                break;
+            }
+        } while ((System.currentTimeMillis() - time) < runTime);
+
+        HARDWARE.setGPIO(1, 2);
+        return reVal;
+    }
+
+    /**
+     * 向超高频写入数据，无过滤
+     *
+     * @param data    需要写入的 数据
+     * @param mb      memory bank，用户需要写入的数据的 bank号 0x01 表示 EPC， 0x02 表示 TID， 0x03
+     *                表示USR，其他值为非法值
+     * @param sa      写入起始位置, 单位为 字（字长: 2byte）
+     * @param runTime 执行时间, 设为0只写1次
+     *
+     * @return 写入成功返回true
+     */
+    public boolean writeUHFInTime(byte[] data, int mb, int sa, long runTime) {
+        return writeUHFInTime(data, mb, sa, runTime, null, 0, 0);
+    }
+
+    /**
+     * 向超高频写入数据
+     *
+     * @param data    需要写入的 数据
+     * @param mb      memory bank，用户需要写入的数据的 bank号 0x01 表示 EPC， 0x02 表示 TID， 0x03
+     *                表示USR，其他值为非法值
+     * @param sa      写入起始位置, 单位为 字（字长: 2byte）
+     * @param runTime 执行时间, 设为0只写1次
+     * @param filter  过滤 超高频卡,如果不需要过滤,请传入 null 或 长度为0的字节数组
+     * @param mmb     为启动过滤操作的 bank号， 0x01 表示 EPC， 0x02 表示 TID， 0x03 表示USR，其他值为非法值
+     * @param msa     MSA启动过滤操作的起始地址, 单位为 字 // 0x20
+     *
+     * @return 写入成功返回true
+     */
+    public boolean writeUHFInTime(byte[] data, int mb, int sa, long runTime, byte[] filter,
+                                  int mmb, int msa) {
+        if (null == data) {
+            return false;
+        }
+
+        HARDWARE.setGPIO(0, 2);
+
+        if (null == filter) {
+            filter = new byte[0];
+        }
+        // 总长度 = 22其他信息 + 过滤数据 + 50写入数据
+        int totalLen = 22 + filter.length + data.length;
+
+        byte[] cmd_write = new byte[totalLen];
+
+        // hardware.setGPIO(0, 2);
+        // 帧头
+        cmd_write[0] = (byte) 0xA5;
+        cmd_write[1] = (byte) 0x5A;
+
+        // 帧长度
+        if (0xff < totalLen) {
+            cmd_write[2] = (byte) (totalLen >> 8);
+        } else {
+            cmd_write[2] = (byte) 0x00;
+        }
+        cmd_write[3] = (byte) totalLen;
+
+        // 帧类型
+        cmd_write[4] = (byte) 0x86;
+        // 密码ap
+        cmd_write[5] = (byte) 0x00;
+        cmd_write[6] = (byte) 0x00;
+        cmd_write[7] = (byte) 0x00;
+        cmd_write[8] = (byte) 0x00;
+        // MMB 为启动过滤操作的 bank 号， 0x01 表示 EPC， 0x02 表示 TID， 0x03 表示USR，其他值为非法值
+        cmd_write[9] = (byte) mmb;
+
+        // MSA启动过滤操作的起始地址, 单位为 bit // 20
+        int bitMsa = msa << 4; // 字 转 bit
+        if (0xff < msa) {
+            cmd_write[10] = (byte) (bitMsa >> 8);
+        } else {
+            cmd_write[10] = (byte) 0x00;
+        }
+        cmd_write[11] = (byte) bitMsa;
+
+        // MDL过滤的数据长度, 单位为 bit, 若为0表示不进行过滤
+        int bitLen = filter.length << 3;
+        if (0xff < bitLen) {
+            cmd_write[12] = (byte) (bitLen >> 8);
+        } else {
+            cmd_write[12] = (byte) 0x00;
+        }
+        cmd_write[13] = (byte) bitLen;
+
+        // 要写的EPC号
+        int filterLen = filter.length;
+//        for (int i = 0; i < epcLen; i++) {
+//            cmd_write[14 + i] = filter[i];
+//        }
+        System.arraycopy(filter,0, cmd_write,14, filter.length);
+
+
+        // MB:memory bank，用户需要写入的数据的 bank号
+        cmd_write[14 + filterLen] = (byte) mb;
+
+        // 写入起始位置, 单位为 字 // 0x02
+        if (0xff < sa) {
+            cmd_write[15 + filterLen] = (byte) (sa >> 8);
+        } else {
+            cmd_write[15 + filterLen] = (byte) 0x00;
+        }
+        cmd_write[16 + filterLen] = (byte) sa;
+
+        // 数据大小, 单位为 字
+        int wordLen = data.length / 2;
+        if (0xff < wordLen) {
+            cmd_write[17 + filterLen] = (byte) (wordLen >> 8);
+        } else {
+            cmd_write[17 + filterLen] = (byte) 0x00;
+        }
+        cmd_write[18 + filterLen] = (byte) wordLen;
+
+        // 写入的数据 12位
+        int dataLen = data.length;
+        for (int i = 0; i < dataLen; i++) {// data.length
+            cmd_write[19 + filterLen + i] = data[i];
+        }
+
+        // 校验,将除了 帧头 和 帧尾 之外的所有数据进行异或
+        int checkIndex = 19 + filterLen + dataLen; // 校验位
+        cmd_write[checkIndex] = 0x00;
+        for (int i = 2; i < checkIndex; i++) {
+            cmd_write[checkIndex] ^= cmd_write[i];
+        }
+
+        // 帧尾
+        cmd_write[checkIndex + 1] = 0x0D;
+        cmd_write[checkIndex + 2] = 0x0A;
+
+
+        boolean reVal = false;
+        byte[] buf = new byte[10];
+
+        long time = System.currentTimeMillis();
+        do {
+            int len = runCmd(cmd_write, buf);
+
+            LogsUtil.d(TAG, "writeUHFInTime(" + mb + ") len=10:" + (len));
+            if (buf[4] == (byte) 0x87 && buf[5] == 0x01) {
+                reVal = true;
+                break;
+            } else {
+                LogsUtil.d(TAG, "writeUHFInTime()失败 : buf[4] == " + buf[4] + " buf[5] == "
+                        + buf[5]);
+            }
+        } while ((System.currentTimeMillis() - time) < runTime);
+
+        HARDWARE.setGPIO(1, 2);
+        return reVal;
+    }
+
+    /**
+     * 获取EPC区后12字节数据,无法进行过滤.epc区共16byte,前4个byte不可改
+     *
+     * @param epcBuf 存放epc区数据的数组,长度必须大于或等于12
+     *
+     * @return 读取成功返回true
+     */
+    public boolean fastReadEpc(byte[] epcBuf) {
+        boolean reVal = false;
+        if (null == epcBuf || epcBuf.length < EPC_LEN) {
+            return reVal;
+        }
+        HARDWARE.setGPIO(0, 2);
+
+        byte[] buf = new byte[25];
+        int len = runCmd(CMD_FAST_READ_EPC, buf);
+
+        LogsUtil.d(TAG, "fastReadEpc() len=25:" + len);
+
+        if (25 == len && buf[4] == (byte) 0x81) {
+            for (int i = 0; i < EPC_LEN; i++) {
+                epcBuf[i] = buf[i + 7];
+            }
+            reVal = true;
+        } else {
+            LogsUtil.d(
+                    TAG,
+                    "fastReadEpc() check failed: "
+                            + ArrayUtils.bytes2HexString(buf, 0, len));
+        }
+        HARDWARE.setGPIO(1, 2);
+        return reVal;
+    }
+
+    /**
+     * 快速获取TID区数据, 无法进行过滤, TID区总大小 : 24字节
+     *
+     * @param sa 获取数据 起始地址, 单位 字
+     * @param dl 获取数据 长度 , 单位 节
+     *
+     * @return
+     */
+    public byte[] fastReadTID(int sa, int dl) {
+
+        HARDWARE.setGPIO(0, 2);
+
+        byte[] reVal = null;
+
+        // 起始地址, 单位为 字 // 0x02
+        if (0xFF < sa) {
+            CMD_FAST_READ_TID[6] = (byte) (sa >> 8);
+        } else {
+            CMD_FAST_READ_TID[6] = (byte) 0x00;
+        }
+        CMD_FAST_READ_TID[5] = (byte) sa;
+
+        // 获取数据长度, 单位为 字
+        if (0xFF < dl) {
+            CMD_FAST_READ_TID[7] = (byte) (dl >> 8);
+        } else {
+            CMD_FAST_READ_TID[7] = (byte) 0x00;
+        }
+        CMD_FAST_READ_TID[8] = (byte) dl;
+
+        // 校验位
+        CMD_FAST_READ_TID[9] = 0;
+        for (int i = 2; i < CMD_FAST_READ_TID.length - 3; i++) {
+            CMD_FAST_READ_TID[9] ^= CMD_FAST_READ_TID[i];
+        }
+
+        byte[] buf = new byte[40];
+        int len = runCmd(CMD_FAST_READ_TID, buf);
+        LogsUtil.d(TAG, "fastReadTID() len:" + len);
+
+        if ((12 + dl * 2) == len && buf[4] == (byte) 0x8F && buf[5] == 0x01) {
+            reVal = new byte[dl << 1];
+//            for (int i = 0; i < reVal.length; i++) {
+//                reVal[i] = buf[i + 9];
+//            }
+            System.arraycopy(buf, 9, reVal, 0, reVal.length);
+            LogsUtil.d(TAG,
+                    "fastReadTID(): " + ArrayUtils.bytes2HexString(reVal));
+        } else {
+            Log.d(TAG, "buf[4] = " + buf[4] + "  buf[5] = " + buf[5]);
+        }
+
+        HARDWARE.setGPIO(1, 2);
+        return reVal;
+    }
+
+    public void readEpcs(int readTimes) {
+
+        HARDWARE.setGPIO(0, 2);
+
+        // 寻标签次数
+        read_more[5] = (byte) ((readTimes & 0xFF00) >> 8);//
+        read_more[6] = (byte) (readTimes & 0xFF);
+
+        // 检验位
+        int check = 0;
+        for (int i = 2; i < 7; i++) {
+            check ^= read_more[i];
+        }
+        read_more[7] = (byte) check;
+
+        // 发送命令
+        int write = HARDWARE.write(fd, read_more);
+        if (write < 1) {
+            LogsUtil.d(TAG, "write() failed len: " + write);
+        }
+
+        byte buf[] = new byte[32];
+        int len = 0;
+        int count = 0;
+        while (count++ < readTimes) {
+            LogsUtil.d(TAG, "readTiims:" + count);
+            if (1 != HARDWARE.select(fd, 1, 0)) {
+                continue;
+            }
+
+            len = HARDWARE.read(fd, buf, buf.length);
+            LogsUtil.d(TAG, "readEpcs len: " + len);
+            LogsUtil.d(TAG, "data: " + ArrayUtils.bytes2HexString(buf, 0, len));
+
+        }
+
+    }
+
+    public void stopMore() {
+        while ((len = HARDWARE.read(fd, buf, 25)) > 0)
+            ;
+        HARDWARE.write(fd, stop_read_more);
+        LogsUtil.d(TAG, "stopMore() count" + count);
+    }
+
+    public boolean findMore() {
+        boolean flag = false;
+        while ((len = HARDWARE.read(fd, buf, 25)) > 0)
+            ;// clear buf
+        HARDWARE.write(fd, read_more_time);// 设置连续寻卡等待时间
+        if (HARDWARE.select(fd, 3, 0) == 1) {
+            len = HARDWARE.read(fd, buf, 25);
+            if (len < 1) {
+                System.out.println("read error");
+            } else {
+                LogsUtil.d(TAG, ArrayUtils.bytes2HexString(buf));
+                flag = true;
+            }
+        }
+        return flag;
+
+    }
+
+
+    /**
+     * @param rwPower 0:读功率， 1：写功率
+     *
+     * @return 0<:命令执行成功, 0:串口未检测到数据, -1:执行命令失败, -2获取串口数据的长度小于1, -3:fd<1
+     */
+    public int getPower(int[] rwPower) {
+
+        int reVal = -1;
+
+        if (null == rwPower || rwPower.length < 2) {
+            return reVal;
+        }
+
+        HARDWARE.setGPIO(0, 2);
+
+        byte[] buff = new byte[20];
+        reVal = runCmd(CMD_GET_POWER, buff);
+        LogsUtil.d(TAG, "getPower() len=12:" + (reVal));
+
+        if (14 <= reVal && buff[4] == (byte) 0x13) {
+            int h = 0;
+            int l = 0;
+
+            // 读 功率
+            h = (buff[7] & 0xFF) << 8; // 高8位
+            l = buff[8] & 0xFF; // 低8位
+            rwPower[0] = (h | l) / 100; // 合并2字节 后 除以100即为 功率值
+
+            // 写 功率
+            h = (buff[9] & 0xFF) << 8;
+            l = buff[10] & 0xFF;
+            rwPower[1] = (h | l) / 100;
+
+            LogsUtil.d(TAG, "readPower:" + rwPower[0] + " writePower:"
+                    + rwPower[1]);
+        } else {
+            reVal = -4;
+        }
+
+        HARDWARE.setGPIO(0, 2);
+        return reVal;
+    }
+
+    /**
+     * @param readPower  读 功率.范围:5-30
+     * @param writePower 写 功率.范围:5-30
+     *
+     * @return 设置成功 返回 true
+     */
+    public int setPower(int readPower, int writePower) {
+        return setPower(readPower, writePower, 1, 1, 0);
+    }
+
+    /**
+     * @param readPower  读 功率.范围:5-30
+     * @param writePower 写 功率.范围:5-30
+     * @param id         天线号
+     * @param save       本次设置是否保存 , 0 = 不保存
+     * @param open       是否闭环, 非0 = 闭环, 默认0
+     *
+     * @return 设置成功 返回 大于0的int
+     */
+    public int setPower(int readPower, int writePower, int id, int save,
+                        int open) {
+
+        if (readPower < 0 || writePower < 0 || id < 0) {
+            return -4;
+        }
+
+        HARDWARE.setGPIO(0, 2);
+
+        if (0 != save) {
+            save = 1;
+        }
+        if (0 != open) {
+            open = 1;
+        }
+
+        CMD_SET_POWER[5] = (byte) ((save << 1) + open);
+
+        // 设置 天线号
+        CMD_SET_POWER[6] = (byte) id;
+
+        // 限制 读功率范围
+        if (MAX_POWER < readPower) {
+            readPower = MAX_POWER;
+        } else if (readPower < MIN_POWER) {
+            readPower = MIN_POWER;
+        }
+        // 读功率,2字节
+        readPower *= 100; // 功率要先乘以100,协议如此规定
+        CMD_SET_POWER[7] = (byte) (readPower >> 8);
+        CMD_SET_POWER[8] = (byte) readPower;
+
+        // 限制 写功率范围
+        if (MAX_POWER < writePower) {
+            writePower = MAX_POWER;
+        } else if (writePower < MIN_POWER) {
+            writePower = MIN_POWER;
+        }
+        // 写功率,2字节
+        writePower *= 100; // 功率要先乘以100,协议如此规定
+        CMD_SET_POWER[9] = (byte) (writePower >> 8);
+        CMD_SET_POWER[10] = (byte) writePower;
+
+        // 校验位
+        CMD_SET_POWER[11] = (byte) 0x00;
+        for (int i = 2; i < 11; i++) {
+            CMD_SET_POWER[11] ^= CMD_SET_POWER[i];
+        }
+
+        byte[] buff = new byte[16];
+        int reVal = runCmd(CMD_SET_POWER, buff);
+        LogsUtil.d(TAG, "setPower() len=9:" + (reVal));
+
+        if ((0 < reVal) && (buff[4] == 0x11) && (buff[5] == (byte) 0x01)) {
+        } else {
+            reVal = -4;
+        }
+		LogsUtil.d(TAG, "17：buf[4] == " + buff[4] + ",1：buf[5] == " + buff[5]);
+
+        HARDWARE.setGPIO(1, 2);
+        return reVal;
+    }
+
+}

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:id="@+id/layout111"
+    android:background="#ffffff"
+    android:orientation="vertical" xmlns:tools="http://schemas.android.com/tools">
+
+    <FrameLayout
+        android:id="@+id/lockscreen_bg"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@drawable/qn_bg1"
+        android:visibility="visible" >
+
+        <LinearLayout 
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical"
+            android:paddingLeft="10.0dip"
+            android:paddingRight="10.0dip" >
+
+            <TextView
+                android:id="@+id/guider_text"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10.0dip"
+                android:singleLine="true"
+                android:text="请将手指放置在指纹模块上,然后轻点一下屏幕."
+                android:textColor="@color/blue"
+                android:textSize="@dimen/t_Size26"
+                
+            android:ellipsize="marquee" 
+            android:marqueeRepeatLimit="marquee_forever"
+            android:focusable="true"
+            android:focusableInTouchMode="true" />
+        </LinearLayout>
+
+        <RelativeLayout 
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+             >
+
+            <ImageView  android:layout_marginTop="30dp"
+                android:id="@+id/lockscreen_confirmbg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="75.0dip"
+                android:src="@drawable/qn_bg2"
+                tools:ignore="ContentDescription" />
+
+            <ImageView android:layout_marginTop="30dp"
+                android:id="@+id/lockscreen_fngerprint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="70.0dip"
+                android:src="@drawable/qn_fngerprint" 
+                tools:ignore="ContentDescription"/>
+
+            <ImageView 
+                android:id="@+id/lockscreen_scan_line"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="75.0dip"
+                android:layout_marginTop="30dp"
+                android:src="@drawable/qn_light"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:id="@+id/count_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+               	android:layout_marginTop="26dp"
+                android:layout_above="@id/lockscreen_confirmbg"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="70.0dip"
+               
+                android:singleLine="true"
+               
+                android:textColor="@color/red"
+                android:textSize="@dimen/t_Size45" />
+        </RelativeLayout>
+    </FrameLayout>
+
+</LinearLayout>

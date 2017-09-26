@@ -1,0 +1,97 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:title="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <!-- #FF0000 -->
+
+    <com.fanfull.view.ActivityHeadItemView
+        android:id="@+id/v_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="凡方数码"
+        title:showImage="false" 
+        android:src="@drawable/login_logo"/>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="35dp"
+        android:background="@drawable/shape_scan_uhf"
+        android:focusable="true"
+        android:focusableInTouchMode="true" >
+
+        <TextView
+            android:id="@+id/tv_login_user"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@android:color/transparent"
+            android:drawableLeft="@drawable/user_id_account"
+            android:drawablePadding="10dp"
+            android:gravity="center_vertical"
+            android:textColor="@color/gainsboro"
+            android:hint="点击扫描IC卡"
+            android:singleLine="true"
+            android:paddingBottom="8dp"
+            android:paddingLeft="15dp"
+            android:paddingTop="8dp"
+            android:textSize="20sp" />
+
+    </FrameLayout>
+
+    <!-- editText 设置了inputType 和 gravity 不为 left,hint不显示, 需加上 android:ellipsize="start"  
+        android:gravity="center"-->
+
+    <EditText
+        android:id="@+id/et_login_psw"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="15dp"
+        android:ellipsize="start"
+        android:focusableInTouchMode="false"
+        android:hint="请输入密码"
+        android:inputType="numberPassword"
+        android:lines="1"
+        android:maxLength="6"
+        android:password="true"
+        android:textSize="20sp" 
+        android:paddingBottom="8dp"
+        android:paddingLeft="15dp"
+        android:paddingTop="8dp"
+        android:drawablePadding="10dp"
+        android:drawableLeft="@drawable/user_password"
+        android:textColor="@color/gainsboro"
+        android:imeOptions="actionGo"
+        android:background="@drawable/shape_scan_uhf"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="30dp"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/btn_login_login"
+            style="@style/activity_btn"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="登  录" />
+
+        <Button
+            android:id="@+id/btn_login_cancel"
+            style="@style/activity_btn"
+            android:layout_width="0dp"
+            android:layout_marginLeft="20dp"
+            android:layout_weight="1"
+            android:text="取  消" />
+    </LinearLayout>
+
+</LinearLayout>
