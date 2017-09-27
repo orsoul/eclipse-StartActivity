@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.fanfull.fff"
+    android:sharedUserId="android.uid.system"
     android:versionCode="2"
-    android:versionName="v1.1.2" >
+    android:versionName="v1.1.3" >
 
     <!-- android:sharedUserId="android.uid.system" -->
     <uses-permission android:name="android.permission.SHUTDOWN" />
@@ -439,6 +440,7 @@
         </service>
         <service android:name="com.mvp.center.ConnectService" >
         </service>
+
         <activity
             android:name="com.mvp.bagLink2.BagLinkActivity"
             android:launchMode="singleTask" >
@@ -454,7 +456,7 @@
             android:name="com.mvp.pileCreate1.PileCreateOneActivity"
             android:launchMode="singleTask" >
         </activity>
-        
+
         <!-- 开机启动广播 -->
         <receiver android:name="com.fanfull.background.BootBroadcastReceiver" >
             <intent-filter>
@@ -468,10 +470,9 @@
             android:name="com.fanfull.activity.scan_general.QueryBagCirculationActivity"
             android:label="@string/title_activity_query_bag_circulation" >
         </activity>
-        
         <activity
             android:name="com.mvp.screenManage.ScreenManageActivity"
-            android:launchMode="singleTask">
+            android:launchMode="singleTask" >
         </activity>
         <activity
             android:name="com.mvp.pilecreate2.PileCreateTwoActivity"
