@@ -87,4 +87,12 @@
 	 
 	  <style name="AppThemeOne" parent="android:Theme.Black" />
     <style name="AppThemeTwo" parent="android:Theme.Light" />
+    
+    <style name="RadioButton">
+        <item name="android:layout_margin">2dp</item>
+        <item name="android:button">@null</item>
+        <item name="android:background">@drawable/radio_button_select</item>
+        <item name="android:textColor">#000000</item>
+        <item name="android:gravity">center</item>
+    </style>
 </resources>
