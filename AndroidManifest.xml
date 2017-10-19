@@ -396,6 +396,11 @@
         <activity
             android:name="com.mvp.center.CenterActivity"
             android:launchMode="singleTask" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name="com.mvp.baglink.BagLinkActivity"
@@ -478,13 +483,8 @@
         </activity>
         <activity
             android:name="com.mvp.hand.HandOperActivity"
-            android:launchMode="singleTask" >
-        <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            </activity>
+            android:launchMode="singleTask" />
+        
         <activity
             android:name="com.mvp.hand.InitScreenActivity"
             android:launchMode="singleTask" />

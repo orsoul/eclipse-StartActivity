@@ -32,14 +32,6 @@
             android:orientation="vertical"
             android:padding="10dp" >
 
-            <!--
-                 <Spinner
-                android:id="@+id/bizhong"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:entries="@array/bagModel" />
-            -->
-
             <Button
                 android:id="@+id/quebie"
                 android:background="@drawable/background_not_select"
@@ -72,6 +64,7 @@
                     android:text="残损" />
                 
                 <RadioButton
+                    android:id="@+id/yuanfeng"
                     android:layout_width="0dp"
                     style="@style/RadioButton"
                     android:layout_height="match_parent"
@@ -142,6 +135,7 @@
             </com.fanfull.view.MyRadioGroup>
 
             <ImageView
+                android:id="@+id/line"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="10dp"

@@ -12,25 +12,28 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.entity.PileInfo;
 import com.fanfull.base.BaseActivity;
 import com.fanfull.fff.R;
 import com.fanfull.utils.DialogUtil;
+import com.fanfull.utils.ToastUtil;
 import com.fanfull.view.MyRadioGroup;
 import com.mvp.hand.HandContract.Presenter;
 
 public class InitScreenActivity extends BaseActivity implements
-		com.mvp.refreshscreen.RefreshScreenContract.View {
+		com.mvp.refreshscreen.RefreshScreenContract.View,com.mvp.hand.HandContract.View{
 	//private Spinner bizhong;
 	private Button quebie;
 	private RadioGroup leixing;
 	private MyRadioGroup leixing2;
-	private RadioButton wanzheng, cansun;
+	private RadioButton wanzheng, cansun,yuanfeng;
 	private RadioButton weifudian, yifudian, weiqingfen, yiqingfen;
 
 	private RadioGroup version, version1, version2;
@@ -41,6 +44,7 @@ public class InitScreenActivity extends BaseActivity implements
 	private MyRadioGroup mRadioGroup;
     private RadioButton p100,p50,p20,p10,p5,p1,p05,p02,p01;
     private RadioButton y1,y05,y01,y005,y002,y001;
+    private ImageView line;
     
 	private Button init;
 	private DialogUtil dialogUtil = new DialogUtil(this);
@@ -66,6 +70,7 @@ public class InitScreenActivity extends BaseActivity implements
 
 		wanzheng = (RadioButton) findViewById(R.id.wanzheng);
 		cansun = (RadioButton) findViewById(R.id.cansun);
+		yuanfeng = (RadioButton) findViewById(R.id.yuanfeng);
 
 		weifudian = (RadioButton) findViewById(R.id.weifudian);
 		yifudian = (RadioButton) findViewById(R.id.yifudian);
@@ -86,7 +91,9 @@ public class InitScreenActivity extends BaseActivity implements
 		jiujiu = (RadioButton) findViewById(R.id.jiujiu);
 		lingwu = (RadioButton) findViewById(R.id.lingwu);
 		yiwu = (RadioButton) findViewById(R.id.yiwu);
-
+		
+		line = (ImageView) findViewById(R.id.line);
+		
 		init = (Button) findViewById(R.id.init);
 
 		leixing.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -95,8 +102,16 @@ public class InitScreenActivity extends BaseActivity implements
 			public void onCheckedChanged(RadioGroup group, int checkedId) {
 				if (checkedId == wanzheng.getId()) {
 					leixing1_str = "完整";
+					leixing2.setVisibility(View.VISIBLE);
+					line.setVisibility(View.VISIBLE);
 				} else if (checkedId == cansun.getId()) {
 					leixing1_str = "残损";
+					leixing2.setVisibility(View.VISIBLE);
+					line.setVisibility(View.VISIBLE);
+				} else if(checkedId == yuanfeng.getId()){
+					leixing1_str = "原封";
+					leixing2.setVisibility(View.GONE);
+					line.setVisibility(View.GONE);
 				}
 			}
 		});
@@ -167,9 +182,16 @@ public class InitScreenActivity extends BaseActivity implements
 
 			@Override
 			public void onClick(View v) {
-				dialogUtil.showProgressDialog();
-				presenter.initScreen(bagModel, leixing1_str + "|"
-						+ leixing2_str, version_value, series);
+				if(bagModel != null){
+					if(leixing1_str.equals("原封")){
+						leixing2_str = "已清分";
+					}
+					presenter.create(bagModel, leixing1_str, leixing2_str, "-1");
+					
+				}else{
+					ToastUtil.showToastInCenter("请选择券别");
+				}
+				
 			}
 		});
 		/*bizhong.setOnItemSelectedListener(new OnItemSelectedListener() {
@@ -231,48 +253,63 @@ public class InitScreenActivity extends BaseActivity implements
                 if(checkedId == p100.getId()){
                     Log.d(TAG, "选中："+p100.getText());
                     quebie.setText(p100.getText());
+                    bagModel = "纸100元(200万-5.5)";
                 }else if (checkedId == p50.getId()){
                     Log.d(TAG, "选中："+p50.getText());
                     quebie.setText(p50.getText());
+                    bagModel = "纸50元(100万-5.5)";
                 }else if (checkedId == p20.getId()){
                     Log.d(TAG, "选中："+p20.getText());
                     quebie.setText(p20.getText());
+                    bagModel = "纸20元(40万-5.5)";
                 }else if (checkedId == p10.getId()){
                     Log.d(TAG, "选中："+p10.getText());
                     quebie.setText(p10.getText());
+                    bagModel = "纸10元(20万-5.5)";
                 }else if (checkedId == p5.getId()){
                     Log.d(TAG, "选中："+p5.getText());
                     quebie.setText(p5.getText());
+                    bagModel ="纸5元(10万-5.5)";
                 }else if (checkedId == p1.getId()){
                     Log.d(TAG, "选中："+p1.getText());
                     quebie.setText(p1.getText());
+                    bagModel ="纸1元(2万-5.5)";
                 }else if(checkedId == p05.getId()){
                     Log.d(TAG, "选中："+p05.getText());
                     quebie.setText(p05.getText());
+                    bagModel = "纸5角(2.5万-5.5)";
                 }else if(checkedId == p02.getId()){
                     Log.d(TAG, "选中："+p02.getText());
                     quebie.setText(p02.getText());
+                    bagModel="纸2角(1万-5.5)";
                 }else if(checkedId == p01.getId()){
                     Log.d(TAG, "选中："+p01.getText());
                     quebie.setText(p01.getText());
+                    bagModel = "纸1角(0.5万-5.5)";
                 }else if(checkedId == y1.getId()){
                     Log.d(TAG, "选中："+y1.getText());
                     quebie.setText(y1.getText());
+                    bagModel="硬1元(5万-5.5)";
                 }else if(checkedId == y05.getId()){
                     Log.d(TAG, "选中："+y05.getText());
                     quebie.setText(y05.getText());
+                    bagModel="硬5角(2.5万-5.5)";
                 }else if(checkedId == y01.getId()){
                     Log.d(TAG, "选中："+y01.getText());
                     quebie.setText(y01.getText());
+                    bagModel="硬1角(0.5万-5.5)";
                 }else if(checkedId == y005.getId()){
                     Log.d(TAG, "选中："+y005.getText());
                     quebie.setText(y005.getText());
+                    bagModel="硬5分(0.5万-5.5)";
                 }else if(checkedId == y002.getId()){
                     Log.d(TAG, "选中："+y002.getText());
                     quebie.setText(y002.getText());
+                    bagModel="硬2分(0.2万-5.5)";
                 }else if(checkedId == y001.getId()){
                     Log.d(TAG, "选中："+y001.getText());
                     quebie.setText(y001.getText());
+                    bagModel="硬1分(0.1万-5.5)";
                 }
             }
         });
@@ -280,7 +317,7 @@ public class InitScreenActivity extends BaseActivity implements
 	
 	private AlertDialog mDialog;
 
-	private HandPresenter presenter = new HandPresenter(this);
+	private HandPresenter presenter = new HandPresenter(this,this);
 
 	private String bagModel;
 
@@ -318,6 +355,7 @@ public class InitScreenActivity extends BaseActivity implements
 	public void writeScreenSuccess() {
 		dialogUtil.dismissProgressDialog();
 		presenter.light();
+		presenter.insert();
 	}
 
 	@Override
@@ -325,6 +363,28 @@ public class InitScreenActivity extends BaseActivity implements
 		dialogUtil.dismissProgressDialog();
 		dialogUtil.showDialog(error);
 
+	}
+
+	@Override
+	public void createPileSuccess() {
+		ToastUtil.showToastInCenter("创建堆成功，写入屏数据");
+		if(leixing1_str.equals("原封")){
+			presenter.initScreen(bagModel, "完整|原封", version_value, series);	
+		}else{
+			presenter.initScreen(bagModel, leixing1_str + "|"
+					+ leixing2_str, version_value, series);		
+		}
+		
+	}
+
+	@Override
+	public void createPileFailure() {
+		ToastUtil.showToastInCenter("创建堆失败");
+	}
+
+	@Override
+	public void onFailure(String error) {
+		ToastUtil.showToastInCenter("网络错误");
 	}
 
 }

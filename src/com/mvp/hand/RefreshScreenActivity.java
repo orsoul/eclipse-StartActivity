@@ -1,6 +1,9 @@
 package com.mvp.hand;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -39,13 +42,54 @@ public class RefreshScreenActivity extends BaseActivity implements com.mvp.bagli
 			public void onClick(View v) {
 				bagNum = 0;
 				if(bags.length()!=0){
-					bagNum = Integer.valueOf(bags.getText().toString());	
+					bagNum = Integer.valueOf(bags.getText().toString().replace(",", ""));	
 				}
 				
-				moneyTotal = money.getText().toString();
+				moneyTotal = money.getText().toString().replace(",", "");
 				System.out.println(moneyTotal + " "+bagNum);
 				mDialogUtil.showProgressDialog();
 				presenter.readScreen();
+				
+			}
+		});
+		
+		money.addTextChangedListener(new TextWatcher() {
+			
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				
+				 if (count != before) {
+		                String sss = "";
+		                String string = s.toString().replace(",", "");
+		                int b = string.length() / 3;
+		                if (string.length() >= 3 ) {
+		                    int yushu = string.length() % 3;
+		                    if (yushu == 0) {
+		                        b = string.length() / 3 - 1;
+		                        yushu = 3;
+		                    }
+		                    for (int i = 0; i < b; i++) {
+		                        sss = sss + string.substring(0, yushu) + "," + string.substring(yushu, 3);
+		                        string = string.substring(3, string.length());
+		                    }
+		                    sss = sss + string;
+		                    Log.d("", "循环测试");
+		                    money.setText(sss);
+		                }
+		            }
+				 money.setSelection(money.getText().length());
+			}
+			
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void afterTextChanged(Editable s) {
+				// TODO Auto-generated method stub
 				
 			}
 		});
@@ -78,6 +122,7 @@ public class RefreshScreenActivity extends BaseActivity implements com.mvp.bagli
 	public void writeScreenSuccess() {
 		mDialogUtil.dismissProgressDialog();
 		presenter.light();
+		presenter.update();
 	}
 
 	@Override
