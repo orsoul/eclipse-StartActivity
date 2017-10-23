@@ -151,11 +151,8 @@ public class WriteScreenTask implements Runnable {
 			model = "07";
 		} else if (model.equals("完整|未清分")) {
 			model = "08";
-<<<<<<< HEAD
-=======
 		} else if(model.equals("完整|原封")){
 			model = "09";
->>>>>>> origin/v1.1.2
 		}
 
 		if (moneyType.contains("1角")) {
@@ -178,11 +175,6 @@ public class WriteScreenTask implements Runnable {
 			moneyType = "09";
 		} else if (moneyType.contains("100元")) {
 			moneyType = "0A";
-<<<<<<< HEAD
-		} else {
-			moneyType = "0A";
-		}
-=======
 		} else if (moneyType.contains("1分")) {
 			moneyType = "0B";
 		} else if (moneyType.contains("2分")) {
@@ -192,7 +184,6 @@ public class WriteScreenTask implements Runnable {
 		} else {
 			moneyType = "0A";
 		} 
->>>>>>> origin/v1.1.2
 
 		SimpleDateFormat dataFormat = new SimpleDateFormat("yyyyMMddhhmmss");
 		date = dataFormat.format(new Date());
@@ -209,11 +200,7 @@ public class WriteScreenTask implements Runnable {
 		pileName = getPileNameString(pileName);
 
 	}
-<<<<<<< HEAD
-
-=======
 	public String mTid = null;
->>>>>>> origin/v1.1.2
 	@Override
 	public void run() {
 		UHFOperation mUhfOperation = UHFOperation.getInstance();
@@ -223,15 +210,6 @@ public class WriteScreenTask implements Runnable {
 		while (20 > count++) {
 			System.out.println("刷新" + count + "次");
 			if (mUhfOperation.findOne()) {
-<<<<<<< HEAD
-				/** 目的是确保读到的是之前的那个超高频 */
-				// LogsUtil.d("write id:"+ArrayUtils.bytesToHexString(mUhfOperation.mEPC).equals(mSreenEPC)+""+"----"+mSreenEPC);
-				/*
-				 * if(null == mSreenEPC ||
-				 * !ArrayUtils.bytesToHexString(mUhfOperation
-				 * .mEPC).equals(mSreenEPC)){ continue; }else {
-				 */
-=======
 				SystemClock.sleep(500);
 				byte[] tid;
 				if((tid = mUhfOperation.readTIDNogl())== null){
@@ -240,7 +218,6 @@ public class WriteScreenTask implements Runnable {
 					mTid = ArrayUtils.bytes2HexString(tid);
 				}
 				
->>>>>>> origin/v1.1.2
 				String wString = moneyType + model + moneyDisplay[0]
 						+ moneyDisplay[1] + display_style + date + userID
 						+ bagNum + series + "00" + pileName + refreshNum + time

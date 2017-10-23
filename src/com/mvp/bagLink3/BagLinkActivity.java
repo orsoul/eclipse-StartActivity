@@ -76,9 +76,4 @@ public class BagLinkActivity extends BaseActivity implements View{
 		mDiaUtil.dismissProgressDialog();
 		mDiaUtil.showDialog(error);
 	}
-<<<<<<< HEAD
-=======
-	
-	
->>>>>>> origin/v1.1.2
 }

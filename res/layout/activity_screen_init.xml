@@ -24,7 +24,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="45dp" >
+        android:layout_marginTop="40dp" >
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -32,16 +32,18 @@
             android:orientation="vertical"
             android:padding="10dp" >
 
-            <Spinner
-                android:id="@+id/bizhong"
+            <Button
+                android:id="@+id/quebie"
+                android:background="@drawable/background_not_select"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:entries="@array/bagModel" />
+                android:layout_height="40dp"
+                android:textSize="15px"
+                android:text="- 请 选 择 券 别 -" />
 
             <RadioGroup
                 android:id="@+id/leixing"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:orientation="horizontal" >
 
                 <RadioButton
@@ -50,6 +52,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:checked="true"
+                    style="@style/RadioButton"
                     android:text="完整" />
 
                 <RadioButton
@@ -57,53 +60,92 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
+                    style="@style/RadioButton"
                     android:text="残损" />
+                
+                <RadioButton
+                    android:id="@+id/yuanfeng"
+                    android:layout_width="0dp"
+                    style="@style/RadioButton"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="原封" />
             </RadioGroup>
 
-            <ImageView android:layout_width="match_parent"
+            <ImageView
+                android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/brown"/>
-            
-            <RadioGroup
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="@color/white" />
+
+            <com.fanfull.view.MyRadioGroup
                 android:id="@+id/leixing2"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical" >
 
-                <RadioButton
-                    android:id="@+id/yiqingfen"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:text="已清分" />
+                    android:layout_height="40dp"
+                    android:orientation="horizontal" >
 
-                <RadioButton
-                    android:id="@+id/weiqingfen"
+                    <RadioButton
+                        android:id="@+id/yiqingfen"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        style="@style/RadioButton"
+                        android:checked="true"
+                        android:text="已清分" />
+
+                    <RadioButton
+                        android:id="@+id/weiqingfen"
+                        android:layout_width="0dp"
+                        style="@style/RadioButton"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="未清分" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="未清分" />
+                    android:layout_height="40dp"
+                    android:orientation="horizontal" >
 
-                <RadioButton
-                    android:id="@+id/yifudian"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="已复点" />
+                    <RadioButton
+                        android:id="@+id/yifudian"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        style="@style/RadioButton"
+                        android:checked="true"
+                        android:text="已复点" />
 
-                <RadioButton
-                    android:id="@+id/weifudian"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="未复点" />
-            </RadioGroup>
+                    <RadioButton
+                        android:id="@+id/weifudian"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        style="@style/RadioButton"
+                        android:text="未复点" />
+                </LinearLayout>
+            </com.fanfull.view.MyRadioGroup>
 
-            <ImageView android:layout_width="match_parent"
+            <ImageView
+                android:id="@+id/line"
+                android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/brown"/>
-            
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="@color/white" />
+
             <RadioGroup
                 android:id="@+id/version"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:orientation="horizontal" >
 
                 <RadioButton
@@ -112,26 +154,28 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:checked="true"
+                    style="@style/RadioButton"
                     android:text="第四套" />
 
                 <RadioButton
                     android:id="@+id/wutao"
                     android:layout_width="0dp"
+                    style="@style/RadioButton"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="第五套" />
             </RadioGroup>
 
-            
             <RadioGroup
                 android:id="@+id/version1"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:orientation="horizontal" >
 
                 <RadioButton
                     android:id="@+id/baling"
                     android:layout_width="0dp"
+                    style="@style/RadioButton"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:checked="true"
@@ -139,28 +183,32 @@
 
                 <RadioButton
                     android:id="@+id/jiuling"
+                    style="@style/RadioButton"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="90版" />
-                
+
                 <RadioButton
                     android:id="@+id/jiuliu"
                     android:layout_width="0dp"
+                    style="@style/RadioButton"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="96版" />
             </RadioGroup>
+
             <RadioGroup
                 android:id="@+id/version2"
-                android:visibility="gone"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal" >
+                android:layout_height="40dp"
+                android:orientation="horizontal"
+                android:visibility="gone" >
 
                 <RadioButton
                     android:id="@+id/jiujiu"
                     android:layout_width="0dp"
+                    style="@style/RadioButton"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:checked="true"
@@ -169,21 +217,25 @@
                 <RadioButton
                     android:id="@+id/lingwu"
                     android:layout_width="0dp"
+                    style="@style/RadioButton"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="05版" />
-                
+
                 <RadioButton
                     android:id="@+id/yiwu"
                     android:layout_width="0dp"
+                    style="@style/RadioButton"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="15版" />
-            </RadioGroup>            
+            </RadioGroup>
+
             <Button
                 android:id="@+id/init"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:background="@drawable/background_not_select"
+                android:layout_height="40dp"
                 android:text="初始化" />
         </LinearLayout>
     </ScrollView>

@@ -106,13 +106,8 @@ public class NetWork {
 					
 					LogsUtil.e(url);
 					connection = (HttpURLConnection) url.openConnection();
-<<<<<<< HEAD
-					connection.setConnectTimeout(2*1000);
-					connection.setReadTimeout(2*1000);
-=======
 					/*connection.setConnectTimeout(2*1000);
 					connection.setReadTimeout(2*1000);*/
->>>>>>> origin/v1.1.2
 					connection.setUseCaches(true);
 					connection.setRequestMethod("GET");
 					connection.connect();
