@@ -125,7 +125,7 @@ public class HandPresenter implements Presenter {
 		SimpleDateFormat dataFormat = new SimpleDateFormat("yyyyMMddhhmmss");
 		String date = dataFormat.format(new Date());
 		task = new WriteScreenTask(mRefreshScreenView, bagType,
-				moneyType, "0", 0, version, 1, "", "RH01", series, date);
+				moneyType, "0", 0, version, 1, "", pileName, series, date);
 		ThreadPoolFactory.getNormalPool().execute(task);
 	}
 
@@ -242,9 +242,10 @@ public class HandPresenter implements Presenter {
 		screenInfo.setRefresh_flag(0);
 		screenInfo.setUpdate_time(DateUtils.getFormatDate());
 		screenInfo.setScreenID(task.mTid);
-		screenInfo.setSerialNum("");
+		screenInfo.setSerialNum("null");
+		Log.d("", screenInfo.toString());
 		ScreenInfoDao screenDao = DBService.getService().getScreenInfoDao();
-		screenDao.insert(screenInfo);
+		screenDao.insertOrReplace(screenInfo);
 	}
 	
 	public void update(){
