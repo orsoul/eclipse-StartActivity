@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/activity_main"
+    android:background="@color/black"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.fanfull.view.MyRadioGroup
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
+
+            <RadioButton
+                android:id="@+id/p100"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                style="@style/RadioButton"
+                android:layout_height="30dp"
+                android:text="100元纸币"/>
+
+            <RadioButton
+                android:id="@+id/p50"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                style="@style/RadioButton"
+                android:layout_height="30dp"
+                android:text="50元纸币"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
+
+            <RadioButton
+                android:id="@+id/p20"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                style="@style/RadioButton"
+                android:layout_height="30dp"
+                android:text="20元纸币"/>
+
+            <RadioButton
+                android:id="@+id/p10"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                style="@style/RadioButton"
+                android:layout_height="30dp"
+                android:text="10元纸币"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
+
+            <RadioButton
+                android:id="@+id/p5"
+                android:layout_width="0dp"
+                style="@style/RadioButton"
+                android:layout_weight="1"
+                android:layout_height="30dp"
+                android:text="5元纸币"/>
+
+            <RadioButton
+                android:id="@+id/p1"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                style="@style/RadioButton"
+                android:layout_height="30dp"
+                android:text="1元纸币"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
+
+            <RadioButton
+                android:id="@+id/p05"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                style="@style/RadioButton"
+                android:layout_height="30dp"
+                android:text="5角纸币"/>
+
+            <RadioButton
+                android:id="@+id/p02"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                style="@style/RadioButton"
+                android:layout_height="30dp"
+                android:text="2角纸币"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
+
+            <RadioButton
+                android:id="@+id/p01"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                style="@style/RadioButton"
+                android:layout_height="30dp"
+                android:text="1角纸币"/>
+
+            <RadioButton
+                android:id="@+id/y1"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                style="@style/RadioButton"
+                android:layout_height="30dp"
+                android:text="1元硬币"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
+
+            <RadioButton
+                android:id="@+id/y05"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                style="@style/RadioButton"
+                android:layout_height="30dp"
+                android:text="5角硬币"/>
+
+            <RadioButton
+                android:id="@+id/y01"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                style="@style/RadioButton"
+                android:layout_height="30dp"
+                android:text="1角硬币"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
+
+            <RadioButton
+                android:id="@+id/y005"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                style="@style/RadioButton"
+                android:layout_height="30dp"
+                android:text="5分硬币"/>
+
+            <RadioButton
+                android:id="@+id/y002"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                style="@style/RadioButton"
+                android:layout_height="30dp"
+                android:text="2分硬币"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
+
+            <RadioButton
+                android:id="@+id/y001"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                style="@style/RadioButton"
+                android:layout_height="30dp"
+                android:text="1分硬币"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="40dp"/>
+        </LinearLayout>
+
+    </com.fanfull.view.MyRadioGroup>
+</ScrollView>

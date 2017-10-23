@@ -3,18 +3,18 @@
 
     <string-array name="bagModel">
         <item>- 请 选 择 券 别 -</item>
-        <item>纸100元(200万-5.5)</item>
-        <item>纸50元(100万-5.5)</item>
-        <item>纸20元(40万-5.5)</item>
-        <item>纸10元(20万-5.5)</item>
-        <item>纸5元(10万-5.5)</item>
-        <item>纸1元(2万-5.5)</item>
-        <!--
-             <item>纸100元(400万-5.5)</item>
-        <item>纸2元(4万-5.5)</item>
-        <item>纸5角(2.5万-5.5)</item>
-        <item>纸1角(0.5万-5.5)</item>
-        -->
+        <item>100元纸币</item>
+        <item>50元纸币</item>
+        <item>20元纸币</item>
+        <item>10元纸币</item>
+        <item>5元纸币</item>
+        <item>2元纸币</item>
+        <item>1元纸币</item>
+        <item>5角纸币</item>
+        <item>1角纸币</item>
+        <item>1元硬币</item>
+        <item>5角硬币</item>
+        <item>1角硬币</item>
     </string-array>
     <string-array name="moneyModel">
         <item>清分</item>
