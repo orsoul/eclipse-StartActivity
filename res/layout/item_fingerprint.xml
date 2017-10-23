@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+  >
+
+    <LinearLayout 
+         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+        
+    <TextView
+         android:layout_marginLeft="20dp"
+        android:id="@+id/tv_setting_item_set_id"
+         style="@style/tv_setting_item"
+         android:layout_width="0dp"
+        android:layout_weight="0.2"
+         android:drawableRight="@null"
+          android:gravity="center"
+        android:text="指纹ID" />
+
+     <TextView
+        android:id="@+id/tv_setting_item_set_name"
+        style="@style/tv_setting_item"
+        android:layout_width="0dp"
+       android:layout_weight="0.6"
+         android:gravity="center"
+     	android:drawableRight="@null"
+        android:text="用户" />
+     
+     <TextView
+        android:id="@+id/tv_setting_item_set_version"
+        style="@style/tv_setting_item"
+         android:layout_width="0dp"
+        android:layout_weight="0.2"
+        android:gravity="center"
+        android:drawableRight="@null"
+        android:text="版本" />
+	 </LinearLayout>
+
+</RelativeLayout>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:title="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <com.fanfull.view.ActivityHeadItemView
+        android:id="@+id/v_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="入  库"
+        title:showImage="true" >
+    </com.fanfull.view.ActivityHeadItemView>
+
+    <FrameLayout
+        android:id="@+id/fl_yk_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/v_title" />
+
+</RelativeLayout>

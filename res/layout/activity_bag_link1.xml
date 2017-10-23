@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:title="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <com.fanfull.view.ActivityHeadItemView
+        android:id="@+id/v_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="袋关联"
+        title:showImage="true" >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="200dp"
+            android:layout_marginTop="4dp"
+            android:src="@drawable/re_scan"
+            android:visibility="gone" />
+    </com.fanfull.view.ActivityHeadItemView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="45dp"
+        android:orientation="vertical" >
+
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="下载数据"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/button2"
+            style="@style/store_manage_center_btn"
+            android:layout_margin="5dp"
+            android:text="扫描托盘袋" />
+
+        <Button
+            android:id="@+id/button3"
+            style="@style/store_manage_center_btn"
+            android:layout_margin="5dp"
+            android:text="扫描屏" />
+
+        <Button
+            android:id="@+id/button4"
+            style="@style/store_manage_center_btn"
+            android:layout_margin="5dp"
+            android:text="扫描堆中袋" />
+
+        <Button
+            android:id="@+id/button5"
+            style="@style/store_manage_center_btn"
+            android:layout_margin="5dp"
+            android:text="刷新屏" />
+
+        <Button
+            android:id="@+id/button6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="数据验证"
+            android:visibility="gone" />
+    </LinearLayout>
+
+</RelativeLayout>

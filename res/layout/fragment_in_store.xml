@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical" >
+
+        <Button
+            android:id="@+id/btn_yk_go"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:text="开启" />
+
+        <Button
+            android:id="@+id/btn_yk_stop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/button"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:text="摆动" />
+
+        <Button
+            android:id="@+id/btn_yk_hand_scan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/button"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:text="复位" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_yk_finish_tp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="5dp"
+        android:drawableTop="@drawable/finish_tp_72_72"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:text="下一托盘"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/tv_yk_lock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="10dp"
+        android:drawableTop="@drawable/lock_"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:text="锁定批"
+        android:visibility="gone" />
+
+    <CheckBox
+        android:id="@+id/cb_yk_dcrk"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/linearLayout1"
+        android:scaleX="0.7"
+        android:scaleY="0.7"
+        android:visibility="gone"
+        android:text="倒车入库" />
+
+</RelativeLayout>

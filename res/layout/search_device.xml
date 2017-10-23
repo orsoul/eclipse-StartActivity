@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:title="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/FrameLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/scanning_bg_1" >
+
+       <com.fanfull.view.ActivityHeadItemView
+        android:id="@+id/v_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="寻找报警锁"
+        title:showImage="true" >
+    </com.fanfull.view.ActivityHeadItemView>
+ 
+    
+   <FrameLayout 
+          android:layout_width="match_parent"
+        android:layout_height="fill_parent" >
+       
+        <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent" >
+        <ListView 
+            android:id="@+id/log_id"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_above="@+id/func_id"
+            />
+
+            <ImageView
+                android:id="@+id/device_icon_id_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+               android:layout_alignParentRight="true"
+               android:layout_marginTop="100dp"
+               android:layout_marginRight="2dp"
+                android:gravity="center_horizontal"
+                android:src="@drawable/device_icon_small" />
+
+            <ImageView
+                android:id="@+id/device_icon_id_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="2dp"
+                android:layout_centerVertical="true"
+                android:gravity="center_horizontal"
+                android:src="@drawable/device_icon_small" />
+
+            <ImageView
+                android:id="@+id/device_icon_id_4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="44dp"
+                android:gravity="center_horizontal"
+                android:src="@drawable/device_icon_small" />
+
+            <ImageView
+                android:id="@+id/device_icon_id_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginBottom="120dp"
+                android:layout_marginRight="25dp"
+                android:gravity="center_horizontal"
+                android:src="@drawable/device_icon_small" />
+
+     <LinearLayout
+         android:id="@+id/func_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal" >
+
+            <Button
+            android:id="@+id/btn_search"
+            android:layout_height="wrap_content"
+       		 android:textColor = "@android:color/black"
+              android:layout_width="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/button_shape"
+            android:text="搜索" />
+		 <Button
+            android:id="@+id/btn_light"
+            style="@style/activity_btn"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/button_shape"
+            android:text="解锁" />
+        <Button
+            android:id="@+id/btn_ring"
+            style="@style/activity_btn"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/button_shape"
+            android:text="唤醒" />
+         <Button
+            android:id="@+id/btn_log"
+            style="@style/activity_btn"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/button_shape"
+            android:text="记录" />
+    </LinearLayout>
+    </RelativeLayout>
+
+      <com.fanfull.view.SearchDevicesView
+            android:id="@+id/search_device_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+        </com.fanfull.view.SearchDevicesView>
+       
+   </FrameLayout> 
+
+
+</LinearLayout>

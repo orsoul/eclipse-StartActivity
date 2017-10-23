@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:title="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <com.fanfull.view.ActivityHeadItemView
+        android:id="@+id/v_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="批量操作"
+        title:showImage="true" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="false"
+        android:layout_centerHorizontal="false"
+        android:layout_centerVertical="false"
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/v_title"
+        android:orientation="vertical" >
+
+        <Button
+            android:id="@+id/btn_lot_scan_in_door"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="0dp"
+            android:background="@drawable/button"
+            android:text="门式入库"
+            android:textColor="@color/black" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/btn_lot_scan_in_hand"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/button"
+                android:text="手持入库"
+                android:textColor="@color/black" />
+
+            <Button
+                android:id="@+id/btn_lot_scan_out_door"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:background="@drawable/button"
+                android:text="门式出库"
+                android:textColor="@color/black" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_lot_scan_out_hand"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/button"
+            android:text="手持出库"
+            android:textColor="@color/black" />
+    </LinearLayout>
+
+</RelativeLayout>

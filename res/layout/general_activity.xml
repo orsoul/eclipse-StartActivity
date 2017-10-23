@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:circle="http://schemas.android.com/apk/res/com.fanfull.fff"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".General" >
+
+    <!-- 上行 -->
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <com.fanfull.view.CircleLayout
+            android:id="@+id/main_circle_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="-200dip"
+            circle:firstChildPosition="East"
+            circle:isRotating="true"
+            circle:rotateToCenter="true" >
+
+            <!-- circle:circleBackground="@drawable/green"  > -->
+
+            <com.fanfull.view.CircleImageView
+                circle:name="0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:scaleType="fitXY"
+                android:src="@drawable/fengdai01" />
+
+            <com.fanfull.view.CircleImageView
+                circle:name="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:scaleType="fitXY"
+                android:src="@drawable/ruku01" />
+
+            <com.fanfull.view.CircleImageView
+                circle:name="2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:scaleType="fitXY"
+                android:src="@drawable/chuku01" />
+
+            <com.fanfull.view.CircleImageView
+                circle:name="3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:scaleType="fitXY"
+                android:src="@drawable/yanfeng01" />
+
+            <com.fanfull.view.CircleImageView
+                circle:name="4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:scaleType="fitXY"
+                android:src="@drawable/kaidai01" />
+
+            <com.fanfull.view.CircleImageView
+                circle:name="5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:scaleType="fitXY"
+                android:src="@drawable/huandai01" />
+
+            <com.fanfull.view.CircleImageView
+                circle:name="0"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:gravity="center"
+                android:scaleType="fitXY"
+                android:src="@drawable/fengdai01" />
+
+            <com.fanfull.view.CircleImageView
+                circle:name="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:scaleType="fitXY"
+                android:src="@drawable/ruku01" />
+
+            <com.fanfull.view.CircleImageView
+                circle:name="2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:scaleType="fitXY"
+                android:src="@drawable/chuku01" />
+
+            <com.fanfull.view.CircleImageView
+                circle:name="3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:scaleType="fitXY"
+                android:src="@drawable/yanfeng01" />
+
+            <com.fanfull.view.CircleImageView
+                circle:name="4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:scaleType="fitXY"
+                android:src="@drawable/kaidai01" />
+
+            <com.fanfull.view.CircleImageView
+                circle:name="5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:scaleType="fitXY"
+                android:src="@drawable/huandai01" />
+        </com.fanfull.view.CircleLayout>
+
+        <ImageButton
+            android:id="@+id/up"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:padding="5dip"
+            android:src="@drawable/up1" />
+
+        <ImageButton
+            android:id="@+id/down"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="10dp"
+            android:layout_marginRight="10dp"
+            android:padding="5dip"
+            android:src="@drawable/down1" />
+    </RelativeLayout>
+    <!-- 下行 -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/check_bag"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="验封"
+            android:textSize="20dip" />
+
+        <Button
+            android:id="@+id/open_bag"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="开袋"
+            android:textSize="20dip" />
+
+        <Button
+            android:id="@+id/change_bag"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="更换"
+            android:textSize="20dip" />
+    </LinearLayout>
+
+</LinearLayout>

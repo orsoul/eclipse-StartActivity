@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:title="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#99CCCC"
+    android:orientation="vertical" >
+
+    <!-- #99CCCC -->
+
+    <com.fanfull.view.ActivityHeadItemView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/reason_to_change"
+        title:showImage="true" />
+
+    <CheckBox
+        android:id="@+id/checkBox1"
+        style="@style/cb_change_bag_reason"
+        android:text="@string/can_not_read" />
+
+    <CheckBox
+        android:id="@+id/checkBox2"
+        style="@style/cb_change_bag_reason"
+        android:text="@string/bagcode_can_not_read" />
+
+    <CheckBox
+        android:id="@+id/checkBox3"
+        style="@style/cb_change_bag_reason"
+        android:text="@string/bag_broken" />
+
+    <CheckBox
+        android:id="@+id/checkBox4"
+        style="@style/cb_change_bag_reason"
+        android:text="@string/bag_has_foreignmatter" />
+
+    <CheckBox
+        android:id="@+id/checkBox5"
+        style="@style/cb_change_bag_reason"
+        android:text="@string/other" />
+    
+    <CheckBox
+        android:id="@+id/checkBox6"
+        style="@style/cb_change_bag_reason"
+        android:text="@string/fanfull_change_bag_node_change" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/change_bag_reason_btn_ok"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/button_shape"
+            android:text="@string/change_bag_reason_ok" />
+
+        <Button
+            android:id="@+id/change_bag_reason_btn_quit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_weight="1"
+            android:background="@drawable/button_shape"
+            android:text="@string/change_bag_reason_quit" />
+    </LinearLayout>
+
+</LinearLayout>

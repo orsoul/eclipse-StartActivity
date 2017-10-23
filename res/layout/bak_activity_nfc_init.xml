@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+     <LinearLayout
+        android:id="@+id/layout_diqu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="15dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:background="#cbcbcb"
+        android:orientation="vertical"
+        android:padding="0.2px" >
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="30dp" >
+
+            <TextView
+                android:id="@+id/tv_value_diqu"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="60dp"
+                android:background="#fff"
+                android:ellipsize="end"
+                android:gravity="left|center"
+                android:hint="请选择地区"
+                android:paddingLeft="10dp"
+                android:singleLine="true"
+                android:textColor="#ff000000"
+                android:textSize="18dp" >
+            </TextView>
+
+            <LinearLayout
+                android:id="@+id/bt_dropdown_diqu"
+                android:layout_width="60dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:background="#fff"
+                android:gravity="center"
+                android:onClick="onClick" >
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="15dp"
+                    android:background="@drawable/down_arrow" />
+            </LinearLayout>
+        </RelativeLayout>
+    </LinearLayout>
+    
+      <LinearLayout
+        android:id="@+id/layout_cai"
+        android:layout_below="@+id/layout_diqu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="15dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:background="#cbcbcb"
+        android:orientation="vertical"
+        android:padding="0.2px" >
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="30dp" >
+
+            <TextView
+                android:id="@+id/tv_value_can"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="60dp"
+                android:background="#fff"
+                android:ellipsize="end"
+                android:gravity="left|center"
+                android:hint="请选择是否残损"
+                android:paddingLeft="10dp"
+                android:singleLine="true"
+                android:textColor="#ff000000"
+                android:textSize="18dp" >
+            </TextView>
+
+            <LinearLayout
+                android:id="@+id/bt_dropdown_cai"
+                android:layout_width="60dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:background="#fff"
+                android:gravity="center"
+                android:onClick="onClick" >
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="15dp"
+                    android:background="@drawable/down_arrow" />
+            </LinearLayout>
+        </RelativeLayout>
+    </LinearLayout>
+    
+      
+    <LinearLayout
+        android:id="@+id/layout_dai"
+        android:layout_below="@+id/layout_cai"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="15dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:background="#cbcbcb"
+        android:orientation="vertical"
+        android:padding="0.2px" >
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="30dp" >
+
+            <TextView
+                android:id="@+id/tv_value_dai"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="60dp"
+                android:background="#fff"
+                android:ellipsize="end"
+                android:gravity="left|center"
+                android:hint="请选择袋型号"
+                android:paddingLeft="10dp"
+                android:singleLine="true"
+                android:textColor="#ff000000"
+                android:textSize="18dp" >
+            </TextView>
+
+            <LinearLayout
+                android:id="@+id/bt_dropdown_dai"
+                android:layout_width="60dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:background="#fff"
+                android:gravity="center"
+                android:onClick="onClick" >
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="15dp"
+                    android:background="@drawable/down_arrow" />
+            </LinearLayout>
+        </RelativeLayout>
+    </LinearLayout>
+          
+       
+      <LinearLayout
+        android:id="@+id/v_coverBagItemView_info_linear"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+         android:layout_below="@+id/layout_dai"
+        android:orientation="vertical" >
+	
+	    <com.fanfull.view.CoverBagItemView
+	        android:id="@+id/v_init_bag_init_epc_show"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="5dp"
+	        android:layout_marginLeft="5dp"
+	        android:text="读袋标签" />
+	    
+	    <com.fanfull.view.CoverBagItemView
+	        android:id="@+id/v_init_bag_read_rfid_show"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="5dp"
+	        android:layout_marginLeft="5dp"
+	        android:text="读袋锁片"  />
+	        
+	    <com.fanfull.view.CoverBagItemView
+	        android:id="@+id/v_init_bag_init_first_show"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="5dp"
+	        android:layout_marginLeft="5dp"
+	        android:text="写入标签" />
+
+	    <com.fanfull.view.CoverBagItemView
+	        android:id="@+id/v_init_bag_write_rfid_show"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="5dp"
+	        android:layout_marginLeft="5dp"
+	        android:text="更新袋锁" />
+	 </LinearLayout>
+           
+      
+          <LinearLayout
+            android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="0dp"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/btn_init_bag_ok"
+            style="@style/activity_btn"
+            android:layout_width="0dp"
+            android:layout_marginLeft="12dp"
+            android:layout_weight="1"
+            android:text="开  始" />
+
+        <Button
+            android:id="@+id/btn_init_bag_cancel"
+            style="@style/activity_btn"
+            android:layout_width="0dp"
+            android:layout_marginLeft="12dp"
+            android:layout_weight="1"
+            android:text="取  消" />
+         <Button
+            android:id="@+id/btn_init_bag_off_line"
+            style="@style/activity_btn"
+            android:layout_width="0dp"
+            android:layout_marginLeft="12dp"
+            android:layout_weight="1"
+            android:visibility="gone"
+            android:text="离线上传" />
+    </LinearLayout>
+       
+</RelativeLayout>

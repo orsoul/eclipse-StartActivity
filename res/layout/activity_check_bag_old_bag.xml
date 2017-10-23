@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <include
+        android:id="@+id/ll_cover_bag_activity_scan_content"
+        layout="@layout/activity_cover_bag_old_bag" />
+
+<!--     <include
+        android:id="@+id/ll_cover_bag_activity_task_content"
+        layout="@layout/activity_cover_bag_ez_task"
+        android:visibility="gone" /> -->
+
+</FrameLayout>

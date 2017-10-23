@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:title="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <com.fanfull.view.ActivityHeadItemView
+        android:id="@+id/v_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="加入新袋"
+        title:showImage="true" >
+    </com.fanfull.view.ActivityHeadItemView>
+
+    <include
+        android:id="@+id/fl_info_1"
+        layout="@layout/activity_bag_link_info" />
+
+    <include
+        android:id="@+id/fl_info_2"
+        layout="@layout/activity_bag_link_info" />
+
+    <Button
+        android:id="@+id/btn_info_ok"
+        style="@style/activity_btn"
+        android:layout_width="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="35dp"
+        android:layout_marginRight="35dp"
+        android:layout_marginTop="20dp"
+        android:padding="5dp"
+        android:text="确定加入" />
+
+</LinearLayout>

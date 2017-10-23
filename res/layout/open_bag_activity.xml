@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <RelativeLayout
+        android:id="@+id/openbag_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <RelativeLayout
+            android:id="@+id/top_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:background="#FFA500" >
+
+            <TextView
+                android:id="@+id/top_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="开袋操作"
+                android:textSize="20dip" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/plan_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/top_content"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="计划数量："
+                android:textSize="20dip" />
+
+            <TextView
+                android:id="@+id/plan_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="100"
+                android:textColor="#ff0000"
+                android:textSize="20dip" />
+        </LinearLayout>
+        
+        <LinearLayout
+            android:id="@+id/linearLayout1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/plan_content"
+            android:layout_marginTop="10dip"
+            android:orientation="vertical" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="扫描条码："
+                android:textSize="20dip" />
+
+            <TextView
+                android:id="@+id/code_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="未完成"
+                android:textSize="20dip" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/linearLayout1"
+            android:orientation="vertical" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="扫描袋码："
+                android:textSize="20dip" />
+
+            <TextView
+                android:id="@+id/bag_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="未完成"
+                android:textSize="20dip" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/person_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/linearLayout2"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="完成总数量  ："
+                android:textSize="20dip" />
+
+            <TextView
+                android:id="@+id/finish_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="000"
+                android:textColor="#0000dd"
+                android:textSize="20dip" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/finish_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/person_content"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="个人扫描数量："
+                android:textSize="20dip" />
+
+            <TextView
+                android:id="@+id/person_finish_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="000"
+                android:textColor="#0000dd"
+                android:textSize="20dip" />
+        </LinearLayout>
+
+
+       <LinearLayout
+            android:layout_width="fill_parent"
+
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal" >
+
+             <Button
+                android:id="@+id/readbag_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="-4dip"
+                android:text="读袋" />
+
+            <Button
+                android:id="@+id/scan_barcode_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="-4dip"
+                android:layout_marginRight="-4dip"
+                android:text="条码" />
+
+            <Button
+                android:id="@+id/scan_bag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="-4dip"
+                android:layout_marginRight="-4dip"
+                android:text="写袋" />
+
+            <Button
+                android:id="@+id/btn_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="-4dip"
+                android:layout_marginRight="-4dip"
+                android:text="取消" />
+
+            <Button
+                android:id="@+id/over"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="-4dip"
+                android:layout_marginRight="-4dip"
+                android:text="结束" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/task_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible" >
+
+        <TextView
+            android:id="@+id/tv1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:text="请选择任务"
+            android:textSize="20dip" />
+
+        <ListView
+            android:id="@+id/list_task"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv1" >
+        </ListView>
+    </RelativeLayout>
+
+</RelativeLayout>

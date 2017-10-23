@@ -1,0 +1,40 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <com.orsoul.view.NumberInputer
+        android:id="@+id/v_item_nubmer_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/btn_item_dialog_set_one"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:text="设为  5 " />
+
+        <Button
+            android:id="@+id/btn_item_dialog_set_ten"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="设为 15" />
+
+        <Button
+            android:id="@+id/btn_item_dialog_set_twinty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:text="设为 28" />
+    </LinearLayout>
+
+</LinearLayout>

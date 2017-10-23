@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:title="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+	<RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/orange" >
+
+        <ImageView
+            android:id="@+id/create_two_back"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:src="@drawable/back" />
+
+        <TextView
+            android:id="@+id/create_two_title"
+            style="@style/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="新建堆"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
+    </RelativeLayout>
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:orientation="vertical"
+        android:padding="10dp" >
+        	<TextView 
+        	    android:id="@+id/create_two_bagModel"
+        		android:layout_width="match_parent"
+        		android:layout_height="0dp"
+        		android:layout_weight="1"
+        		android:layout_marginLeft="10dp"
+        		android:layout_marginRight="10dp"
+        		android:text="纸100元(200万-5.5)"
+        		android:background="@drawable/selector_item_general_list"
+        		android:gravity="center" />
+        	<TextView 
+        	    android:id="@+id/create_two_moneyType"
+        		android:layout_width="match_parent"
+        		android:layout_height="0dp"
+        		android:layout_weight="1"
+        		android:layout_marginLeft="10dp"
+        		android:layout_marginRight="10dp"
+        		android:layout_marginTop="5dp"
+        		android:text="完整"
+        		android:background="@drawable/selector_item_general_list"
+        		android:gravity="center" />
+        	<TextView 
+        	    android:id="@+id/create_two_moneyModel"
+        		android:layout_width="match_parent"
+        		android:layout_height="0dp"
+        		android:layout_weight="1"
+        		android:layout_marginLeft="10dp"
+        		android:layout_marginRight="10dp"
+        		android:layout_marginTop="5dp"
+        		android:text="清分"
+        		android:background="@drawable/selector_item_general_list"
+        		android:gravity="center" />
+        	<TextView 
+        	    android:id="@+id/create_two_num"
+        		android:layout_width="match_parent"
+        		android:layout_height="0dp"
+        		android:layout_weight="1"
+        		android:layout_marginLeft="10dp"
+        		android:layout_marginRight="10dp"
+        		android:layout_marginTop="5dp"
+        		android:text="A-完整卷库"
+        		android:background="@drawable/selector_item_general_list"
+        		android:gravity="center" />
+			<Button
+            	android:id="@+id/create_two_ok"
+            	style="@style/activity_btn"
+            	android:layout_width="150dp"
+            	android:layout_height="0dp"
+            	android:layout_marginTop="5dp"
+            	android:layout_weight="1"
+            	android:text="确 定 建 堆" 
+            	android:gravity="center"
+            	android:layout_gravity="center_horizontal"/>
+    </LinearLayout>
+
+</LinearLayout>

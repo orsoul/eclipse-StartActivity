@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:title="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <com.fanfull.view.ActivityHeadItemView
+        android:id="@+id/v_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="预 扫 描"
+        title:showImage="true" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:orientation="vertical" >
+
+        <Button
+            android:id="@+id/btn_pre_scan_yk_open"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/button_small"
+            android:text="启动扫描" />
+
+        <Button
+            android:id="@+id/btn_pre_scan_yk_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/button_small"
+            android:text="开始扫描" />
+
+        <Button
+            android:id="@+id/btn_pre_scan_yk_stop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/button_small"
+            android:text="停止扫描" />
+
+        <Button
+            android:id="@+id/btn_pre_scan_yk_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/button_small"
+            android:text="结束扫描" />
+    </LinearLayout>
+
+</LinearLayout>

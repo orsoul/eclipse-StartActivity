@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants">
+	<Button
+            android:id="@+id/item_option_createpile1"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            android:focusable="false"
+            android:background="@drawable/selector_item_general_list"
+            android:text="纸1元(2万-5.5)--完整--已复点" />
+</RelativeLayout>

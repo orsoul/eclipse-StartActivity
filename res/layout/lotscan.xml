@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+<TextView android:id="@+id/text_quit_lotsan"
+    android:layout_height="19dp"
+    android:textColor="#0033CC"
+    android:layout_width="fill_parent"
+    android:layout_alignParentRight="true"
+    android:gravity="right"
+    android:layout_marginRight="3dp"
+    android:text="返回上一页"/>
+    <Button
+        	android:id="@+id/lot_inbank"
+        	android:layout_alignParentTop="true"
+        	android:layout_width="wrap_content"
+            android:layout_height="wrap_content"            	
+            android:layout_marginTop="48dp"
+            android:layout_marginLeft="90dp"
+            android:background="@drawable/button"
+       		android:text="批量入库" />
+
+    <Button
+       		android:id="@+id/lot_outbank"
+        	android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+         
+           	android:layout_marginLeft="35dp"
+            android:layout_marginTop="13dp"
+            android:layout_alignParentLeft="true"
+        	android:layout_below="@+id/lot_inbank"
+        	android:background="@drawable/button"
+        	android:text="批量出库" />
+
+    <Button
+        	android:id="@+id/lot_count"
+        	android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+          	android:layout_alignParentRight="true"
+           	android:layout_marginRight="35dp"
+           	android:layout_marginLeft="15dp"
+            android:layout_marginTop="13dp"
+            android:layout_below="@id/lot_inbank"
+        	android:layout_toRightOf="@+id/lot_outbank"
+        	android:background="@drawable/button"
+        	android:text="批量清点" />
+
+</RelativeLayout>

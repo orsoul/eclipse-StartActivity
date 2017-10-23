@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:title="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/scan_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <com.fanfull.view.ActivityHeadItemView
+        android:id="@+id/v_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        title:showImage="true" >
+
+        <ImageView
+            android:id="@+id/iv_pre_scan_redo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="205dp"
+            android:layout_marginTop="0dp"
+            android:background="@drawable/mode_far_64"
+            />
+    </com.fanfull.view.ActivityHeadItemView>
+
+    <!-- 计划数量 -->
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_margin="8dp"
+            android:text="计划数量："
+            android:textSize="15sp"
+            android:textStyle="normal" 
+            android:textColor="@color/sliverwhite"/>
+
+        <TextView
+            android:id="@+id/tv_pre_scan_plan_num"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerInParent="true"
+            android:background="#00FFB603"
+            android:gravity="center"
+            android:text="--"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:textSize="20sp" />
+        
+          <TextView
+            android:id="@+id/tv_scanbunch_activity_lock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="5dp"
+            android:drawableTop="@drawable/button_lock"
+            android:text="锁定批" 
+            android:textColor="@color/sliverwhite"/>
+    </RelativeLayout>
+
+    <!-- 已扫数量 -->
+
+    <RelativeLayout
+        android:id="@+id/plan_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/tv_pre_scan_scanned"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="8dp"
+            android:text="已扫描："
+            android:textSize="15sp"
+            android:textStyle="normal" 
+            android:textColor="@color/sliverwhite"/>
+
+        <TextView
+            android:id="@+id/tv_pre_scan_scanned_num"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_centerInParent="false"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@id/tv_pre_scan_scanned"
+            android:background="#99FFB603"
+            android:gravity="center"
+            android:text="-"
+            android:textColor="#ffffff"
+            android:textSize="70sp" />
+    </RelativeLayout>
+
+    <com.orsoul.view.MyProgressBar
+        android:id="@+id/pb_pre_scan_scanned_progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="20dp" />
+
+    <Button
+        android:id="@+id/btn_pre_scan_ok"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/button_shape"
+        android:gravity="center"
+        android:text="开始扫描" />
+
+</LinearLayout>

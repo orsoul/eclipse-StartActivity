@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+	    <RadioGroup
+	        android:id="@+id/group_one"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="center_horizontal"
+	        android:orientation="horizontal" >
+	    <RadioButton
+	        android:id="@+id/radioButton1"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="完整    " />
+	
+	    <RadioButton
+	        android:id="@+id/radioButton2"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="残损    " />
+		</RadioGroup>
+    </LinearLayout>
+    
+     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+	    <RadioGroup
+	        android:id="@+id/group_two"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="center_horizontal"
+	        android:orientation="horizontal" >
+	    <RadioButton
+	        android:id="@+id/radioButton3"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="已清分" />
+	
+	    <RadioButton
+	        android:id="@+id/radioButton4"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="未清分" />
+	    <RadioButton
+	        android:id="@+id/radioButton5"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginLeft="-172dp"
+	        android:layout_marginTop="50dp"
+	        android:text="已复点" />
+	
+	    <RadioButton
+	        android:id="@+id/radioButton6"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginRight="-100dp"
+	        android:layout_marginTop="50dp"
+	        
+	        android:text="未复点" /> 
+		</RadioGroup>
+ 	</LinearLayout>
+
+       
+     <LinearLayout
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:orientation="vertical" >
+       <Button
+            android:id="@+id/dialog_confirm"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/button_shape"
+            android:text="确定" />
+       	</LinearLayout>
+</LinearLayout>

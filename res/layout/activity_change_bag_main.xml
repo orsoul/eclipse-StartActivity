@@ -1,0 +1,48 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:title="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <com.fanfull.view.ActivityHeadItemView
+        android:id="@+id/v_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/changbag"
+        title:showImage="true" />
+
+    <Button
+        android:id="@+id/btn_changebag_go_findout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/button"
+        android:ems="4"
+        android:text="@string/fanfull_change_bag_findout"
+        android:textSize="16sp" />
+    
+    <Button
+        android:id="@+id/btn_changebag_go_open"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/button"
+        android:ems="4"
+        android:text="@string/fanfull_change_bag_open"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/btn_changebag_go_change"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/button"
+        android:maxEms="4"
+        android:text="@string/fanfull_change_bag_change"
+        android:textSize="16sp" />
+
+</LinearLayout>
