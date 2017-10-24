@@ -43,6 +43,7 @@ public class SettingCenterActivity extends BaseActivity {
 	private ViewSettingItem mVCheckSmallSrceen;
 	private ViewSettingItem mVDoor;
 	private ViewSettingItem mVCheckLogin;
+	private ViewSettingItem mInkScreen;
 
 	private TextView mIpSettingtv;
 	private TextView mPowerSettingtv;
@@ -92,6 +93,14 @@ public class SettingCenterActivity extends BaseActivity {
 		mVDoor = (ViewSettingItem) findViewById(R.id.v_setting_check_lot_door);
 		mVDoor.setCheckedChangedListener(listener);
 		mVDoor.setChecked(openLotDoor);
+		
+		//离线模式
+		boolean inkScreen = SPUtils.getBoolean(getApplicationContext(),
+				MyContexts.INK_SCREEN_DOWNLOAD, false);
+		mInkScreen = (ViewSettingItem) findViewById(R.id.v_setting_ink_screen);
+		mInkScreen.setChecked(inkScreen);
+		mInkScreen.setCheckedChangedListener(listener);
+		
 		// 登录复核
 		boolean checkLogin = SPUtils.getBoolean(MyContexts.KEY_CHECK_LOGIN,
 				true);
@@ -379,6 +388,10 @@ public class SettingCenterActivity extends BaseActivity {
 				break;
 			case R.id.v_setting_check_bunch:// 扫捆
 				SPUtils.putBoolean(MyContexts.KEY_SCAN_BUNCH, isChecked);
+				break;
+			case R.id.v_setting_ink_screen:
+				SPUtils.putBoolean(getApplicationContext(),
+						MyContexts.INK_SCREEN_DOWNLOAD, isChecked);
 				break;
 			}
 		}

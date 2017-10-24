@@ -258,6 +258,7 @@ public class HandPresenter implements Presenter {
 			ScreenInfo screenInfo = screenInfoList.get(0);
 			pileID = screenInfo.getPileID();
 			screenInfo.setRefresh_flag(value.getRefreshNumber());
+			screenInfo.setUpdate_time(DateUtils.getFormatDate());
 			screenDao.update(screenInfo);
 		}
 		PileInfoDao dao = DBService.getService().getPileInfoDao();
@@ -268,6 +269,7 @@ public class HandPresenter implements Presenter {
 			PileInfo pileInfo = pileInfoList.get(0);
 			pileInfo.setBagNum(this.bagNum);
 			pileInfo.setTotalAmount(this.moneyTotal);
+			pileInfo.setUpdate_time(DateUtils.getFormatDate());
 			dao.update(pileInfo);
 		}
 	}

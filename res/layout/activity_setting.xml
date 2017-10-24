@@ -63,6 +63,18 @@
                 android:background="@color/lighter_gray" />
 
             <com.fanfull.view.ViewSettingItem
+                android:id="@+id/v_setting_ink_screen"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:text="启用全离线" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/lighter_gray" />
+
+            <com.fanfull.view.ViewSettingItem
                 android:id="@+id/v_setting_check_bunch"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -100,8 +112,8 @@
                 android:id="@+id/v_setting_check_login"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:text="登录复核" />
+                android:text="登录复核"
+                android:visibility="gone" />
 
             <View
                 android:layout_width="match_parent"
@@ -168,6 +180,7 @@
                 android:layout_marginRight="10dp"
                 android:text="自动关机"
                 android:textColor="#E6E8FA" />
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1px"
