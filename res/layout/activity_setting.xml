@@ -67,7 +67,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="启用扫捆"
-                android:visibility="gone" />
+                android:visibility="visible" />
 
             <View
                 android:layout_width="match_parent"
@@ -156,6 +156,18 @@
                 android:text="指纹管理"
                 android:textColor="#E6E8FA" />
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/lighter_gray" />
+
+            <TextView
+                android:id="@+id/tv_setting_item_transfer"
+                style="@style/tv_setting_item"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:text="传输设置"
+                android:textColor="#E6E8FA" />
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1px"

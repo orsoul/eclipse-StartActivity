@@ -371,7 +371,6 @@ public class ReplyParser {
 		// 数量
 		System.out.println("number:" + info);
 		String sum = info.substring(info.length() - 6, info.length() - 2);
-		System.out.println("sum:" + sum);
 		if ("9999".equals(sum)) {
 			sum = "未确定";
 		} else {

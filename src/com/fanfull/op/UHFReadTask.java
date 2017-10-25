@@ -25,6 +25,7 @@ public abstract class UHFReadTask implements Runnable {
 
 	private boolean isRunning;
 	private int msgWhat = -1;
+
 	public void setMsgWhat(int msgWhat) {
 		this.msgWhat = msgWhat;
 	}
@@ -33,9 +34,12 @@ public abstract class UHFReadTask implements Runnable {
 	public void run() {
 		isRunning = true;
 
-		byte[] bs = UHFOperation.getInstance().readUHFInTime(mb, sa,
-				dataLen, runTime, filter, mmb, msa);
-
+		byte[] bs = new byte[dataLen];
+		boolean readSuccess = UHFOperation.getInstance().readUHFInTime(mb, sa,
+				bs, runTime, filter, mmb, msa);
+		if (!readSuccess) {
+			bs = null;
+		}
 		onReadResult(bs, msgWhat);
 
 		isRunning = false;

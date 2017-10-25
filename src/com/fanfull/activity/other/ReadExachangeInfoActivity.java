@@ -28,7 +28,6 @@ import com.fanfull.contexts.StaticString;
 import com.fanfull.factory.ThreadPoolFactory;
 import com.fanfull.fff.R;
 import com.fanfull.hardwareAction.OLEDOperation;
-import com.fanfull.hardwareAction.RFIDOperation;
 import com.fanfull.operation.BagOperation;
 import com.fanfull.operation.NFCBagOperation;
 import com.fanfull.socket.ReplyParser;
@@ -262,7 +261,6 @@ public class ReadExachangeInfoActivity extends Activity implements OnClickListen
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		RFIDOperation.getInstance().closeRf();
 		if (OLEDOperation.enable) {
 			OLEDOperation.getInstance().close();
 		}

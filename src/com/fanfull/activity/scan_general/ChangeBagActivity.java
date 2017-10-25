@@ -21,7 +21,6 @@ import com.fanfull.view.CoverBagItemView;
  * 
  * 换袋页面
  */
-
 public class ChangeBagActivity extends BaseActivity {
 
 	private final int MSG_SELECT_CHANGE_BAG = 1;

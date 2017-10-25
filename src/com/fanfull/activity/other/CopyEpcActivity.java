@@ -13,14 +13,12 @@ import com.fanfull.contexts.MyContexts;
 import com.fanfull.contexts.StaticString;
 import com.fanfull.factory.ThreadPoolFactory;
 import com.fanfull.fff.R;
-import com.fanfull.hardwareAction.RFIDOperation;
 import com.fanfull.hardwareAction.UHFOperation;
 import com.fanfull.operation.BagOperation;
 import com.fanfull.operation.NFCBagOperation;
 import com.fanfull.utils.ArrayUtils;
 import com.fanfull.utils.LogsUtil;
 import com.fanfull.utils.SPUtils;
-import com.fanfull.utils.ToastUtil;
 import com.fanfull.view.ActivityHeadItemView;
 import com.fanfull.view.CoverBagItemView;
 
@@ -316,7 +314,6 @@ public class CopyEpcActivity extends BaseActivity{
 	protected void onDestroy() {
 		super.onDestroy();
 		
-		RFIDOperation.getInstance().closeRf();
 		mBagOp = null;
 		if(null != mUHFOp){
 			LogsUtil.d(TAG, "--close--uhf---");

@@ -48,7 +48,7 @@ public class StaticString {
 	public static String bagid = null;// 袋子ID
 	public static String tid = null;// 封签码
 	/** 封签事件码 60字符 */
-	public static String bagtidcode = null;
+	public static String eventCode = null;
 	public static String barcode_old = null;// 旧条码
 	public static String bagtype = null;// 袋类型，记录封签的时候选择的完整，清分，复点等信息
 	public static boolean againPass = false;// 无复核人

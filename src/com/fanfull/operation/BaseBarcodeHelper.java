@@ -6,6 +6,7 @@ import android.os.SystemClock;
 import com.fanfull.contexts.StaticString;
 import com.fanfull.hardwareAction.BarCodeOperation;
 import com.fanfull.socket.ReplyParser;
+import com.fanfull.socket.SendTask;
 import com.fanfull.socket.SocketConnet;
 import com.fanfull.utils.ArrayUtils;
 import com.fanfull.utils.LogsUtil;
@@ -148,7 +149,7 @@ public abstract class BaseBarcodeHelper {
 //				time = System.currentTimeMillis();
 		
 		String barcode = new String(buf).trim();
-		if (len == 26 && barcodeFormatCorrect(barcode)) {// 读到正确的数据 len ==
+		if (barcodeFormatCorrect(barcode)) {// 读到正确的数据 len ==
 			// 22(20位条码数据),len=23,38位的条码数据,len=26,24wei
 			// mBarCodeOp.hardware.setGPIO(1, 1);// 关闭读头
 			// readHeadFlag = false;
@@ -170,7 +171,7 @@ public abstract class BaseBarcodeHelper {
 			// 本地校验通过
 			if (localCheckCorrect()&& netCheckCorrect()) {
 				// 在新线程中 向服务器发送数据
-				SocketConnet.getInstance().communication(20);// 上传数据批编号(例如果是封袋操作则conPi
+				SocketConnet.getInstance().communication(SendTask.CODE_UPLODE_PACKET);// 上传数据批编号(例如果是封袋操作则conPi
 														// =
 														// 23;*********)
 
@@ -236,13 +237,15 @@ public abstract class BaseBarcodeHelper {
 	
 	public boolean barcodeFormatCorrect(String barcode) {
 		
-		String format = barcode.substring(8, 11);
+		if (null == barcode) {
+			return false;
+		}
+		return barcode.matches("^[A-Za-z0-9]{5}[0-9][ABCD][A-Za-z0-9]{18}$");
 		
-//		LogsUtil.sf(format);
-		
+//		String format = barcode.substring(8, 11);
 		// 券别: 5A == 100元券
 		// 券种: 1 == 未清分完整券; 2 == 已清分完整券; 3 == 未清分残损券; 4 == 已清分残损券
-		return format.matches("5[ABCDE][1234]");
+//		return format.matches("5[ABCDE][1234]");
 	}
 	public class ReadBarcodeTask implements Runnable {
 
@@ -261,12 +264,12 @@ public abstract class BaseBarcodeHelper {
 			stoped = false;
 			int n = 0;
 			byte buf[] = new byte[100];
-			while ((n = mBarCodeOp.hardware.read(mBarCodeOp.fd, buf, 48)) > 0) {	;}// clear buf 
+			while ((n = mBarCodeOp.hardware.read(mBarCodeOp.fd, buf, 48)) > 0) {}// clear buf 
 			mBarCodeOp.scan();
 			SystemClock.sleep(100);
 			while (!stoped) {
 				// SystemClock.sleep(100);
-				if (mBarCodeOp.hardware.select(mBarCodeOp.fd, 0, 50000) == 1) {// 当串口存在数据，异步读取数据，修改UI
+				if (mBarCodeOp.hardware.select(mBarCodeOp.fd, 1, 0) == 1) {// 当串口存在数据，异步读取数据，修改UI
 					// 扫到 捆封签 控制读头停止扫描
 					mBarCodeOp.stopScan();
 					// 线程休眠, 等待读头将 封签码 解析完成

@@ -5,8 +5,10 @@ package com.mvp.center;
  */
 
 public interface TimeListener {
-    void onFinish(long time);
+	byte b = 0;
 
-    void onFailure(int flag);
+	void onFinish(long time);
+
+	void onFailure(int flag);
 }
                                                   

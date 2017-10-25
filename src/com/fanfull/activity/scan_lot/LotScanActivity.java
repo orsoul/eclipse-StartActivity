@@ -23,8 +23,8 @@ import com.fanfull.contexts.StaticString;
 import com.fanfull.contexts.TYPE_OP;
 import com.fanfull.factory.ThreadPoolFactory;
 import com.fanfull.fff.R;
-import com.fanfull.hardwareAction.NfcOperation;
 import com.fanfull.hardwareAction.UHFOperation;
+import com.fanfull.op.RFIDOperation;
 import com.fanfull.socket.RecieveListenerAbs;
 import com.fanfull.socket.ReplyParser;
 import com.fanfull.socket.SendTask;
@@ -47,42 +47,26 @@ import com.orsoul.view.NumberInputer;
  * 
  */
 public class LotScanActivity extends BaseActivity {
-	/**
-	 * 手持 批量入库
-	 */
+	/** 手持 批量入库 */
 	public static final int TYPE_LOT_INSTORE = 0;
-	/**
-	 * 手持 预扫描补扫
-	 */
+	/** 手持 预扫描补扫 */
 	public static final int TYPE_PRE_SCAN = 1;
-	/**
-	 * 手持 入库补扫
-	 */
+	/** 手持 入库补扫 */
 	public static final int TYPE_MEND_SCAN = 2;
-	/**
-	 * 预扫描 补扫 完成
-	 */
+	/** 预扫描 补扫 完成 */
 	public static final int RESULT_CODE_PRE_FINISH = 1;
-	/**
-	 * 预扫描 补扫 未完成
-	 */
+	/** 预扫描 补扫 未完成 */
 	public static final int RESULT_CODE_PRE_UNFINISH = 2;
-	/**
-	 * 交接 补扫 完成一托盘
-	 */
+	/** 交接 补扫 完成一托盘 */
 	public static final int RESULT_CODE_MEND_FINISH_TP = 3;
-	/**
-	 * 交接 补扫 完成全部
-	 */
+	/** 交接 补扫 完成全部 */
 	public static final int RESULT_CODE_MEND_FINISH_ALL = 4;
-	/**
-	 * 交接 补扫 未完成
-	 */
+	/** 交接 补扫 未完成 */
 	public static final int RESULT_CODE_MEND_UNFINISH = 5;
 
 	// TODO
 	private static final String[] TEXT_TITLES = { "批量入库", "预扫补扫", "入库补扫",
-			"批量出库", };
+			"批量出库", "查找漏扫" };
 	private static final String TEXT_START_SCAN = "开始扫描";
 	private static final String TEXT_STOP_SCAN = "停止";
 	private static final String TEXT_QUIT = "离开";
@@ -95,6 +79,7 @@ public class LotScanActivity extends BaseActivity {
 	private final int MSG_LONG_TIME_NO_REPLY = 4;
 	private final int MSG_SCAN_FINISH = 5;
 	private final int MSG_ADD_ONE_OUT = 6;
+	private final int MSG_CHECK_MISSING_BAG = 7;
 
 	private final int MSG_SHOW_LOCK_RESULT = 11;
 	private final int MSG_SET_SALVER_NUM = 12;
@@ -178,6 +163,12 @@ public class LotScanActivity extends BaseActivity {
 					SendTask.CODE_LOT_INSTORE_NUM);
 			waitReply(SendTask.CODE_LOT_INSTORE_NUM, MSG_GET_INSTORE_INFO_OVER);
 			mDiaUtil.showProgressDialog();
+		} else if (TYPE_OP.FIND_MISSING_BAG == mType) {
+			// 查找 漏扫袋子
+			SocketConnet.getInstance().communication(
+					SendTask.CODE_LOT_INSTORE_NUM);
+			waitReply(SendTask.CODE_LOT_INSTORE_NUM, MSG_GET_INSTORE_INFO_OVER);
+			mDiaUtil.showProgressDialog();
 		} else {
 			// 预扫描、交接 补扫 // 从 服务端 获取任务信息
 			SocketConnet.getInstance().communication(
@@ -230,9 +221,16 @@ public class LotScanActivity extends BaseActivity {
 		} else if (TYPE_OP.IN_STORE_HAND_LOT == mType) {
 			// 手持批量 入库
 			mVtitle.setText(TEXT_TITLES[0]);
-		} else {
+		} else if (TYPE_OP.OUT_STORE_HAND_LOT == mType) {
 			// 手持批量 出库
 			mVtitle.setText(TEXT_TITLES[3]);
+		} else if (TYPE_OP.FIND_MISSING_BAG == mType) {
+			// 查找漏扫
+			mVtitle.setText(TEXT_TITLES[4]);
+			isUHFMode = false;
+		} else {
+			// 手持批量 入库
+			mVtitle.setText(TEXT_TITLES[0]);
 		}
 
 		mImgSwich = findViewById(R.id.iv_pre_scan_redo);
@@ -313,6 +311,12 @@ public class LotScanActivity extends BaseActivity {
 	@Override
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
+		setResultCode();
+		SocketConnet.getInstance().setRecieveListener(null);
+		super.onBackPressed();
+	}
+
+	private void setResultCode() {
 		int resultCode = 0;
 		if (mType == TYPE_OP.IN_STORE_DOOR_PRE) {// 回到 预扫描 遥控界面
 			if (haveDone) {
@@ -336,8 +340,6 @@ public class LotScanActivity extends BaseActivity {
 		}
 		LogsUtil.d(TAG, "onBackPressed resultCode:" + resultCode);
 		setResult(resultCode);
-		SocketConnet.getInstance().setRecieveListener(null);
-		super.onBackPressed();
 	}
 
 	@Override
@@ -542,8 +544,9 @@ public class LotScanActivity extends BaseActivity {
 				mTvScannedNum.setText(String.valueOf(mScannedNum));
 				mProgreeBar.incrementProgressBy(1);
 				if (haveDone) {
+					setResultCode();
 					if (TYPE_OP.IN_STORE_HAND_LOT == mType) {
-//						mTvLock.performClick();
+						// mTvLock.performClick();
 						mDiaUtil.showDialogFinishActivity("任务完成");
 					} else {
 						mDiaUtil.showDialogFinishActivity("扫描结束");
@@ -582,6 +585,16 @@ public class LotScanActivity extends BaseActivity {
 				} else {
 					mDiaUtil.showDialog(info);
 				}
+				break;
+			case MSG_CHECK_MISSING_BAG:
+				SoundUtils.playDropSound();
+				if (msg.arg1 == msg.what) {
+					mDiaUtil.showDialog("该袋未入库");
+				} else {
+					ToastUtil.showToastInCenter("该袋已入库或不属于当前任务");
+				}
+				mBtnOk.setText(TEXT_START_SCAN);
+				haveTaskRunning = false;
 				break;
 			case MSG_LONG_TIME_NO_SCAN:
 				LogsUtil.d(TAG, "ScanTask send : MSG_LONG_TIME_NO_SCAN");
@@ -663,8 +676,10 @@ public class LotScanActivity extends BaseActivity {
 					}
 				} else {
 					bagIdBuf = new byte[12];
-					readSuccess = NfcOperation.getInstance().readData(0x04,
-							bagIdBuf.length, bagIdBuf, 0, null);
+					readSuccess = RFIDOperation.getInstance().readNFCInTime(
+							0x04, bagIdBuf, 0, null);
+					// readSuccess = NfcOperation.getInstance().readData(0x04,
+					// bagIdBuf.length, bagIdBuf, 0, null);
 				}
 
 				// 1, 未扫到epc
@@ -684,7 +699,16 @@ public class LotScanActivity extends BaseActivity {
 				LogsUtil.d("bagID=" + bagId);
 
 				// 2, 判断 扫到的 袋id； if(null == mBagIdList) mean is out store
-				if (TYPE_OP.OUT_STORE_HAND_LOT == mType) {
+				if (TYPE_OP.FIND_MISSING_BAG == mType) {
+					// 查找 漏扫袋子
+					Message msg = mHandler.obtainMessage();
+					msg.what = MSG_CHECK_MISSING_BAG;
+					if (mBagIdList.contains(bagId)) {
+						msg.arg1 = msg.what;
+					}
+					mHandler.sendMessage(msg);
+					break;
+				} else if (TYPE_OP.OUT_STORE_HAND_LOT == mType) {
 					// 出库， 只处理 05开头且 未出库 的袋id
 					if (null == bagId || !bagId.startsWith("05")
 							|| mBagIdList.contains(bagId)) {

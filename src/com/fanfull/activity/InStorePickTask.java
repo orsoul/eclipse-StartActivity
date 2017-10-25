@@ -18,7 +18,7 @@ import android.widget.ListView;
 
 import com.android.adapter.CommonAdapter;
 import com.android.adapter.ViewHolder;
-import com.fanfull.activity.scan_general.IOStoreNfcActivity;
+import com.fanfull.activity.scan_general.CoverNfcNewBagActivity;
 import com.fanfull.activity.scan_general_oldbag.CIOActivity4oldBag;
 import com.fanfull.activity.scan_lot.LotScanActivity;
 import com.fanfull.activity.scan_lot.YkInstoreActivity;
@@ -94,7 +94,7 @@ public class InStorePickTask extends BaseActivity { // 0918
 		SocketConnet.getInstance().communication(SendTask.CODE_BANK_CODE_LIST);
 
 		super.onCreate(savedInstanceState);
-
+		
 		// 定时线程
 		// ThreadPoolFactory.getNormalPool().execute(new Runnable() {
 		// @Override
@@ -364,7 +364,7 @@ public class InStorePickTask extends BaseActivity { // 0918
 				case TYPE_OP.IN_STORE_HAND:
 					// 手持 逐个入库
 					intent = new Intent(getApplicationContext(),
-							IOStoreNfcActivity.class);
+							CoverNfcNewBagActivity.class);
 					break;
 				case TYPE_OP.IN_STORE_OLD_BAG:
 					// 使用第一代基金系统

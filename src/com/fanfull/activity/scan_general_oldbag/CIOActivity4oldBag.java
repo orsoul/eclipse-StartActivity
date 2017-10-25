@@ -25,7 +25,7 @@ import com.fanfull.factory.ThreadPoolFactory;
 import com.fanfull.fff.R;
 import com.fanfull.hardwareAction.BarCodeOperation;
 import com.fanfull.hardwareAction.OLEDOperation;
-import com.fanfull.hardwareAction.RFIDOperation;
+import com.fanfull.op.RFIDOperation;
 import com.fanfull.socket.RecieveListenerAbs;
 import com.fanfull.socket.ReplyParser;
 import com.fanfull.socket.SendTask;
@@ -316,7 +316,7 @@ public class CIOActivity4oldBag extends BaseActivity {
 				mHandler.sendEmptyMessage(MSG_READ_BARCODE_START);
 			} else if (mStep == STEP_RW_LOCK) {
 				mHandler.sendEmptyMessage(MSG_READ_BARCODE_START);
-//				mHandler.sendEmptyMessage(MSG_RW_LOCK_START);
+				// mHandler.sendEmptyMessage(MSG_RW_LOCK_START);
 			} else if (mStep == STEP_NET_CHECK) {
 				mHandler.sendEmptyMessage(MSG_NET_CHECK_START);
 			} else if (mStep == STEP_OVER) {
@@ -587,7 +587,7 @@ public class CIOActivity4oldBag extends BaseActivity {
 					break;
 				}
 				/* 寻卡，并判断是否 为 M1卡 */
-				byte[] uid = RFIDOperation.getInstance().activatecard();
+				byte[] uid = RFIDOperation.getInstance().findCard();
 				if (null == uid) {
 					SystemClock.sleep(50);
 					continue;
@@ -598,8 +598,8 @@ public class CIOActivity4oldBag extends BaseActivity {
 				}
 
 				/* 读M1卡 第9块区 判断是否上锁 */
-				byte[] block9 = RFIDOperation.getInstance().readBlockToByte(9);
-				if (null == block9) {
+				byte[] block9 = new byte[16];
+				if (!RFIDOperation.getInstance().readM1(9, block9, 0, uid)) {
 					SystemClock.sleep(50);
 					continue;
 				}
@@ -681,16 +681,16 @@ public class CIOActivity4oldBag extends BaseActivity {
 					break;
 				}
 				if (!wasWrite[0]) {
-					wasWrite[0] = RFIDOperation.getInstance().writeBlock(4,
-							datas[0]);
+					wasWrite[0] = RFIDOperation.getInstance().writeM1(4,
+							datas[0], 500, null);
 				}
 				if (!wasWrite[1]) {
-					wasWrite[1] = RFIDOperation.getInstance().writeBlock(5,
-							datas[1]);
+					wasWrite[1] = RFIDOperation.getInstance().writeM1(5,
+							datas[0], 500, RFIDOperation.sLastUid);
 				}
 				if (!wasWrite[2]) {
-					wasWrite[2] = RFIDOperation.getInstance().writeBlock(6,
-							datas[2]);
+					wasWrite[2] = RFIDOperation.getInstance().writeM1(6,
+							datas[0], 500, RFIDOperation.sLastUid);
 				}
 				allWrite = wasWrite[0] && wasWrite[1] && wasWrite[2];
 			}
@@ -711,26 +711,31 @@ public class CIOActivity4oldBag extends BaseActivity {
 		 */
 		private int readDatasFrom456BlockAndCheck(byte[] barcodeBuf) {
 
-			byte[][] datas = new byte[3][];
+			byte[][] datas = new byte[3][16];
 			boolean allRead = false;
-			int count = 0;
-			while (!allRead) {
-				if (WRITE_TIMES < ++count) {
-					break;
-				}
-				if (null == datas[0]) {
-					datas[0] = RFIDOperation.getInstance().readBlockToByte(4);
-				}
-				if (null == datas[1]) {
-					datas[1] = RFIDOperation.getInstance().readBlockToByte(5);
-				}
-				if (null == datas[2]) {
-					datas[2] = RFIDOperation.getInstance().readBlockToByte(6);
-				}
-				allRead = (null != datas[0]) && (null != datas[1])
-						&& (null != datas[2]);
-			}
-
+			allRead = RFIDOperation.getInstance()
+					.readM1(4, datas[0], 500, null)
+					&& RFIDOperation.getInstance().readM1(5, datas[1], 500,
+							RFIDOperation.sLastUid)
+					&& RFIDOperation.getInstance().readM1(6, datas[2], 500,
+							RFIDOperation.sLastUid);
+//			int count = 0;
+//			while (!allRead) {
+//				if (WRITE_TIMES < ++count) {
+//					break;
+//				}
+//				if (null == datas[0]) {
+//					datas[0] = RFIDOperation.getInstance().readBlockToByte(4);
+//				}
+//				if (null == datas[1]) {
+//					datas[1] = RFIDOperation.getInstance().readBlockToByte(5);
+//				}
+//				if (null == datas[2]) {
+//					datas[2] = RFIDOperation.getInstance().readBlockToByte(6);
+//				}
+//				allRead = (null != datas[0]) && (null != datas[1])
+//						&& (null != datas[2]);
+//			}
 			if (!allRead) {
 				// 未能完全读取数据
 				return 0;

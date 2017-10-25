@@ -9,20 +9,27 @@ import java.net.Socket;
 import java.util.Arrays;
 
 import com.fanfull.contexts.StaticString;
-import com.fanfull.factory.ThreadPoolFactory;
 import com.fanfull.utils.ArrayUtils;
 import com.fanfull.utils.LogsUtil;
 
 /**
- * 
  * @ClassName: SocketConnet
  * @Description: socket连接
  * @author Keung
  * @date 2014-8-15 上午09:12:56
- * 
  */
 public class SocketConnet implements Runnable {
 	private final String TAG = SocketConnet.class.getSimpleName();
+	private static boolean enable;
+	
+
+	public static boolean isEnable() {
+		return enable;
+	}
+
+	public static void setEnable(boolean enable) {
+		SocketConnet.enable = enable;
+	}
 
 	private Socket sSocket = null;
 	private DataOutputStream dout = null;
@@ -35,13 +42,9 @@ public class SocketConnet implements Runnable {
 	private Thread mRecThread;
 	private TimeoutThread mTimeoutThread;
 
-	/**
-	 * 连接天线编号
-	 */
+	/** 连接天线编号 */
 	private int mConnNum = -1;
-	/**
-	 * 回复编号
-	 */
+	/** 回复编号 */
 	private int commNum = -1;
 	private int count = 0;
 	/**
@@ -167,7 +170,7 @@ public class SocketConnet implements Runnable {
 				socketAddress = new InetSocketAddress(StaticString.IP2,
 						StaticString.PORT2);
 			}
-			socket.connect(socketAddress);
+			socket.connect(socketAddress, timeOut);
 
 		} catch (IOException e) {
 			LogsUtil.d(TAG, "socket connect failed socketAddress:"
@@ -216,34 +219,56 @@ public class SocketConnet implements Runnable {
 	 * @param int taskid 通信类型
 	 * @description: socket通信, 在新线程中 向服务器发送数据
 	 */
-	public void communication(int taskid) {
-		if (null == mSendTask) {
-			return;
-		}
-		count++;
-		mSendTask.setProperty(taskid, getIntString(count));// 设置S的值
-		StaticString.information = null;
-		setCommNum(count);//
-		ThreadPoolFactory.getNormalPool().execute(mSendTask);
-		mTimeoutThread.startTime();
+	public boolean communication(int taskid) {
+//		if (null == mSendTask) {
+//			return;
+//		}
+//		count++;
+//		mSendTask.setProperty(taskid, getIntString(count));// 设置S的值
+//		StaticString.information = null;
+//		setCommNum(count);//
+//		ThreadPoolFactory.getNormalPool().execute(mSendTask);
+//		mTimeoutThread.startTime();
+		return communication(taskid, null);
 	}
 
 	/**
 	 * @param int taskid 通信类型
 	 * @description: socket通信, 在新线程中 向服务器发送数据
 	 */
-	public void communication(int taskid, String... info) {
-		if (null == mSendTask || null == info) {
-			return;
-		}
+	public boolean communication(int taskid, String... info) {
 		count++;
-		mSendTask.setProperty(taskid, getIntString(count), info);// 设置S的值
-		StaticString.information = null;
 		setCommNum(count);
-		ThreadPoolFactory.getNormalPool().execute(mSendTask);
-		mTimeoutThread.startTime();
+		StaticString.information = null;
+		boolean sendSuccess = send(SendTask.getInfo(taskid, getIntString(count), info));
+		if (sendSuccess) {
+			mTimeoutThread.startTime();
+		}
+		return sendSuccess;
+//		mSendTask.setProperty(taskid, getIntString(count), info);// 设置S的值
+//		ThreadPoolFactory.getNormalPool().execute(mSendTask);
 	}
-
+	public boolean send(byte[] data) {
+		if (null == data || null == out || !isConnect()) {
+			return false;
+		}
+		
+		try {
+			out.write(data);
+			out.flush();
+			return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+	}
+	public boolean send(String text) {
+		if (null == text) {
+			return false;
+		}
+		return send(text.getBytes());
+	}
 	/**
 	 * 
 	 * @Description: 关闭网络连接
@@ -266,6 +291,10 @@ public class SocketConnet implements Runnable {
 			if (in != null) {
 				in.close();
 				in = null;
+			}
+			if (out != null) {
+				out.close();
+				out = null;
 			}
 			if (dout != null) {
 				dout.close();

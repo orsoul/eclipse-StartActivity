@@ -23,7 +23,7 @@ import com.fanfull.contexts.StaticString;
 import com.fanfull.contexts.TYPE_OP;
 import com.fanfull.factory.ThreadPoolFactory;
 import com.fanfull.fff.R;
-import com.fanfull.hardwareAction.NfcOperation;
+import com.fanfull.op.RFIDOperation;
 import com.fanfull.op.UHFOperation;
 import com.fanfull.socket.RecieveListenerAbs;
 import com.fanfull.socket.ReplyParser;
@@ -667,8 +667,9 @@ public class UploadBagIdActivity extends BaseActivity {
 					}
 				} else {
 					bagIdBuf = new byte[12];
-					readSuccess = NfcOperation.getInstance().readData(0x04,
-							bagIdBuf.length, bagIdBuf, 0, null);
+					readSuccess = RFIDOperation.getInstance().readNFCInTime(0x04, bagIdBuf, 0, null);
+//					readSuccess = NfcOperation.getInstance().readData(0x04,
+//							bagIdBuf.length, bagIdBuf, 0, null);
 				}
 
 				// 1, 未扫到epc

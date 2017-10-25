@@ -25,8 +25,8 @@ import android.net.NetworkInfo;
 public class Net {
 	private static Net mNet;
 	private static NetWork mNetWork;
-	//private static String ip = "192.168.58.238";
-	private static String ip =StaticString.IP0;
+	private static String ip = "192.168.11.111";
+	//private static String ip =StaticString.IP0;
 	private static int port = 8080;
 	/**
 	 * 参数为 update_time, organID

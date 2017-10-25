@@ -57,14 +57,16 @@
     <string name="changbag">换袋操作</string>
 
     <!-- 换袋 -->
-    <string name="fanfull_change_bag_reason">去开袋</string>
-    <string name="fanfull_change_bag_check_info">去换袋</string>
+    <string name="fanfull_change_bag_findout">去查漏</string>
+    <string name="fanfull_change_bag_open">去开袋</string>
+    <string name="fanfull_change_bag_change">去换袋</string>
     <string name="reason_to_change">请选择换袋原因</string>
     <string name="can_not_read">&lt;1> 开袋抽查</string>
     <string name="bagcode_can_not_read">&lt;2> 袋锁读取失败</string>
     <string name="bag_broken">&lt;3> 基金袋损坏</string>
     <string name="bag_has_foreignmatter">&lt;4> 基金袋有异物</string>
     <string name="other">&lt;5> 其他</string>
+    <string name="fanfull_change_bag_node_change">&lt;6> 网点换袋</string>
     <string name="change_bag_reason_quit">返回</string>
     <string name="change_bag_reason_ok">进入换袋</string>
     <!-- Update -->
@@ -86,6 +88,7 @@
     <string name="text_click_again_leave">再次点击离开</string>
     <string name="text_init_uhf_failed">超高频模块启动失败</string>
     <string name="text_init_rfid_failed">高频模块启动失败</string>
+    <string name="text_init_serial_failed">串口模块启动失败</string>
     <string name="text_init_barcode_failed">二维读头启动失败</string>
     <string name="text_scan_nothing">未扫描到数据</string>
     <string name="text_set_power_success">设置功率成功</string>
@@ -97,5 +100,6 @@
     <string name="title_activity_pick_door">PickDoorActivity</string>
     <string name="title_activity_setting_shut_down">SettingShutDownActivity</string>
     <string name="title_activity_query_bag_circulation">QueryBagCirculationActivity</string>
+    <string name="title_activity_setting_transfer">SettingTransferActivity</string>
 
 </resources>

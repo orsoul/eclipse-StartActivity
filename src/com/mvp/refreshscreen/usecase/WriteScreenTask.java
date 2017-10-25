@@ -151,6 +151,8 @@ public class WriteScreenTask implements Runnable {
 			model = "07";
 		} else if (model.equals("完整|未清分")) {
 			model = "08";
+		} else if(model.equals("完整|原封")){
+			model = "09";
 		}
 
 		if (moneyType.contains("1角")) {
@@ -173,9 +175,15 @@ public class WriteScreenTask implements Runnable {
 			moneyType = "09";
 		} else if (moneyType.contains("100元")) {
 			moneyType = "0A";
+		} else if (moneyType.contains("1分")) {
+			moneyType = "0B";
+		} else if (moneyType.contains("2分")) {
+			moneyType = "0C";
+		} else if (moneyType.contains("5分")) {
+			moneyType = "0D";
 		} else {
 			moneyType = "0A";
-		}
+		} 
 
 		SimpleDateFormat dataFormat = new SimpleDateFormat("yyyyMMddhhmmss");
 		date = dataFormat.format(new Date());
@@ -192,7 +200,7 @@ public class WriteScreenTask implements Runnable {
 		pileName = getPileNameString(pileName);
 
 	}
-
+	public String mTid = null;
 	@Override
 	public void run() {
 		UHFOperation mUhfOperation = UHFOperation.getInstance();
@@ -203,13 +211,13 @@ public class WriteScreenTask implements Runnable {
 			System.out.println("刷新" + count + "次");
 			if (mUhfOperation.findOne()) {
 				SystemClock.sleep(500);
-				/** 目的是确保读到的是之前的那个超高频 */
-				// LogsUtil.d("write id:"+ArrayUtils.bytesToHexString(mUhfOperation.mEPC).equals(mSreenEPC)+""+"----"+mSreenEPC);
-				/*
-				 * if(null == mSreenEPC ||
-				 * !ArrayUtils.bytesToHexString(mUhfOperation
-				 * .mEPC).equals(mSreenEPC)){ continue; }else {
-				 */
+				byte[] tid;
+				if((tid = mUhfOperation.readTIDNogl())== null){
+					continue;
+				}else {
+					mTid = ArrayUtils.bytes2HexString(tid);
+				}
+				
 				String wString = moneyType + model + moneyDisplay[0]
 						+ moneyDisplay[1] + display_style + date + userID
 						+ bagNum + series + "00" + pileName + refreshNum + time

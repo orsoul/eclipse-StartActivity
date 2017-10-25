@@ -25,8 +25,6 @@ import com.android.adapter.ViewHolder;
 import com.fanfull.contexts.MyContexts;
 import com.fanfull.factory.ThreadPoolFactory;
 import com.fanfull.fff.R;
-import com.fanfull.hardwareAction.NfcOperation;
-import com.fanfull.hardwareAction.RFIDOperation;
 import com.fanfull.hardwareAction.UHFOperation;
 import com.fanfull.operation.BagOperation;
 import com.fanfull.utils.ArrayUtils;
@@ -180,7 +178,6 @@ public class SearchDevicesActivity extends Activity implements OnClickListener {
 		super.onDestroy();
 		mSearchDeviceview.setSearching(false);
 		mReadBagIndexTask.stop();
-		RFIDOperation.getInstance().closeRf();
 		if(null != mUhfOp){
 			mUhfOp.close();
 			mUhfOp = null;
@@ -300,7 +297,12 @@ public class SearchDevicesActivity extends Activity implements OnClickListener {
 					continue;
 				}
 				// 已初始化
-				String tmp  = NfcOperation.getInstance().reaAddr((byte)0x17);
+				String tmp  = null;
+//				tmp  = NfcOperation.getInstance().reaAddr((byte)0x17);
+				byte[] dataBuf = new byte[16];
+				if (com.fanfull.op.RFIDOperation.getInstance().readNFCInTime(0x17, dataBuf , 0, null)) {
+					tmp = ArrayUtils.bytes2HexString(dataBuf);
+				}
 				LogsUtil.d(TAG, "报警记录信息 tmp= "+tmp);
 				if(tmp != null && tmp.length() > 4){
 					Map<String, String> map = new HashMap<String, String>();

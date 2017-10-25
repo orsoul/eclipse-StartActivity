@@ -32,10 +32,14 @@ import com.fanfull.factory.ThreadPoolFactory;
 import com.fanfull.fff.R;
 import com.fanfull.hardwareAction.FingerPrint;
 import com.fanfull.hardwareAction.OLEDOperation;
+import com.fanfull.op.RFIDOperation;
+import com.fanfull.op.SerialPortOperation;
+import com.fanfull.socket.SocketConnet;
 import com.fanfull.utils.IOUtil;
 import com.fanfull.utils.LogsUtil;
 import com.fanfull.utils.SPUtils;
 import com.fanfull.utils.SoundUtils;
+import com.fanfull.utils.ToastUtil;
 
 /**
  * @author Administrator 启动页面
@@ -43,6 +47,7 @@ import com.fanfull.utils.SoundUtils;
  */
 public class StartActivity extends Activity {
 	private final String TAG = StartActivity.class.getSimpleName();
+	private boolean checkIsFinish;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -57,16 +62,38 @@ public class StartActivity extends Activity {
 		TextView tvVersionName = (TextView) findViewById(R.id.tv_start_activity_versionname);
 		tvVersionName.setText(BaseApplication.getVersionName());
 
-		// 打开wifi
-		WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-		LogsUtil.d(TAG, "WifiState:" + wifiManager.getWifiState());
-		// wifiManager.getWifiState() == WifiManager.WIFI_STATE_DISABLING // 0
-		// || wifiManager.getWifiState() == WifiManager.WIFI_STATE_DISABLED // 1
-		// || wifiManager.getWifiState() == WifiManager.WIFI_STATE_UNKNOWN // 4
-		if (!wifiManager.isWifiEnabled()) { // 3
-			wifiManager.setWifiEnabled(true);
+		// wifi 是否启用
+		boolean wifiEnable = SPUtils.getBoolean(MyContexts.KEY_WIFI_ENABLE,
+				true);
+		SocketConnet.setEnable(wifiEnable);
+		LogsUtil.d(TAG, "wifi enable : " + wifiEnable);
+		if (wifiEnable) {
+			// 打开wifi
+			WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+			LogsUtil.d(TAG, "WifiState:" + wifiManager.getWifiState());
+			// wifiManager.getWifiState() == WifiManager.WIFI_STATE_DISABLING //
+			// 0
+			// || wifiManager.getWifiState() == WifiManager.WIFI_STATE_DISABLED
+			// // 1
+			// || wifiManager.getWifiState() == WifiManager.WIFI_STATE_UNKNOWN
+			// // 4
+			if (!wifiManager.isWifiEnabled()) { // 3
+				wifiManager.setWifiEnabled(true);
+			}
 		}
-		SPUtils.putBoolean(MyContexts.KEY_CHECK_LOGIN, true);// 默认 需要 复核
+
+		// 串口 是否启用
+		boolean serialEnable = SPUtils.getBoolean(MyContexts.KEY_SERIAL_ENABLE,
+				false);
+		SerialPortOperation.setEnable(serialEnable);
+		int baudrate = SPUtils.getInt(MyContexts.KEY_BAUDRATE_VALUE, 19200);
+		SerialPortOperation.setBaudrate(baudrate);
+		LogsUtil.d(TAG, "串口 enable : " + serialEnable);
+		LogsUtil.d(TAG, "串口 baudrate : " + baudrate);
+
+		// 默认 需要 复核
+		SPUtils.putBoolean(MyContexts.KEY_CHECK_LOGIN, true);
+		// SPUtils.putBoolean(MyContexts.KEY_SCAN_BUNCH, true);
 
 		// 封袋 超高频功率
 		int coverRead = SPUtils.getInt(MyContexts.KEY_POWER_READ_COVER, -1);
@@ -126,6 +153,30 @@ public class StartActivity extends Activity {
 				/* 载入 oled屏 字库 */
 				loadWordLibLogin();// 先加载登录需要文字
 				loadWordLib();
+
+				/* 打开高频模块 */
+				int i;
+				for (i = 0; i < 3; i++) {
+					if (RFIDOperation.getInstance().openAndWakeup()) {
+						break;
+					}
+				}
+				if (3 <= i) {
+					ToastUtil.showToastInCenter(getResources().getString(
+							R.string.text_init_rfid_failed));
+					finish();
+					return;
+				}
+
+				if (SerialPortOperation.isEnable()) {
+					if (!SerialPortOperation.open(false)) {
+						ToastUtil.showToastInCenter(getResources().getString(
+								R.string.text_init_serial_failed));
+					}
+				}
+
+				startNext();
+
 			}
 		});
 
@@ -148,17 +199,43 @@ public class StartActivity extends Activity {
 				// 启动屏幕亮灭监听
 				Intent servIceintent = new Intent(StartActivity.this,
 						BackgroundService.class);
-//				servIceintent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				// servIceintent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 				startService(servIceintent);
 
-				Intent intent = new Intent(StartActivity.this,
-						LoginActivity.class);
-				// intent = new
-				// Intent(StartActivity.this,ChangeBagActivity.class);
-				startActivity(intent);
-				finish();
+				startNext();
+
 			}
 		});
+	}
+
+	/**
+	 * 决定是否进入 登录界面。动画播放完毕 和 模块初始化完毕
+	 */
+	private void startNext() {
+		if (checkIsFinish) {
+			// if (!RFIDOperation.getInstance().openAndWakeup()) {
+			// ToastUtil.showToastInCenter(getResources().getString(
+			// R.string.text_init_rfid_failed));
+			// finish();
+			// return;
+			// }
+			// if (SerialPortOperation.isEnable() &&
+			// !SerialPortOperation.isOpen()) {
+			// ToastUtil.showToastInCenter(getResources().getString(
+			// R.string.text_init_serial_failed));
+			//
+			// if (!SocketConnet.isEnable()) {
+			// // 串口打开失败 同时 网络传输未启用
+			// SPUtils.putBoolean(MyContexts.KEY_SERIAL_ENABLE, false);
+			// SPUtils.putBoolean(MyContexts.KEY_WIFI_ENABLE, true);
+			// }
+			// }
+			Intent intent = new Intent(StartActivity.this, LoginActivity.class);
+			startActivity(intent);
+			finish();
+		} else {
+			checkIsFinish = true;
+		}
 	}
 
 	/**
@@ -170,12 +247,13 @@ public class StartActivity extends Activity {
 			is = getAssets().open("ip_config.json");
 			String jsonStr = IOUtil.convertInputStream2String(is);
 			JSONObject root = new JSONObject(jsonStr);
-			
+
 			@SuppressWarnings("unchecked")
 			Iterator<String> keys = root.keys();
-			
+
 			while (keys.hasNext()) {
 				String key = keys.next();
+
 				if (key.startsWith("KEY_IP")) {
 					SPUtils.putString(key, root.getString(key));
 				} else {

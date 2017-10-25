@@ -1,6 +1,8 @@
 package com.fanfull.activity.scan_general;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -30,6 +32,7 @@ import com.fanfull.fff.R;
 import com.fanfull.hardwareAction.OLEDOperation;
 import com.fanfull.op.RFIDOperation;
 import com.fanfull.op.UHFOperation;
+import com.fanfull.socket.RecieveListenerAbs;
 import com.fanfull.socket.ReplyParser;
 import com.fanfull.socket.SendTask;
 import com.fanfull.socket.SocketConnet;
@@ -43,6 +46,7 @@ import com.fanfull.utils.SPUtils;
 import com.fanfull.utils.SoundUtils;
 import com.fanfull.utils.ToastUtil;
 import com.fanfull.utils.ViewUtil;
+import com.fanfull.view.ActivityHeadItemView;
 import com.fanfull.view.CoverBagItemView;
 
 /**
@@ -57,6 +61,11 @@ import com.fanfull.view.CoverBagItemView;
  * 
  */
 public class CoverNfcNewBagActivity extends BaseActivity {
+
+	private static final String TEXT_COVER = "封 袋";
+	private static final String TEXT_IN_STORE = "入 库";
+	private static final String TEXT_OUT_STORE = "出 库";
+	private static final String TEXT_OPEN = "开 袋";
 
 	private TextView mTvPlanAmount;
 	private TextView mTvTotalAmount;
@@ -75,10 +84,11 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 	private final int SHOW_LOCK_RESULT = 11;
 	private final int SHOW_LOCK_FAILED = 12;
 
+	private final static int MSG_GET_INSTORE_INFO_OVER = 0x1003;// 开始读袋锁
 	private final static int MSG_CHECK_BAG_START = 0x1002;// 开始读袋锁
 	private final int MSG_CHECK_BAG_FAILED = 0x1000;
 	private final static int MSG_CHECK_BAG_SUCCESS = 0x1001;
-	
+
 	private final static int MSG_NET_CHECK_START = 0x1005;// 开始服务器校验
 	private final static int MSG_COVER_NET_SUCCESS = 0x1009;
 	private final static int MSG_COVER_NET_FAILED = 0x1010;
@@ -93,14 +103,11 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 	private final int STEP_CHECK_BAG = 1;
 	private final int STEP_NET_CHECK = 3;
 	private final int STEP_UPDATE_BAG = 5;
-	
+
 	private final int STEP_COVER_OVER = 6;
 
 	private int mStep = STEP_CHECK_BAG;
 
-	private byte mUid[] = null;
-	/** tid 6byte */
-	private byte mTid[] = null;
 	private boolean haveTaskRunning;
 
 	private UHFOperation mUHFOp = null;
@@ -108,6 +115,7 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 	private CheckBagTask mCheckBagTask;
 	private NetCoverTask mNetCoverTask;// 开始封袋，发送封签码
 	private WriteRFIDTask mWriteNFCTask;
+	private CoverBagRecieveListener mRecieveListener;
 
 	private String mTotalFinish;// 总完成数量
 	private String mPersonFinish;// 个人完成数量
@@ -120,12 +128,15 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 	// 用于记录选择了什么券别，清分，复点信息。
 	private String mStr, str1 = "", str2 = "", str3 = "";
 
+	private byte mUid[] = null;
+	/** tid 6byte */
+	private byte mTid[] = new byte[6];
 	/** 封签 信息 30byte */
 	private byte[] mCoverEventData;
 	/** 交接 信息 12byte */
 	private byte[] mHandoverData;
 	/** 袋ID 12byte */
-	private byte[] mBagIdBuf;;
+	private byte[] mBagIdBuf;
 	/** 流水号 11byte */
 	// private byte[] mSerialData;
 
@@ -154,37 +165,26 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 			return;
 		}
 		newRFIDOp = RFIDOperation.getInstance();
-		newRFIDOp.openTemp(false);
-
-		LogsUtil.d(TAG, "mTypeOperation : " + mTypeOp);
+		// newRFIDOp.openTemp(false);
 
 		mHandler = new Handler(new MyHandlerCallBack());
 		mDiaUtil = new DialogUtil(this);
 
 		super.onCreate(savedInstanceState);
-		mTypeOp = getIntent().getIntExtra(TYPE_OP.KEY_TYPE, TYPE_OP.COVER_BAG);
+
+		mRecieveListener = new CoverBagRecieveListener();
+		SocketConnet.getInstance().setRecieveListener(mRecieveListener);
+
 		findView();
-		
+
 		mBagIdBuf = new byte[12];
-		
+
 		/** 第1 读袋码，以及验证是否启用 */
 		mCheckBagTask = new CheckBagTask();
 		/** 第2 发送封签事件给前置 得到时间等信息 */
 		mNetCoverTask = new NetCoverTask();
 		/** 第3 更新袋锁，写标志位以及索引信息 */
 		mWriteNFCTask = new WriteRFIDTask();
-
-		/** 获取批编号，判断和上一次是否有改变，如果改变则需要弹出券别选择框 */
-		String lastNumber = SPUtils.getString(getApplicationContext(),
-				MyContexts.IS_LAST_PI_NUMBER, "1");
-		if (!lastNumber.equals(StaticString.pinumber)) {
-			SPUtils.putString(MyContexts.IS_LAST_PI_NUMBER,
-					StaticString.pinumber);
-			mStep = STEP_SELECT_TYPE;
-		} else {
-			StaticString.bagtype = SPUtils.getString(getApplicationContext(),
-					MyContexts.IS_LAST_TYPE_NUMBER, "11");
-		}
 
 		/* 根据业务类型 设置 超高频 功率 */
 		SystemClock.sleep(100); // 打开模块后，休眠一段时间再使用
@@ -195,6 +195,8 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 
 	}
 
+	private int mNetCode;
+
 	/**
 	 * 
 	 * @Title: initView
@@ -204,7 +206,47 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 	 * @throws
 	 */
 	protected void findView() {
+
 		setContentView(R.layout.activity_cover_newbag);
+		ActivityHeadItemView mTitle = (ActivityHeadItemView) findViewById(R.id.v_coverbagactivity_title);
+
+		mTypeOp = getIntent().getIntExtra(TYPE_OP.KEY_TYPE, TYPE_OP.COVER_BAG);
+		LogsUtil.d(TAG, "mTypeOp : " + mTypeOp);
+
+		switch (mTypeOp) {
+		case TYPE_OP.COVER_BAG:
+			mTitle.setText(TEXT_COVER);
+			mNetCode = SendTask.CODE_COVER_UPLOAD_BAG_INFO;
+
+			/** 获取批编号，判断和上一次是否有改变，如果改变则需要弹出券别选择框 */
+			String lastNumber = SPUtils.getString(MyContexts.IS_LAST_PI_NUMBER,
+					"1");
+			if (!lastNumber.equals(StaticString.pinumber)) {
+				SPUtils.putString(MyContexts.IS_LAST_PI_NUMBER,
+						StaticString.pinumber);
+				mStep = STEP_SELECT_TYPE;
+			} else {
+				StaticString.bagtype = SPUtils.getString(
+						MyContexts.IS_LAST_TYPE_NUMBER, "11");
+			}
+			break;
+		case TYPE_OP.IN_STORE_HAND:
+			mTitle.setText(TEXT_IN_STORE);
+			mNetCode = SendTask.CODE_IN_STORE_UPLOAD_BAG_INFO;
+			// 手持入库, 从 服务端 获取任务信息
+			setCommunicationCode(SendTask.CODE_LOT_INSTORE_NUM);
+			SocketConnet.getInstance().communication(
+					SendTask.CODE_LOT_INSTORE_NUM);
+			break;
+		case TYPE_OP.OUT_STORE_HAND:
+			mTitle.setText(TEXT_OUT_STORE);
+			mNetCode = SendTask.CODE_OUT_STORE_UPLOAD_BAG_INFO;
+			break;
+		case TYPE_OP.OPEN_BAG:
+			mTitle.setText(TEXT_OPEN);
+			mNetCode = 799;
+			break;
+		}
 
 		mVReadBagLock = (CoverBagItemView) findViewById(R.id.v_show1);
 		mVNetCheck = (CoverBagItemView) findViewById(R.id.v_show2);
@@ -250,30 +292,33 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 	 * 锁定批
 	 */
 	public void buildLockPi() {
-		AlertDialog.Builder builder = new Builder(this);
-		builder.setTitle(MyContexts.TEXT_DIALOG_TITLE).setMessage(
-				MyContexts.DIALOG_MESSAGE_LOCK_BUNCH);
-		builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface arg0, int arg1) {
-				StaticString.information = null;
-				SocketConnet.getInstance().communication(7);// 锁定批
-				ThreadPoolFactory.getNormalPool().execute(new Runnable() {
+		mDiaUtil.showDialog2Button(MyContexts.DIALOG_MESSAGE_LOCK_BUNCH, "确定",
+				"取消", new OnClickListener() {
 					@Override
-					public void run() {
-						// 在子线程中 检查 StaticString.information
-						// 是否为空
-						if (ReplyParser.waitReply()) {
-							mHandler.sendEmptyMessage(SHOW_LOCK_RESULT);
-						} else {
-							mHandler.sendEmptyMessage(SHOW_LOCK_FAILED);
-						}
+					public void onClick(DialogInterface dialog, int which) {
+						setCommunicationCode(SendTask.CODE_LOCK_PI);
+						SocketConnet.getInstance().communication(
+								SendTask.CODE_LOCK_PI);//
 					}
-				});
-			}
-		});
-		builder.setNegativeButton("取消", null);
-		builder.show();
+				}, null);
+		// mHandler.sendEmptyMessage(SHOW_LOCK_RESULT);
+
+		// AlertDialog.Builder builder = new Builder(this);
+		// builder.setTitle(MyContexts.TEXT_DIALOG_TITLE).setMessage(
+		// MyContexts.DIALOG_MESSAGE_LOCK_BUNCH);
+		// builder.setPositiveButton("确定", new DialogInterface.OnClickListener()
+		// {
+		// @Override
+		// public void onClick(DialogInterface arg0, int arg1) {
+		// setCommunicationCode(SendTask.CODE_LOCK_PI);
+		// SocketConnet.getInstance().communication(SendTask.CODE_LOCK_PI);//
+		// 锁定批
+		// }
+		// });
+		// builder.setNegativeButton("取消", null);
+		// create = builder.create();
+		// create.show();
+		// LogsUtil.d(TAG, "buildLockPi: " + create);
 	}
 
 	// 22943587 82284256
@@ -446,54 +491,63 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 	 * 
 	 * @return
 	 */
-	private boolean pasremPiNumber() {
+	private boolean pasremPiNumber(String recInfo) {
 		boolean retVal = false;
-		if (null == StaticString.information) {// 82484256
+		if (null == recInfo) {// 82484256
+			return retVal;
+		}
+		String[] splits = recInfo.split(" ");
+		if (splits.length < 2 || splits[1].length() < 14) {
 			return retVal;
 		}
 
-		LogsUtil.d(TAG,
-				"information len : " + StaticString.information.length());
-
-		if (StaticString.information.length() < 20) {
-			return retVal;
-		}
 		try {
 			// *22 22000100019999
 			// 055310040491C9321E4480F620292D6E000B160726165835 160726165835
 			// 2016072608710100100014 004#
-			String[] splits = StaticString.information.split(" ");
 
-			mPersonFinish = StaticString.information.substring(6, 10);// 个人完成数量
-			mTotalFinish = StaticString.information.substring(10, 14);// 总完成数量
-			mPlanNumber = StaticString.information.substring(14, 18);// 计划数量
+			// mPersonFinish = StaticString.information.substring(6, 10);//
+			// 个人完成数量
+			// mTotalFinish = StaticString.information.substring(10, 14);//
+			// 总完成数量
+			// mPlanNumber = StaticString.information.substring(14, 18);// 计划数量
+
+			mPersonFinish = splits[1].substring(2, 6);// 个人完成数量
+			mTotalFinish = splits[1].substring(6, 10);// 总完成数量
+			mPlanNumber = splits[1].substring(10, 14);// 计划数量
+
 			if ("9999".equals(mPlanNumber)) {
 				mPlanNumber = "-";
 			}
-			LogsUtil.d(TAG, "总数量: " + mTotalFinish);
+
 			LogsUtil.d(TAG, "个人完成: " + mPersonFinish);
-			LogsUtil.d(TAG, "封签事件: " + splits[2]);
-			LogsUtil.d(TAG, "交接信息: " + splits[3]);
-			LogsUtil.d(TAG, "流水号: " + splits[4]);
+			LogsUtil.d(TAG, "总完成数: " + mTotalFinish);
+			LogsUtil.d(TAG, "计划数量: " + mPlanNumber);
+			// LogsUtil.d(TAG, "封签事件: " + splits[2]);
+			// LogsUtil.d(TAG, "交接信息: " + splits[3]);
+			// LogsUtil.d(TAG, "流水号: " + splits[4]);
 
-			mHandoverData = ArrayUtils.hexString2Bytes(splits[3]);
-			mSerialNumber = splits[4];
-
-			/* 在封签事件中嵌入 清分信息 */
-			// 1. 截取袋型号 01~10
-			int bagType = Integer.parseInt(splits[2].substring(6, 8));
-			// 2. 截取末尾2位 清分/复点信息, 1:完整, 2:残损; 1清分,2未清分,3复点,4未复点
-			String chs = splits[2].substring(splits[2].length() - 2,
-					splits[2].length());
-			int clearType = Integer.parseInt(chs);
-			if (20 <= clearType) {
-				clearType -= 20;
+			if (mTypeOp == TYPE_OP.COVER_BAG) {
+				mHandoverData = ArrayUtils.hexString2Bytes(splits[3]);
+				mSerialNumber = splits[4];
+				/* 在封签事件中嵌入 清分信息 */
+				// 1. 截取袋型号 01~10
+				int bagType = Integer.parseInt(splits[2].substring(6, 8));
+				// 2. 截取末尾2位 清分/复点信息, 1:完整, 2:残损; 1清分,2未清分,3复点,4未复点
+				String chs = splits[2].substring(splits[2].length() - 2,
+						splits[2].length());
+				int clearType = Integer.parseInt(chs);
+				if (20 <= clearType) {
+					clearType -= 20;
+				}
+				// 3. 清分信息 与 袋型号 合并
+				mCoverEventData = ArrayUtils.hexString2Bytes(splits[2]
+						.substring(0, splits[2].length() - 2)); // 去掉末尾2个字符
+				mCoverEventData[3] = (byte) (bagType | (clearType << 4));// 袋型号低4位，清分信息高4位
+			} else {
+				mHandoverData = ArrayUtils.hexString2Bytes(splits[2]);
+				mSerialNumber = splits[3];
 			}
-			// 3. 清分信息 与 袋型号 合并
-			mCoverEventData = ArrayUtils.hexString2Bytes(splits[2].substring(0,
-					splits[2].length() - 2)); // 去掉末尾2个字符
-			mCoverEventData[3] = (byte) (bagType | (clearType << 4));// 袋型号低4位，清分信息高4位
-
 			retVal = true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -526,7 +580,7 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 				if (ClickUtil.isFastDoubleClick(2500)) {
 					super.onBackPressed();
 				} else {
-					ToastUtil.showToastInCenter("再次点击退出封袋");
+					ToastUtil.showToastInCenter("再次点击退出");
 				}
 			} else {
 				initUi();
@@ -534,8 +588,8 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 			// 读袋锁阶段，初始化信息，启用码
 		} else if (mStep == STEP_CHECK_BAG) {
 			mCheckBagTask.stop();
-			// mVReadBagLock.setDoing(false);
-			// mBtnConfirm.setEnabled(true);
+			mVReadBagLock.setDoing(false);
+			mBtnConfirm.setEnabled(true);
 			// haveTaskRunning = false;
 		} else if (mStep == STEP_NET_CHECK) { // 将条码等数据发送到服务器验证，是否已经封签过
 			// 网络通信中，不让中断
@@ -584,6 +638,27 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 	private class MyHandlerCallBack implements Handler.Callback {
 		public boolean handleMessage(Message msg) {
 			switch (msg.what) {
+			case MSG_GET_INSTORE_INFO_OVER: // 入库 获取列表 成功
+				mDiaUtil.dismissProgressDialog();
+
+				if (null == mBagIdList || mBagIdList.size() == 0) {
+					mDiaUtil.showDialogFinishActivity("获取入库列表失败，请确定有入库任务");
+					return true;
+				}
+
+				mTvScanAmount.setText(mPersonFinish.replaceFirst("^0+", ""));// 去掉
+				// 数字前面的
+				// '0'
+				mTvTotalAmount.setText(mTotalFinish.replaceFirst("^0+", ""));
+				mTvPlanAmount.setText(mPlanNumber.replaceFirst("^0+", ""));
+
+				if ("".equals(mTvTotalAmount.getText().toString())) {
+					mTvTotalAmount.setText("0");
+				}
+				if ("".equals(mTvPlanAmount.getText().toString())) {
+					mTvPlanAmount.setText("0");
+				}
+				break;
 			case MSG_CHECK_BAG_START: // 1. 检查袋锁
 				mVReadBagLock.setDoing(true);
 				mBtnConfirm.setEnabled(false);
@@ -599,6 +674,7 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 				mCheckBagTask.stop();
 				mVReadBagLock.setDoing(false);
 				mBtnConfirm.setEnabled(true);
+				RFIDOperation.getInstance().closeRF();
 				break;
 			case MSG_CHECK_BAG_SUCCESS:
 				mVReadBagLock.setChecked(true);
@@ -608,7 +684,9 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 				mBtnCancel.setEnabled(false);
 				mStep = STEP_NET_CHECK;
 				haveTaskRunning = true;
-				ThreadPoolFactory.getNormalPool().execute(mNetCoverTask);
+				setCommunicationCode(mNetCode);
+				SocketConnet.getInstance().communication(mNetCode);
+				// ThreadPoolFactory.getNormalPool().execute(mNetCoverTask);
 				break;
 			case MSG_COVER_NET_FAILED:
 				haveTaskRunning = false;
@@ -618,6 +696,7 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 				mBtnCancel.setEnabled(true);
 				mBtnConfirm.setText("重新扫描");
 				mDiaUtil.showReplyDialog();
+				RFIDOperation.getInstance().closeRF();
 				break;
 			case MSG_COVER_NET_TIMEOUT:
 				haveTaskRunning = false;
@@ -633,6 +712,7 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 								mHandler.sendEmptyMessage(MSG_NET_CHECK_START);
 							}
 						}, null);
+				RFIDOperation.getInstance().closeRF();
 				break;
 			case MSG_COVER_NET_SUCCESS:
 				mVNetCheck.setChecked(true);
@@ -652,6 +732,7 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 				mBtnConfirm.setEnabled(true);
 				mBtnCancel.setEnabled(true);
 				mBtnConfirm.setText("重新扫描");
+				RFIDOperation.getInstance().closeRF();
 				break;
 			case MSG_WRITE_NFC_SUCCESS:
 				haveTaskRunning = false;
@@ -697,7 +778,8 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 						OLEDOperation.getInstance().close();
 					}
 					isFirstScan = false;
-				}   
+				}
+				RFIDOperation.getInstance().closeRF();
 				break;
 			case SHOW_LOCK_RESULT:// 111
 
@@ -710,8 +792,10 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 							nav_up.getMinimumHeight());
 					mTvLock.setCompoundDrawables(null, nav_up, null, null);
 					mTvLock.setText("已锁定");
+
 					mDiaUtil.showDialogFinishActivity(info);
 				} else {
+					// mDiaUtil.showDialogFinishActivity(info);
 					mDiaUtil.showDialog(info);
 				}
 
@@ -759,7 +843,9 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 					t++;
 					LogsUtil.d(TAG,
 							ArrayUtils.bytes2HexString(UHFOperation.sEPC));
-					if ((UHFOperation.sEPC[0] & 0xFF) != 0x85) { // 85开头的EPC是标牌
+					if ((UHFOperation.sEPC[0] & 0xFF) != 0x85
+							&& (LogsUtil.getDebugLevel() == LogsUtil.LEVEL_TEST
+									|| (mTypeOp != TYPE_OP.COVER_BAG) || (UHFOperation.sEPC[0] & 0xFF) != 0x05)) { // 85开头的EPC是标牌
 						readEPCSuccess = true;
 						break;
 					}
@@ -839,13 +925,18 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 								+ ArrayUtils.bytes2HexString(mEnableCode));
 				if (!Arrays.equals(mEnableCode, Lock3Util.ENABLE_CODE_ENABLE)) {
 					// 基金袋 未启用， 向服务端 查询 是否 可启用
+					setCommunicationCode(882);
 					SocketConnet.getInstance().communication(882);
-
 					if (ReplyParser.waitReply()) {
 						if (pasreStartUseInfo()) {
 							// 启用基金袋失败
-							if (!newRFIDOp.writeNFCInTime(0x11,
-									Lock3Util.ENABLE_CODE_ENABLE, 1000, mUid)) {
+							// mEnableCode = Arrays.copyOf(
+							// Lock3Util.ENABLE_CODE_ENABLE,
+							// Lock3Util.ENABLE_CODE_ENABLE.length);
+							mEnableCode = ArrayUtils.encryption(
+									Lock3Util.ENABLE_CODE_ENABLE, mUid);
+							if (!newRFIDOp.writeNFCInTime(0x11, mEnableCode,
+									1000, mUid)) {
 								msg.obj = "启用基金袋失败，请重新封袋";
 								mHandler.sendMessage(msg);
 								return;
@@ -892,7 +983,19 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 				}
 				LogsUtil.d(TAG, "check4 flag: F" + plainFlag + " miyueNum:"
 						+ miyueNum);
+
+				if (mTypeOp != TYPE_OP.COVER_BAG) {
+					if (3 == plainFlag) {
+						plainFlag = 2; // 已正常封袋
+					} else {
+						plainFlag = -1; // 未正常封袋
+					}
+				}
 				switch (plainFlag) {
+				case -1: // 出入库、开袋 标志位错误
+					msg.obj = "该袋标志位异常，可能未正常封袋";
+					mHandler.sendMessage(msg);
+					return;
 				case 1: // F1
 					int bagVersion = UHFOperation.sEPC[0] & 0xFF;// 锁片中epc一般不会以04、05开头
 					LogsUtil.d(TAG, "标志位为F1，bagVersion： " + bagVersion);
@@ -942,7 +1045,6 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 
 					msg.obj = "该袋标志位异常，请勿继续使用";
 					mHandler.sendMessage(msg);
-					// mHandler.sendEmptyMessage(BAG_CANNOT_USE_BAG);
 					return;
 				}
 
@@ -956,30 +1058,70 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 				int t2 = ArrayUtils.byteToInt2(mVbuf[3]);
 				LogsUtil.d(TAG, "电压记录值1=" + t2);
 				LogsUtil.d(TAG, "电压记录值2=" + (mVbuf[3] & 0xFF));
-				double v = 2.5 * t2 / 128;
+				double v = 2.5 * (mVbuf[3] & 0xFF) / 128;
 				LogsUtil.d(TAG, "电压记录值3=" + v);
 				if (v < 2.85) {
-					msg.obj = "袋锁电压不足，不法继续使用";
-					mHandler.sendMessage(msg);
-					return;
+					if (mTypeOp == TYPE_OP.COVER_BAG) {
+						if (LogsUtil.getDebugLevel() == LogsUtil.LEVEL_TEST) {
+							ToastUtil.showToastOnUiThreadInCenter("测试 :电压不足 "
+									+ v, CoverNfcNewBagActivity.this);
+						} else {
+							msg.obj = "袋锁电压不足，不法继续使用";
+							mHandler.sendMessage(msg);
+							return;
+						}
+					} else {
+						ToastUtil.showToastOnUiThreadInCenter("袋锁电压不足",
+								CoverNfcNewBagActivity.this);
+					}
 				}
 
-				/* 读取并写入 TID */
-				mTid = mUHFOp.readUHFInTime(UHFOperation.MB_TID, 0x03, 6, 1000,
-						UHFOperation.sEPC, UHFOperation.MB_EPC, 0x02);
-				if (null == mTid) {
-					msg.obj = "获取TID失败，请检查锁片是否插好";
-					mHandler.sendMessage(msg);
-					return;
-				}
-				if (!newRFIDOp.writeNFCInTime(0x07, mTid, 1000, mUid)) {
-					msg.obj = "写入TID失败";
-					mHandler.sendMessage(msg);
-					return;
-				}
-				StaticString.tid = ArrayUtils.bytes2HexString(mTid);
-				LogsUtil.d(TAG, "check6 TID:" + StaticString.tid);
+				if (mTypeOp == TYPE_OP.COVER_BAG) {
+					/* 封袋，读取并写入 TID */
+					if (!mUHFOp.readUHFInTime(UHFOperation.MB_TID, 0x03, mTid,
+							1000, UHFOperation.sEPC, UHFOperation.MB_EPC, 0x02)) {
+						msg.obj = "获取TID失败，请检查锁片是否插好";
+						mHandler.sendMessage(msg);
+						return;
+					}
+					if (!newRFIDOp.writeNFCInTime(0x07, mTid, 1000, mUid)) {
+						msg.obj = "写入TID失败";
+						mHandler.sendMessage(msg);
+						return;
+					}
+					StaticString.tid = ArrayUtils.bytes2HexString(mTid);
+					LogsUtil.d(TAG, "check6 TID:" + StaticString.tid);
+				} else {
+					/** 读取袋中存放的TID信息 */
+					if (!RFIDOperation.getInstance().readNFCInTime(0x07, mTid,
+							500, null)
+							|| !mUHFOp.readUHFInTime(UHFOperation.MB_TID, 0x03,
+									mTid, 500, mTid, UHFOperation.MB_TID, 0x03)) {
+						msg.obj = "锁片与袋锁信息不匹配";
+						mHandler.sendMessage(msg);
+						return;
+					}
+					byte[] eventBuf = new byte[30];
+					if (!RFIDOperation.getInstance().readNFCInTime(0x30,
+							eventBuf, 1000, null)) {
+						msg.obj = "获取事件码失败";
+						mHandler.sendMessage(msg);
+						return;
+					}
+					LogsUtil.d(TAG,
+							"解密前：" + ArrayUtils.bytes2HexString(eventBuf));
+					boolean encrypt = AESCoder.myEncrypt(eventBuf, mTid, false);
+					LogsUtil.d(TAG, "解密EventCode成功？" + encrypt);
 
+					// 封袋的时候在封签事件码嵌入清分信息。 去掉清分信息，还原封签事件码
+					eventBuf[3] = (byte) (eventBuf[3] & 0x0F);
+					StaticString.eventCode = ArrayUtils
+							.bytes2HexString(eventBuf);
+
+					LogsUtil.d(TAG, "解密后：" + StaticString.eventCode);
+
+					StaticString.tid = ArrayUtils.bytes2HexString(mTid);
+				}
 				mHandler.sendEmptyMessage(MSG_CHECK_BAG_SUCCESS);
 				stoped = true;
 				return;
@@ -994,26 +1136,107 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 	 * 第3步，从前置获取封签事件码
 	 * 
 	 * @author Administrator
-	 * 
 	 */
 	private class NetCoverTask implements Runnable {
 
 		@Override
 		public void run() {
 
-			StaticString.information = null;// 判断回复信息之间清空之前信息
-			SocketConnet.getInstance().communication(
-					SendTask.CODE_COVER_UPLOAD_BAG_INFO);
+			// SocketConnet.getInstance().communication(mNetCode);
 
 			if (!ReplyParser.waitReply()) {
 				mHandler.sendEmptyMessage(MSG_COVER_NET_TIMEOUT);
 				return;
 			}
-			if (pasremPiNumber()) {
+			if (pasremPiNumber(StaticString.information)) {
 				mHandler.sendEmptyMessage(MSG_COVER_NET_SUCCESS);
 			} else {
 				mHandler.sendEmptyMessage(MSG_COVER_NET_FAILED);
 			}
+		}
+	}
+
+	/** 保存袋id。1、入库时，保存任务列表；2、出库时，保存已出库袋id */
+	private Collection<String> mBagIdList;
+	private int commCode;
+
+	private void setCommunicationCode(int code) {
+		synchronized (ACCESSIBILITY_SERVICE) {
+			commCode = code;
+		}
+	}
+
+	private boolean commCodeEquals(int code) {
+		boolean reVal = false;
+		synchronized (ACCESSIBILITY_SERVICE) {
+			reVal = code == commCode;
+		}
+		LogsUtil.d(TAG, "real  Code:" + commCode);
+		LogsUtil.d(TAG, "check Code:" + code);
+		return reVal;
+	}
+
+	private class CoverBagRecieveListener extends RecieveListenerAbs {
+		@Override
+		public void onRecieve(String recString) {
+			// TODO Auto-generated method stub
+
+			if (commCodeEquals(-1)) {
+				return;
+			}
+
+			String[] split = recString.split(" ");
+			if (commCodeEquals(SendTask.CODE_LOT_INSTORE_NUM)
+					&& "*37".equals(split[0])
+					&& "01".equalsIgnoreCase(split[1])) {// 获取 批次 信息
+				setCommunicationCode(-1);
+				if (split[2] == null || !split[2].matches("^[1-9]+")) {
+					mHandler.sendEmptyMessage(MSG_GET_INSTORE_INFO_OVER);
+					return;
+				}
+				// 获取已扫数量
+				mPersonFinish = split[3];
+				mTotalFinish = split[3];
+				// 获取 总数
+				mPlanNumber = split[2];
+				// 获取待扫描袋id 列表
+				setCommunicationCode(SendTask.CODE_LOT_INSTORE_GET_BAGID_LIST);
+				SocketConnet.getInstance().communication(
+						SendTask.CODE_LOT_INSTORE_GET_BAGID_LIST);
+			} else if (commCodeEquals(SendTask.CODE_LOT_INSTORE_GET_BAGID_LIST)
+					&& "*57".equals(split[0])) {// 交接扫描 待扫描 列表
+				setCommunicationCode(-1);
+				/*
+				 * 交接阶段 获取 袋id列表 *57 12
+				 * 055311010445C9321E448026,05531101043EC9321E44805D,#
+				 */
+				String[] bagIds = split[2].split(",");
+				// mBagIdList = new ArrayList<String>();
+				mBagIdList = new HashSet<String>();
+				for (int i = 0; i < bagIds.length; i++) {
+					mBagIdList.add(bagIds[i]);
+				}
+				LogsUtil.d(TAG, "mBagIdList.size(): " + mBagIdList.size());
+				mHandler.sendEmptyMessage(MSG_GET_INSTORE_INFO_OVER);
+			} else if (commCodeEquals(882)) {
+				setCommunicationCode(-1);
+				// do nothing, 启用码
+			} else if (commCodeEquals(SendTask.CODE_LOCK_PI)) {
+				setCommunicationCode(-1);
+				mHandler.sendEmptyMessage(SHOW_LOCK_RESULT);
+			} else if (pasremPiNumber(StaticString.information)) {
+				setCommunicationCode(-1);
+				mHandler.sendEmptyMessage(MSG_COVER_NET_SUCCESS);
+			} else {
+				setCommunicationCode(-1);
+				mHandler.sendEmptyMessage(MSG_COVER_NET_FAILED);
+			}
+
+		}
+
+		@Override
+		public void onTimeout() {
+			mHandler.sendEmptyMessage(MSG_COVER_NET_TIMEOUT);
 		}
 	}
 
@@ -1061,39 +1284,56 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 					continue;
 				}
 
-				/* 1, 将标签的TID写入NFC中 */
-				// if (!mNfcBagOp.writeBqTid(mTid)) {
-				// continue;
-				// }
-				// if (!newRFIDOp.writeNFCInTime(0x07, mTid, 500, mUid)) {
-				// continue;
-				// }
+				if (mTypeOp == TYPE_OP.COVER_BAG) {
+					/* 加密 封签事件 */
+					boolean encryptEventCode = AESCoder.myEncrypt(
+							mCoverEventData, mTid, true);
+					LogsUtil.d(TAG, "加密事件码成功？ " + encryptEventCode);
+					LogsUtil.d(
+							TAG,
+							"加密后："
+									+ ArrayUtils
+											.bytes2HexString(mCoverEventData));
+					/* 2, 写封签事件码到高频卡中 */
+					if (!newRFIDOp.writeNFCInTime(0x30, mCoverEventData, 1500,
+							mUid)) {
+						msg.obj = "写入封签事件码失败";
+						mHandler.sendMessage(msg);
+						return;
+					}
 
-				/* 加密 封签事件 */
-				boolean encryptEventCode = AESCoder.myEncrypt(mCoverEventData,
-						mTid, true);
-				LogsUtil.d(TAG, "加密事件码成功？ " + encryptEventCode);
-				LogsUtil.d(TAG,
-						"加密后：" + ArrayUtils.bytes2HexString(mCoverEventData));
+					/* 3, 写 流水号 到高频卡中 */
+					if (!newRFIDOp.writeNFCInTime(0x90,
+							ArrayUtils.hexString2Bytes(mSerialNumber), 1000,
+							mUid)) {
+						msg.obj = "写入 流水号 失败";
+						mHandler.sendMessage(msg);
+						return;
+					}
 
-				/* 2, 写封签事件码到高频卡中 */
-				// if (!mNfcBagOp.writeBagBarcode(mCoverEventData)) {
-				// continue;
-				// }
-				if (!newRFIDOp
-						.writeNFCInTime(0x30, mCoverEventData, 1200, mUid)) {
-					msg.obj = "写入封签事件码失败";
-					mHandler.sendMessage(msg);
-					return;
-				}
-
-				/* 3, 写 流水号 到高频卡中 */
-				if (!newRFIDOp.writeNFCInTime(0x90,
-						ArrayUtils.hexString2Bytes(mSerialNumber), 800, mUid)) {
-					msg.obj = "写入 流水号 失败";
-					mHandler.sendMessage(msg);
-					return;
-				}
+					/* 向锁片写入 袋ID和封签事件码 */
+					// 1， 写袋id到 EPC区
+					if (!mUHFOp.writeUHFInTime(mBagIdBuf, UHFOperation.MB_EPC,
+							0x02, 1000, UHFOperation.sEPC, UHFOperation.MB_EPC,
+							0x02)) {
+						LogsUtil.d(TAG, "写袋id到 EPC区  失败！");
+						msg.obj = "写入 袋ID 失败";
+						mHandler.sendMessage(msg);
+						return;
+					}
+					// 2， 往use区 写封签信息
+					int tcount = 0;
+					while (tcount++ < 2) {
+						if (mUHFOp.writeUHFInTime(mCoverEventData,
+								UHFOperation.MB_USE, 0x00, 0,
+								UHFOperation.sEPC, UHFOperation.MB_EPC, 0x02)) {
+							LogsUtil.d(TAG, "封签事件码写入use 成功 -- " + tcount);
+							tcount = Integer.MAX_VALUE;
+						} else {
+							LogsUtil.d(TAG, "封签事件码写入use failed -- " + tcount);
+						}
+					}
+				}// end if coverBag
 
 				/* 4、写入交接信息 */
 				// 加密 交接信息
@@ -1104,43 +1344,22 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 						"加密后：" + ArrayUtils.bytes2HexString(mHandoverData));
 
 				int sa = mHandoverIndex & 0xFF;// 获得 相对位置
-				LogsUtil.d("CIOO", "交接信息索引：" + sa);
+				LogsUtil.d(TAG, "交接信息索引：" + sa);
 				sa = 3 * sa + 0x40; // 计算绝对位置
-
 				// 写入 交接信息
 				if (!newRFIDOp.writeNFCInTime(sa, mHandoverData, 1000, mUid)) {
 					msg.obj = "写入 交接信息 失败";
 					mHandler.sendMessage(msg);
 					return;
 				}
-
-				/* 向锁片写入 袋ID和封签事件码 */
-				// 1， 写袋id到 EPC区
-				if (!mUHFOp.writeUHFInTime(mBagIdBuf, UHFOperation.MB_EPC,
-						0x02, 1000, UHFOperation.sEPC, UHFOperation.MB_EPC,
-						0x02)) {
-					LogsUtil.d(TAG, "写袋id到 EPC区  失败！");
-					msg.obj = "写入 袋ID 失败";
-					mHandler.sendMessage(msg);
-					return;
+				/* 更新标志位 以及 交接信息 */
+				int f = 3;
+				if (mTypeOp == TYPE_OP.OPEN_BAG) {
+					f = 4;
 				}
-				// 2， 往use区 写封签信息
-				int tcount = 0;
-				while (tcount++ < 3) {
-					if (mUHFOp.writeUHFInTime(mCoverEventData,
-							UHFOperation.MB_USE, 0x00, 0, UHFOperation.sEPC,
-							UHFOperation.MB_EPC, 0x02)) {
-						LogsUtil.d(TAG, "封签事件码写入use 成功 -- " + tcount);
-						tcount = Integer.MAX_VALUE;
-					} else {
-						LogsUtil.d(TAG, "封签事件码写入use failed -- " + tcount);
-					}
-				}
-
-				/* 更新标志位 */
-				byte flag = (byte) Lock3Util.getFlag(3, miyueNum, mUid, false);
+				byte flag = (byte) Lock3Util.getFlag(f, miyueNum, mUid, false);
 				mHandoverIndex++;
-				byte[] bs = new byte[] { flag, mHandoverIndex };// 更新标志位 已经
+				byte[] bs = new byte[] { flag, mHandoverIndex };// 更新标志位 以及
 																// 交接信息索引
 				if (!newRFIDOp.writeNFCInTime(0x10, bs, 1000, mUid)) {
 					msg.obj = "更新 标志位 失败";
@@ -1149,7 +1368,6 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 				}
 				mHandler.sendEmptyMessage(MSG_WRITE_NFC_SUCCESS);
 				return;
-
 			} // end while()
 			haveTaskRunning = false;
 			LogsUtil.w(TAG, WriteRFIDTask.class.getSimpleName() + " finish");

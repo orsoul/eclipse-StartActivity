@@ -25,7 +25,6 @@ import android.widget.TextView;
 import com.android.adapter.CommonAdapter;
 import com.android.adapter.ViewHolder;
 import com.fanfull.fff.R;
-import com.fanfull.hardwareAction.RFIDOperation;
 import com.fanfull.utils.LogsUtil;
 
 public class SettingLogActivity extends Activity {
@@ -127,9 +126,7 @@ public class SettingLogActivity extends Activity {
 	}
 	@Override
 	protected void onDestroy() {
-		// TODO Auto-generated method stub
 		super.onDestroy();
-		RFIDOperation.getInstance().closeRf();
 	}
 	public long getFileLength( String path){
 		long i =0;
