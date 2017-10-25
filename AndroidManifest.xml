@@ -3,14 +3,14 @@
     package="com.fanfull.fff"
     android:sharedUserId="android.uid.system"
     android:versionCode="2"
-    android:versionName="v1.1.2.2" >
+    android:versionName="v1.1.4" >
 
     <!-- android:sharedUserId="android.uid.system" -->
     <uses-permission android:name="android.permission.SHUTDOWN" />
 
     <uses-sdk
         android:minSdkVersion="10"
-        android:targetSdkVersion="10" />
+        android:targetSdkVersion="19" />
 
     <permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
 

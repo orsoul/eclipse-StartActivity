@@ -81,6 +81,7 @@ public class StartActivity extends Activity {
 				wifiManager.setWifiEnabled(true);
 			}
 		}
+
 		// 串口 是否启用
 		boolean serialEnable = SPUtils.getBoolean(MyContexts.KEY_SERIAL_ENABLE,
 				false);
@@ -92,7 +93,7 @@ public class StartActivity extends Activity {
 
 		// 默认 需要 复核
 		SPUtils.putBoolean(MyContexts.KEY_CHECK_LOGIN, true);
-		SPUtils.putBoolean(MyContexts.KEY_SCAN_BUNCH, true);
+		// SPUtils.putBoolean(MyContexts.KEY_SCAN_BUNCH, true);
 
 		// 封袋 超高频功率
 		int coverRead = SPUtils.getInt(MyContexts.KEY_POWER_READ_COVER, -1);
@@ -154,13 +155,24 @@ public class StartActivity extends Activity {
 				loadWordLib();
 
 				/* 打开高频模块 */
-				for (int i = 0; i < 3; i++) {
+				int i;
+				for (i = 0; i < 3; i++) {
 					if (RFIDOperation.getInstance().openAndWakeup()) {
 						break;
 					}
 				}
+				if (3 <= i) {
+					ToastUtil.showToastInCenter(getResources().getString(
+							R.string.text_init_rfid_failed));
+					finish();
+					return;
+				}
+
 				if (SerialPortOperation.isEnable()) {
-					SerialPortOperation.open(false);
+					if (!SerialPortOperation.open(false)) {
+						ToastUtil.showToastInCenter(getResources().getString(
+								R.string.text_init_serial_failed));
+					}
 				}
 
 				startNext();
@@ -191,50 +203,34 @@ public class StartActivity extends Activity {
 				startService(servIceintent);
 
 				startNext();
-				
-//				if (checkIsFinish) {
-//					if (!RFIDOperation.getInstance().isOpen()) {
-//						ToastUtil.showToastInCenter(getResources().getString(
-//								R.string.text_init_rfid_failed));
-//						finish();
-//						return;
-//					}
-//					Intent intent = new Intent(StartActivity.this,
-//							LoginActivity.class);
-//					startActivity(intent);
-//					finish();
-//				} else {
-//					checkIsFinish = true;
-//				}
+
 			}
 		});
 	}
 
 	/**
-	 * 决定是否进入 登录界面。动画播放完毕 和 模块初始化完毕 
+	 * 决定是否进入 登录界面。动画播放完毕 和 模块初始化完毕
 	 */
 	private void startNext() {
 		if (checkIsFinish) {
-			if (!RFIDOperation.getInstance().isOpen()) {
-				ToastUtil.showToastInCenter(getResources().getString(
-						R.string.text_init_rfid_failed));
-				finish();
-				return;
-			}
-			if (SerialPortOperation.isEnable() && !SerialPortOperation.isOpen()) {
-				ToastUtil.showToastInCenter(getResources().getString(
-						R.string.text_init_serial_failed));
-				
-				if (!SocketConnet.isEnable()) {
-					// 串口打开失败 同时 网络传输未启用
-					SPUtils.putBoolean(MyContexts.KEY_SERIAL_ENABLE, false);
-					SPUtils.putBoolean(MyContexts.KEY_WIFI_ENABLE, true);
-//					finish();
-//					return;
-				}
-			}
-			Intent intent = new Intent(StartActivity.this,
-					LoginActivity.class);
+			// if (!RFIDOperation.getInstance().openAndWakeup()) {
+			// ToastUtil.showToastInCenter(getResources().getString(
+			// R.string.text_init_rfid_failed));
+			// finish();
+			// return;
+			// }
+			// if (SerialPortOperation.isEnable() &&
+			// !SerialPortOperation.isOpen()) {
+			// ToastUtil.showToastInCenter(getResources().getString(
+			// R.string.text_init_serial_failed));
+			//
+			// if (!SocketConnet.isEnable()) {
+			// // 串口打开失败 同时 网络传输未启用
+			// SPUtils.putBoolean(MyContexts.KEY_SERIAL_ENABLE, false);
+			// SPUtils.putBoolean(MyContexts.KEY_WIFI_ENABLE, true);
+			// }
+			// }
+			Intent intent = new Intent(StartActivity.this, LoginActivity.class);
 			startActivity(intent);
 			finish();
 		} else {

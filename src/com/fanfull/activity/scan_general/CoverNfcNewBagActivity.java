@@ -165,13 +165,13 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 			return;
 		}
 		newRFIDOp = RFIDOperation.getInstance();
-		newRFIDOp.openTemp(false);
+		// newRFIDOp.openTemp(false);
 
 		mHandler = new Handler(new MyHandlerCallBack());
 		mDiaUtil = new DialogUtil(this);
 
 		super.onCreate(savedInstanceState);
-		
+
 		mRecieveListener = new CoverBagRecieveListener();
 		SocketConnet.getInstance().setRecieveListener(mRecieveListener);
 
@@ -292,30 +292,33 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 	 * 锁定批
 	 */
 	public void buildLockPi() {
-		AlertDialog.Builder builder = new Builder(this);
-		builder.setTitle(MyContexts.TEXT_DIALOG_TITLE).setMessage(
-				MyContexts.DIALOG_MESSAGE_LOCK_BUNCH);
-		builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface arg0, int arg1) {
-				StaticString.information = null;
-				SocketConnet.getInstance().communication(7);// 锁定批
-				ThreadPoolFactory.getNormalPool().execute(new Runnable() {
+		mDiaUtil.showDialog2Button(MyContexts.DIALOG_MESSAGE_LOCK_BUNCH, "确定",
+				"取消", new OnClickListener() {
 					@Override
-					public void run() {
-						// 在子线程中 检查 StaticString.information
-						// 是否为空
-						if (ReplyParser.waitReply()) {
-							mHandler.sendEmptyMessage(SHOW_LOCK_RESULT);
-						} else {
-							mHandler.sendEmptyMessage(SHOW_LOCK_FAILED);
-						}
+					public void onClick(DialogInterface dialog, int which) {
+						setCommunicationCode(SendTask.CODE_LOCK_PI);
+						SocketConnet.getInstance().communication(
+								SendTask.CODE_LOCK_PI);//
 					}
-				});
-			}
-		});
-		builder.setNegativeButton("取消", null);
-		builder.show();
+				}, null);
+		// mHandler.sendEmptyMessage(SHOW_LOCK_RESULT);
+
+		// AlertDialog.Builder builder = new Builder(this);
+		// builder.setTitle(MyContexts.TEXT_DIALOG_TITLE).setMessage(
+		// MyContexts.DIALOG_MESSAGE_LOCK_BUNCH);
+		// builder.setPositiveButton("确定", new DialogInterface.OnClickListener()
+		// {
+		// @Override
+		// public void onClick(DialogInterface arg0, int arg1) {
+		// setCommunicationCode(SendTask.CODE_LOCK_PI);
+		// SocketConnet.getInstance().communication(SendTask.CODE_LOCK_PI);//
+		// 锁定批
+		// }
+		// });
+		// builder.setNegativeButton("取消", null);
+		// create = builder.create();
+		// create.show();
+		// LogsUtil.d(TAG, "buildLockPi: " + create);
 	}
 
 	// 22943587 82284256
@@ -577,7 +580,7 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 				if (ClickUtil.isFastDoubleClick(2500)) {
 					super.onBackPressed();
 				} else {
-					ToastUtil.showToastInCenter("再次点击退出封袋");
+					ToastUtil.showToastInCenter("再次点击退出");
 				}
 			} else {
 				initUi();
@@ -585,8 +588,8 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 			// 读袋锁阶段，初始化信息，启用码
 		} else if (mStep == STEP_CHECK_BAG) {
 			mCheckBagTask.stop();
-			// mVReadBagLock.setDoing(false);
-			// mBtnConfirm.setEnabled(true);
+			mVReadBagLock.setDoing(false);
+			mBtnConfirm.setEnabled(true);
 			// haveTaskRunning = false;
 		} else if (mStep == STEP_NET_CHECK) { // 将条码等数据发送到服务器验证，是否已经封签过
 			// 网络通信中，不让中断
@@ -637,6 +640,12 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 			switch (msg.what) {
 			case MSG_GET_INSTORE_INFO_OVER: // 入库 获取列表 成功
 				mDiaUtil.dismissProgressDialog();
+
+				if (null == mBagIdList || mBagIdList.size() == 0) {
+					mDiaUtil.showDialogFinishActivity("获取入库列表失败，请确定有入库任务");
+					return true;
+				}
+
 				mTvScanAmount.setText(mPersonFinish.replaceFirst("^0+", ""));// 去掉
 				// 数字前面的
 				// '0'
@@ -675,6 +684,7 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 				mBtnCancel.setEnabled(false);
 				mStep = STEP_NET_CHECK;
 				haveTaskRunning = true;
+				setCommunicationCode(mNetCode);
 				SocketConnet.getInstance().communication(mNetCode);
 				// ThreadPoolFactory.getNormalPool().execute(mNetCoverTask);
 				break;
@@ -782,8 +792,10 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 							nav_up.getMinimumHeight());
 					mTvLock.setCompoundDrawables(null, nav_up, null, null);
 					mTvLock.setText("已锁定");
+
 					mDiaUtil.showDialogFinishActivity(info);
 				} else {
+					// mDiaUtil.showDialogFinishActivity(info);
 					mDiaUtil.showDialog(info);
 				}
 
@@ -831,7 +843,9 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 					t++;
 					LogsUtil.d(TAG,
 							ArrayUtils.bytes2HexString(UHFOperation.sEPC));
-					if ((UHFOperation.sEPC[0] & 0xFF) != 0x85) { // 85开头的EPC是标牌
+					if ((UHFOperation.sEPC[0] & 0xFF) != 0x85
+							&& (LogsUtil.getDebugLevel() == LogsUtil.LEVEL_TEST
+									|| (mTypeOp != TYPE_OP.COVER_BAG) || (UHFOperation.sEPC[0] & 0xFF) != 0x05)) { // 85开头的EPC是标牌
 						readEPCSuccess = true;
 						break;
 					}
@@ -911,8 +925,8 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 								+ ArrayUtils.bytes2HexString(mEnableCode));
 				if (!Arrays.equals(mEnableCode, Lock3Util.ENABLE_CODE_ENABLE)) {
 					// 基金袋 未启用， 向服务端 查询 是否 可启用
+					setCommunicationCode(882);
 					SocketConnet.getInstance().communication(882);
-
 					if (ReplyParser.waitReply()) {
 						if (pasreStartUseInfo()) {
 							// 启用基金袋失败
@@ -974,7 +988,7 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 					if (3 == plainFlag) {
 						plainFlag = 2; // 已正常封袋
 					} else {
-						plainFlag = -1;// 未正常封袋
+						plainFlag = -1; // 未正常封袋
 					}
 				}
 				switch (plainFlag) {
@@ -1122,7 +1136,6 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 	 * 第3步，从前置获取封签事件码
 	 * 
 	 * @author Administrator
-	 * 
 	 */
 	private class NetCoverTask implements Runnable {
 
@@ -1168,13 +1181,22 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 		public void onRecieve(String recString) {
 			// TODO Auto-generated method stub
 
+			if (commCodeEquals(-1)) {
+				return;
+			}
+
 			String[] split = recString.split(" ");
 			if (commCodeEquals(SendTask.CODE_LOT_INSTORE_NUM)
 					&& "*37".equals(split[0])
 					&& "01".equalsIgnoreCase(split[1])) {// 获取 批次 信息
 				setCommunicationCode(-1);
+				if (split[2] == null || !split[2].matches("^[1-9]+")) {
+					mHandler.sendEmptyMessage(MSG_GET_INSTORE_INFO_OVER);
+					return;
+				}
 				// 获取已扫数量
 				mPersonFinish = split[3];
+				mTotalFinish = split[3];
 				// 获取 总数
 				mPlanNumber = split[2];
 				// 获取待扫描袋id 列表
@@ -1196,9 +1218,17 @@ public class CoverNfcNewBagActivity extends BaseActivity {
 				}
 				LogsUtil.d(TAG, "mBagIdList.size(): " + mBagIdList.size());
 				mHandler.sendEmptyMessage(MSG_GET_INSTORE_INFO_OVER);
+			} else if (commCodeEquals(882)) {
+				setCommunicationCode(-1);
+				// do nothing, 启用码
+			} else if (commCodeEquals(SendTask.CODE_LOCK_PI)) {
+				setCommunicationCode(-1);
+				mHandler.sendEmptyMessage(SHOW_LOCK_RESULT);
 			} else if (pasremPiNumber(StaticString.information)) {
+				setCommunicationCode(-1);
 				mHandler.sendEmptyMessage(MSG_COVER_NET_SUCCESS);
 			} else {
+				setCommunicationCode(-1);
 				mHandler.sendEmptyMessage(MSG_COVER_NET_FAILED);
 			}
 

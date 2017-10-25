@@ -168,11 +168,6 @@ public class ScanBunchActivity extends BaseActivity {
 	}
 
 	private String checkBarcode(String barcode) {
-
-		if (true) {
-			return null;// TODO
-		}
-
 		if (barcode == null) {
 			return "";
 		}
@@ -225,7 +220,7 @@ public class ScanBunchActivity extends BaseActivity {
 			}
 		}, null);
 
-		super.onBackPressed();
+//		super.onBackPressed();
 	}
 
 	@Override

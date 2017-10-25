@@ -539,7 +539,7 @@ public class GeneralActivity extends BaseActivity {
 				long id) {
 			// 判断是否 需要复核
 			if (null == StaticString.userIdcheck
-					&& SPUtils.getBoolean(MyContexts.KEY_CHECK_LOGIN, false)
+					&& SPUtils.getBoolean(MyContexts.KEY_CHECK_LOGIN, true)
 					&& !SPUtils.getBoolean(MyContexts.KEY_USE_OLDBAG_ENABLE,
 							false)) {
 				mLastClickPos = position;

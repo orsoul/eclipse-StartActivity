@@ -150,7 +150,7 @@ public class LoginActivity extends BaseActivity {
 		mHandler = new Handler(new MyHandlerCallback());
 		mDiaUtil = new DialogUtil(this);
 		
-		initRFID();
+//		initRFID();
 
 		// 设置网络连接
 		mSocketConn = SocketConnet.getInstance();
