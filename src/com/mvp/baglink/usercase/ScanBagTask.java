@@ -30,11 +30,11 @@ public class ScanBagTask implements Runnable{
 			if(mUHFOp.findOne()){
 				final String epc =ArrayUtils.bytes2HexString(mUHFOp.mEPC);
 				String bagID = epc;
-				String head = epc.substring(0, 2);
+				/*String head = epc.substring(0, 2);
 				LogsUtil.d("head=" + head);
 				if(head.equals("04")||head.equals("05")){
 					bagID = epc.substring(0, 18);
-				}
+				}*/
 				System.out.println("袋ID："+bagID);
 				mListener.result(bagID);
 				mUHFOp.close();

@@ -162,16 +162,16 @@ public class LotMainActivity extends BaseActivity {
 			break;
 		case R.id.btn_lot_scan_out_door:// 天线柜出库
 
-			ToastUtil.showToastInCenter("功能完善中，敬请期待");
+			//ToastUtil.showToastInCenter("功能完善中，敬请期待");
 
-			// mInStoreType = TYPE_OP.OUT_STORE_DOOR;
-			// if (SPUtils.getBoolean(MyContexts.KEY_LOT_DOOR, false)) {
-			// // 启用了多道天线柜， 选择天线柜
-			// intent = new Intent(this, PickDoorActivity.class);
-			// intent.putExtra(TYPE_OP.KEY_TYPE, TYPE_OP.OUT_STORE_DOOR);
-			// startActivityForResult(intent, TYPE_OP.OUT_STORE_DOOR);
-			// return;
-			// }
+			mInStoreType = TYPE_OP.OUT_STORE_DOOR;
+			if (SPUtils.getBoolean(MyContexts.KEY_LOT_DOOR, false)) {
+				// 启用了多道天线柜， 选择天线柜
+				intent = new Intent(this, PickDoorActivity.class);
+				intent.putExtra(TYPE_OP.KEY_TYPE, TYPE_OP.OUT_STORE_DOOR);
+				startActivityForResult(intent, TYPE_OP.OUT_STORE_DOOR);
+				return;
+			}
 			break;
 		case R.id.btn_lot_scan_out_hand:// 手持批量出库
 			mInStoreType = TYPE_OP.OUT_STORE_HAND_LOT;

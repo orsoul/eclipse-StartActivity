@@ -121,7 +121,6 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         style="@style/RadioButton"
-                        android:checked="true"
                         android:text="已复点" />
 
                     <RadioButton

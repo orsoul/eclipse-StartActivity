@@ -4,7 +4,7 @@ public class StaticString {
 	/**
 	 * ip0
 	 */
-	public static String IP0 = "192.168.11.179";
+	public static String IP0 = "192.168.18.100";
 	/**
 	 * 端口
 	 */
@@ -31,7 +31,7 @@ public class StaticString {
 	 */
 	public static String information;// 返回信息
 
-	public static String userId = "794AC50C";// "794AC50C"; //卡号StaticString.userId
+	public static String userId = "4121197363";// "794AC50C"; //卡号StaticString.userId
 	/** 复核的userID；==null说明还未复核过；!=null说明已经复核过，后续将不再复核； 每次登陆后将其置为null； */
 	public static String userIdcheck = null; // 复核人的userID
 	/** 用户权限 */

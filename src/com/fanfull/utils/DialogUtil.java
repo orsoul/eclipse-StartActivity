@@ -51,6 +51,9 @@ public class DialogUtil {
 	}
 
 	public void showProgressDialog(CharSequence message) {
+		if(mAct == null || !ActivityUtil.isForeground(mAct.getLocalClassName())){
+			return;
+		}
 		if (null == mProgressDia) {
 			createProgressDialog();
 		}
