@@ -18,7 +18,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.fanfull.activity.scan_general.CoverNfcNewBagActivity;
 import com.fanfull.base.BaseActivity;
 import com.fanfull.contexts.MyContexts;
 import com.fanfull.contexts.StaticString;
@@ -27,7 +26,7 @@ import com.fanfull.factory.ThreadPoolFactory;
 import com.fanfull.fff.R;
 import com.fanfull.hardwareAction.OLEDOperation;
 import com.fanfull.hardwareAction.UHFOperation;
-import com.fanfull.operation.BagOperation;
+import com.fanfull.op.RFIDOperation;
 import com.fanfull.socket.RecieveListener;
 import com.fanfull.socket.RecieveListenerAbs;
 import com.fanfull.socket.ReplyParser;
@@ -292,9 +291,10 @@ public class YkInstoreActivity extends BaseActivity {
 				// 预扫描
 				Intent intent = new Intent(YkInstoreActivity.this,
 						LotScanActivity.class);
-				intent.putExtra(MyContexts.KEY_OPERATION_TYPE,
-						LotScanActivity.TYPE_PRE_SCAN);
+//				intent.putExtra(MyContexts.KEY_OPERATION_TYPE,
+//						LotScanActivity.TYPE_PRE_SCAN);
 				// startActivity(intent);
+				intent.putExtra(TYPE_OP.KEY_TYPE, mOptype);
 				startActivityForResult(intent, LotScanActivity.TYPE_PRE_SCAN);
 			} else if (STEP_IN_START_1 == mStepPointer) {
 				Intent intent = new Intent(YkInstoreActivity.this,
@@ -646,21 +646,15 @@ public class YkInstoreActivity extends BaseActivity {
 				haveTaskRunning = true;
 				int what = MSG_SCAN_BAGID_FAILED;
 				isQuery = true;
-				for (int i = 0; i < 50 && isQuery; i++) {
-					byte[] mUid = BagOperation.getInstance().getUid(); // 寻NFC卡
-
-					if (null != mUid && mUid.length == 7) {
-						int r = BagOperation.getInstance().getNfcBagOperation()
-								.readBagID(); // 读 袋Id
-
-						if (r == CoverNfcNewBagActivity.BAG_HAD_INIT) {
-							what = MSG_SCAN_BAGID_SUCCESS;
-							break;
-						}
-					}
+				Message msg = mHandler.obtainMessage();
+				msg.what = MSG_SCAN_BAGID_FAILED;
+				byte[] bagIdBuf = new byte[12];
+				if (RFIDOperation.getInstance().readNFCInTime(0x4, bagIdBuf, 1000, null)) {
+					msg.obj = bagIdBuf;
+					msg.what = MSG_SCAN_BAGID_SUCCESS;
 				}
-
-				mHandler.sendEmptyMessage(what);
+				
+				mHandler.sendMessage(msg);
 				// mDiaUtil.dismissProgressDialog();
 				haveTaskRunning = false;
 			}
@@ -874,6 +868,7 @@ public class YkInstoreActivity extends BaseActivity {
 			case MSG_SCAN_BAGID_SUCCESS:
 				LogsUtil.d(TAG, "MSG_SCAN_BAGID_SUCCESS");
 				mDiaUtil.dismissProgressDialog();
+				StaticString.bagid = ArrayUtils.bytes2HexString((byte[]) msg.obj);
 				SocketConnet.getInstance().communication(
 						SendTask.CODE_QUERY_SALVER_INFO,
 						new String[] { StaticString.bagid }); // 查询 混托盘 信息

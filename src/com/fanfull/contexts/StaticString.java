@@ -31,7 +31,7 @@ public class StaticString {
 	 */
 	public static String information;// 返回信息
 
-	public static String userId = "794AC50C";// "794AC50C"; //卡号StaticString.userId
+	public static String userId = null;// "794AC50C"; //卡号StaticString.userId
 	/** 复核的userID；==null说明还未复核过；!=null说明已经复核过，后续将不再复核； 每次登陆后将其置为null； */
 	public static String userIdcheck = null; // 复核人的userID
 	/** 用户权限 */
@@ -48,7 +48,7 @@ public class StaticString {
 	public static String bagid = null;// 袋子ID
 	public static String tid = null;// 封签码
 	/** 封签事件码 60字符 */
-	public static String bagtidcode = null;
+	public static String eventCode = null;
 	public static String barcode_old = null;// 旧条码
 	public static String bagtype = null;// 袋类型，记录封签的时候选择的完整，清分，复点等信息
 	public static boolean againPass = false;// 无复核人

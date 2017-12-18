@@ -92,7 +92,6 @@ public class PileCreatePresenter implements Presenter {
 				@Override
 				public void onFailure() {
 					mHandler.post(new Runnable() {
-
 						@Override
 						public void run() {
 							mPileCreateView.createPileFailure();
@@ -107,7 +106,6 @@ public class PileCreatePresenter implements Presenter {
 
 	@Override
 	public void getStoreNum(String userId) {
-
 		mNet.get(Net.PATH_GET_STROENUM_LIST, "cardID", userId,
 				new MessageListener() {
 					@Override
@@ -163,7 +161,6 @@ public class PileCreatePresenter implements Presenter {
 					@Override
 					public void onFailure() {
 						mHandler.post(new Runnable() {
-
 							@Override
 							public void run() {
 								mPileCreateView.onGetStoreNumResult(null);

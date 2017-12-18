@@ -51,10 +51,10 @@ public class Hardware {
 
 	/**
 	 * @param fd
-	 * @param sec Ãë
-	 * @param usec ºÁÃë
+	 * @param sec ï¿½ï¿½
+	 * @param usec ï¿½ï¿½ï¿½ï¿½
 	 * @description
-	 * 	Éè¶¨ È¡¶ÁÍ·Êý¾ÝµÄÆµÂÊ, Ê±¼ä¸ôÓÉ µÚ2¡¢3²ÎÊý¾ö¶¨
+	 * 	ï¿½è¶¨ È¡ï¿½ï¿½Í·ï¿½ï¿½ï¿½Ýµï¿½Æµï¿½ï¿½, Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½2ï¿½ï¿½3ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	 */
 	public native int select(int fd, int sec, int usec);
 

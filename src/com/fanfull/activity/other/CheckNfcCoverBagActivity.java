@@ -25,11 +25,11 @@ import com.fanfull.contexts.StaticString;
 import com.fanfull.factory.ThreadPoolFactory;
 import com.fanfull.fff.R;
 import com.fanfull.hardwareAction.OLEDOperation;
-import com.fanfull.hardwareAction.RFIDOperation;
 import com.fanfull.hardwareAction.UHFOperation;
 import com.fanfull.operation.BagOperation;
 import com.fanfull.operation.NFCBagOperation;
 import com.fanfull.socket.ReplyParser;
+import com.fanfull.socket.SendTask;
 import com.fanfull.socket.SocketConnet;
 import com.fanfull.utils.ArrayUtils;
 import com.fanfull.utils.DialogUtil;
@@ -666,7 +666,6 @@ public class CheckNfcCoverBagActivity extends BaseActivity {
 		}
 		
 		mStep = COVER_OVER;
-		RFIDOperation.getInstance().closeRf();
 		mBagOp = null;
 		if(null != mUHFOp){
 			LogsUtil.d(TAG, "--close--uhf---");
@@ -781,7 +780,7 @@ public class CheckNfcCoverBagActivity extends BaseActivity {
 						SystemClock.sleep(20);
 						continue;
 					}
-					StaticString.bagtidcode = mBagTidcodeInNfc;
+					StaticString.eventCode = mBagTidcodeInNfc;
 					
 					mHandler.sendEmptyMessage(READ_BAG_SUCCESS);
 					return;
@@ -929,7 +928,7 @@ public class CheckNfcCoverBagActivity extends BaseActivity {
 			// TODO Auto-generated method stub
 			LogsUtil.d("check barcode NetTask  start");
 			StaticString.information = null;// 判断回复信息之间清空之前信息
-			SocketConnet.getInstance().communication(887);
+			SocketConnet.getInstance().communication(SendTask.CODE_OUT_STORE_UPLOAD_BAG_INFO);
 			if ( ! ReplyParser.waitReply()) {
 				mHandler.sendEmptyMessage(CHECK_BARCODE_NET_TIMEOUT);
 				return;

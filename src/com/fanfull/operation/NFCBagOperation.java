@@ -582,8 +582,8 @@ public class NFCBagOperation {
 		if (n == 11 || null == tmp) {
 			return (byte) 0xAA;// 标志位读取异常
 		} else {
-			LogsUtil.d(TAG, "密钥=:"
-					+ ArrayUtils.bytes2HexString(tmp).substring(0, 2));
+			LogsUtil.d(TAG,
+					"密钥=:" + ArrayUtils.bytes2HexString(tmp).substring(0, 2));
 			return tmp[0];
 		}
 	}

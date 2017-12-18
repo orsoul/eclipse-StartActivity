@@ -26,7 +26,6 @@ import com.fanfull.contexts.StaticString;
 import com.fanfull.factory.ThreadPoolFactory;
 import com.fanfull.fff.R;
 import com.fanfull.hardwareAction.OLEDOperation;
-import com.fanfull.hardwareAction.RFIDOperation;
 import com.fanfull.op.UHFOperation;
 import com.fanfull.operation.BagOperation;
 import com.fanfull.operation.NFCBagOperation;
@@ -595,7 +594,6 @@ public class OpenNfcNewBagActivity extends BaseActivity {
 
 			if ("9999".equals(mPlanNumber)) {
 				// mPlanNumber = "-";
-
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -661,7 +659,6 @@ public class OpenNfcNewBagActivity extends BaseActivity {
 		}
 
 		mStep = COVER_OVER;
-		RFIDOperation.getInstance().closeRf();
 		mBagOp = null;
 		if (null != mUHFOp) {
 			LogsUtil.d(TAG, "--close--uhf---");
@@ -795,7 +792,6 @@ public class OpenNfcNewBagActivity extends BaseActivity {
 					// 读卡失败
 					SystemClock.sleep(50);
 				}
-
 			}
 			stoped = true;
 		}
@@ -831,7 +827,7 @@ public class OpenNfcNewBagActivity extends BaseActivity {
 					break;
 				}
 
-				if (null == mUHFOp.readUHFInTime(UHFOperation.MB_TID, 0x03, 6,
+				if (!mUHFOp.readUHFInTime(UHFOperation.MB_TID, 0x03, mBqTidInNfc,
 						1000, mBqTidInNfc, UHFOperation.MB_TID, 0x03)) {
 					continue;
 				}
@@ -843,10 +839,10 @@ public class OpenNfcNewBagActivity extends BaseActivity {
 				// 封袋的时候在封签事件码嵌入清分信息。 去掉清分信息，还原封签事件码 mEventCode
 				eventCode[3] = (byte) (eventCode[3] & 0x0F);
 				
-				StaticString.bagtidcode = ArrayUtils.bytes2HexString(eventCode);
+				StaticString.eventCode = ArrayUtils.bytes2HexString(eventCode);
 				
 				LogsUtil.d(TAG, "解密前：" + mEventCode);
-				LogsUtil.d(TAG, "解密后：" + StaticString.bagtidcode);
+				LogsUtil.d(TAG, "解密后：" + StaticString.eventCode);
 				
 				StaticString.tid = ArrayUtils.bytes2HexString(mBqTidInNfc);
 

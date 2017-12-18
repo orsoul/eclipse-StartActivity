@@ -58,6 +58,10 @@ public class RFIDOperation extends BaseOperation {
 			(byte) 0xFF, (byte) 0x09, (byte) 0xF7, (byte) 0xD4, (byte) 0x40,
 			(byte) 0x01, (byte) 0xA2, (byte) 0x07, (byte) 0x44, (byte) 0x33,
 			(byte) 0x22, (byte) 0x11, (byte) 0x98, (byte) 0x00 };
+	/** 关闭RFID电源 */
+	private final static byte[] CMD_CLOSE_RFID = new byte[] { (byte) 0x00, (byte) 0x00, (byte) 0xFF,
+		(byte) 0x04, (byte) 0xFC, (byte) 0xD4, (byte) 0x32,
+		(byte) 0x01, (byte) 0x00, (byte) 0xF9, (byte) 0x00 };
 
 	private RFIDOperation() {
 	}
@@ -126,36 +130,22 @@ public class RFIDOperation extends BaseOperation {
 		HARDWARE.close(fd);
 		LogsUtil.d(TAG, "close:" + fd);
 		fd = -1;
-		instance = null;
-		sLastUid = null;
+//		instance = null;
+//		sLastUid = null;
 	}
+	/**
+	 * 关闭 RFID电源，节省耗电
+	 * @return 成功返回 true
+	 */
+	public boolean closeRF() {
+		byte buf[] = new byte[16];
+		// HARDWARE.setGPIO(0, 5);
+		int runCmd = runCmd(CMD_CLOSE_RFID, buf);
+		// HARDWARE.setGPIO(1, 5);
+		LogsUtil.d(TAG, "closeRF() runCmd 15: " + runCmd);
 
-	public boolean closeRf() {// 关闭RF
-		byte[] close = new byte[] { (byte) 0x00, (byte) 0x00, (byte) 0xFF,
-				(byte) 0x04, (byte) 0xFC, (byte) 0xD4, (byte) 0x32,
-				(byte) 0x01, (byte) 0x00, (byte) 0xF9, (byte) 0x00 };
-		int len = HARDWARE.write(fd, close);
-		byte[] buf = new byte[48];
-		if (len < 1) {
-			System.out.println("write error");
-		}
-		SystemClock.sleep(20);
-		if (HARDWARE.select(fd, 0, 50) == 1) {
-			len = HARDWARE.read(fd, buf, 36);
-			System.out.println(len);
-			if (len < 1) {
-				System.out.println("read error");
-			}// 66 84 01
-			if (buf[0] == (byte) 0x00 && buf[11] == (byte) 0xD5
-					&& buf[12] == (byte) 0x33) {
-				return true;
-			} else {
-			}
-		} else {
-		}
-		return false;
+		return (buf[0] == (byte) 0x00 && buf[11] == (byte) 0xD5 && buf[12] == (byte) 0x33);
 	}
-
 	/**
 	 * 验证回复的信息的前六位是否准确
 	 * 

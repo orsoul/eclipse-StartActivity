@@ -13,7 +13,6 @@ import com.fanfull.contexts.StaticString;
 import com.fanfull.fff.R;
 import com.fanfull.socket.SendTask;
 import com.fanfull.socket.SocketConnet;
-import com.fanfull.utils.ToastUtil;
 import com.fanfull.utils.ViewUtil;
 import com.mvp.center.CenterActivity;
 
@@ -29,8 +28,6 @@ public class MainActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 	}
-
-
 
 	@Override
 	protected void initView() {

@@ -121,7 +121,7 @@ public class LotMainActivity extends BaseActivity {
 		Intent intent = null;
 		// !isChecked &&
 		if (null == StaticString.userIdcheck
-				&& SPUtils.getBoolean(MyContexts.KEY_CHECK_LOGIN)) {
+				&& SPUtils.getBoolean(MyContexts.KEY_CHECK_LOGIN, true)) {
 			mClickView = v;
 			intent = new Intent(getApplicationContext(),
 					CheckUserInfoActivity.class);
