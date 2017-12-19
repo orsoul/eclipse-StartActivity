@@ -108,13 +108,13 @@ public class UHFOperation extends BaseOperation {
      *
      * @param mb          读取数据 的 区, 1 表示 EPC， 2 表示 TID， 3 表示user
      * @param sa          读取 数据的 起始地址, 单位 字（字长: 2byte）
-     * @param readDataLen 读取 数据 的长度, 单位 字节, 应选择 偶数
+     * @param dataBuf 存放读取数据的数组, 长度应为 偶数
      * @param runTime     执行时间, 设为0只读1次
      *
      * @return 读到的数据，读取失败返回null
      */
-    public byte[] readUHFInTime(int mb, int sa, int readDataLen, long runTime) {
-        return readUHFInTime(mb, sa, readDataLen, runTime, null, 0, 0);
+    public boolean readUHFInTime(int mb, int sa, byte[] dataBuf, long runTime) {
+        return readUHFInTime(mb, sa, dataBuf, runTime, null, 0, 0);
     }
 
     /**
@@ -122,7 +122,7 @@ public class UHFOperation extends BaseOperation {
      *
      * @param mb          读取数据 的 区, 1 表示 EPC， 2 表示 TID， 3 表示user
      * @param sa          读取 数据的 起始地址, 单位 字（字长: 2byte）
-     * @param readDataLen 读取 数据 的长度, 单位 字节, 应选择 偶数
+     * @param dataBuf 存放读取数据的数组, 长度应为 偶数
      * @param runTime     执行时间, 设为0只读1次
      * @param filter      过滤数据
      * @param mmb         过滤的区
@@ -130,7 +130,7 @@ public class UHFOperation extends BaseOperation {
      *
      * @return 读到的数据，读取失败返回null
      */
-    public byte[] readUHFInTime(int mb, int sa, int readDataLen, long runTime,
+    public boolean readUHFInTime(int mb, int sa, byte[] dataBuf, long runTime,
                                 byte[] filter, int mmb, int msa) {
 
         HARDWARE.setGPIO(0, 2);
@@ -202,7 +202,7 @@ public class UHFOperation extends BaseOperation {
         cmd_read[16 + epcLen] = (byte) sa;
 
         // 读取数据的长度,单位 字
-        int dataLenWord = readDataLen >> 1;// 把 字节长度 转为 字长度
+        int dataLenWord = dataBuf.length >> 1;// 把 字节长度 转为 字长度
         if (0xff < dataLenWord) {
             cmd_read[17 + epcLen] = (byte) (dataLenWord >> 8);
         } else {
@@ -218,20 +218,21 @@ public class UHFOperation extends BaseOperation {
         cmd_read[epcLen + 20] = 0x0D;
         cmd_read[epcLen + 21] = 0x0A;
 
-        byte[] reVal = null;
-        byte[] buf = new byte[readDataLen + 12];// 12byte 存储其他回复信息
+        boolean reVal = false;
+        byte[] buf = new byte[dataBuf.length + 12];// 12byte 存储其他回复信息
 
         long time = System.currentTimeMillis();
         do {
             int len = runCmd(cmd_read, buf);
 
-            LogsUtil.d(TAG, "readUHFInTime(" + mb + ") len=12:" + (len - readDataLen));
+            LogsUtil.d(TAG, "readUHFInTime(" + mb + ") len=12:" + (len - dataBuf.length));
             if (buf[4] == (byte) 0x85 && buf[5] == 0x01) {
-                reVal = new byte[readDataLen];
+//                reVal = new byte[readDataLen];
 //                for (int i = 0; i < reVal.length; i++) {
 //                    reVal[i] = buf[9 + i];
 //                }
-                System.arraycopy(buf, 9, reVal, 0, reVal.length);
+                System.arraycopy(buf, 9, dataBuf, 0, dataBuf.length);
+                reVal = true;
                 break;
             }
         } while ((System.currentTimeMillis() - time) < runTime);

@@ -48,8 +48,8 @@ import com.fanfull.hardwareAction.FingerManager;
 import com.fanfull.hardwareAction.FingerManager.FingerListener;
 import com.fanfull.hardwareAction.FingerPrint;
 import com.fanfull.hardwareAction.OLEDOperation;
-import com.fanfull.hardwareAction.RFIDOperation;
 import com.fanfull.hardwareAction.UHFOperation;
+import com.fanfull.op.RFIDOperation;
 import com.fanfull.socket.ReplyParser;
 import com.fanfull.socket.SocketConnet;
 import com.fanfull.utils.ArrayUtils;
@@ -110,8 +110,6 @@ public class LoginActivity extends BaseActivity {
 
 	// 指纹操作
 	private FingerPrint mFingerPrint;
-	// RIFD操作
-	private RFIDOperation mRFIDOp;
 
 	private ConnectivityManager mConnManager;
 	private ProgressDialog loginDialog;
@@ -159,6 +157,8 @@ public class LoginActivity extends BaseActivity {
 
 		mHandler = new Handler(new MyHandlerCallback());
 		mDiaUtil = new DialogUtil(this);
+		
+//		initRFID();
 
 		// 设置网络连接
 		mSocketConn = SocketConnet.getInstance();
@@ -174,32 +174,11 @@ public class LoginActivity extends BaseActivity {
 		} else {
 			LogsUtil.d(TAG, "network not Available");
 			showDialogWiFiSetting();
-			// WiFiUtil wiFiUtil = new WiFiUtil(getApplicationContext());
-			// wiFiUtil.closeWifi();
-			// wiFiUtil.openWifi();
-			// registerReceiver();
 		}
-		// new Thread() {
-		// @Override
-		// public void run() {
-		// for (int i = 10; 0 < i; i--) {
-		// SystemClock.sleep(500);
-		// ToastUtil
-		// .showToastOnUiThreadInCenter(i, LoginActivity.this);
-		// }
-		// LoginActivity.this.runOnUiThread(new Runnable() {
-		// @Override
-		// public void run() {
-		// BaseApplication.shutdown();
-		// }
-		// });
-		// }
-		// }.start();
 	}
 
 	protected void initData() {
 		/** 打开RFID */
-		mRFIDOp = RFIDOperation.getInstance();
 		mDbService = FingerDbService.getInstance(this);// 指纹数据库操作
 	}
 
@@ -382,7 +361,7 @@ public class LoginActivity extends BaseActivity {
 	@Override
 	protected void onStart() {
 		// 当返回到登录界面时，此时RFID和指纹模块都是关闭的
-		initRFID();
+//		initRFID();
 		super.onStart();
 	}
 
@@ -441,6 +420,7 @@ public class LoginActivity extends BaseActivity {
 	@Override
 	public void onClick(View v) {
 		// TODO
+		LogsUtil.d(TAG, "onClick haveTaskRunning?" + haveTaskRunning);
 		switch (v.getId()) {
 		case R.id.v_title:// 点击标题 打开WiFi设置，隐藏功能
 			WiFiUtil.openWiFiSetting();
@@ -449,6 +429,7 @@ public class LoginActivity extends BaseActivity {
 			}
 			break;
 		case R.id.tv_login_user:
+			
 			if (!haveTaskRunning) {
 				startScanRFID();
 			}
@@ -470,32 +451,31 @@ public class LoginActivity extends BaseActivity {
 	}
 
 	private void initRFID() {
-		if (mRFIDOp.isOpen()) {
+		if (RFIDOperation.getInstance().isOpen()) {
+			mHandler.sendEmptyMessage(MSG_OPEN_RFID_SUCCESS);
 			return;
 		}
 		ThreadPoolFactory.getNormalPool().execute(new Runnable() {
 			@Override
 			public void run() {
+				haveTaskRunning = true;
 				try {
 					int count = 0;
-					while (false == mRFIDOp.openAndWakeup()) {
-						LogsUtil.d(
-								TAG,
-								getResources().getString(
-										R.string.connet_rfid_error));
-						if (5 < ++count) {
+					while (false == RFIDOperation.getInstance().openAndWakeup()) {
+						if (3 < ++count) {
 							mHandler.sendEmptyMessage(MSG_OPEN_RFID_FAILED);
 							return;
 						}
-						SystemClock.sleep(50);
+//						SystemClock.sleep(50);
 					}
 					mHandler.sendEmptyMessage(MSG_OPEN_RFID_SUCCESS);
 				} catch (Exception ex) {
 					ex.printStackTrace();
 					mHandler.sendEmptyMessage(MSG_OPEN_RFID_FAILED);
+					haveTaskRunning = false;
 					return;
 				}
-
+				haveTaskRunning = false;
 			}
 		});
 	}
@@ -669,7 +649,6 @@ public class LoginActivity extends BaseActivity {
 		OLEDOperation.mWordLib.clear();
 		OLEDOperation.mWordLib = null;
 		UHFOperation.getInstance().close();
-		mRFIDOp = null;
 		RFIDOperation.getInstance().close();
 		BarCodeOperation.getCloseInstance().close();
 
@@ -686,7 +665,7 @@ public class LoginActivity extends BaseActivity {
 
 		@Override
 		public boolean handleMessage(Message msg) {
-			mDiaUtil.dismissProgressDialog();
+//			mDiaUtil.dismissProgressDialog();
 			switch (msg.what) {
 			case MSG_TIMEOUT:
 				haveTaskRunning = false;
@@ -694,6 +673,7 @@ public class LoginActivity extends BaseActivity {
 				mDiaUtil.showReplyDialog();
 				break;
 			case MSG_OPEN_RFID_FAILED:
+				mDiaUtil.dismissProgressDialog();
 				mDiaUtil.showDialogFinishActivity("高频卡模块启动失败,请重新启动程序.");
 				break;
 			case MSG_OPEN_RFID_SUCCESS:
@@ -710,11 +690,10 @@ public class LoginActivity extends BaseActivity {
 				}
 				break;
 			case READ_RFID_FAULTED:
-				haveTaskRunning = false;
+				SoundUtils.playFailedSound();
 				mTvUser.setHint(USER_INFO);
 				break;
 			case READ_RFID_SUCCESS:
-				haveTaskRunning = false;
 				mTvUser.setText(mUserId);
 				mEtPsw.setFocusableInTouchMode(true);
 				mEtPsw.requestFocus();
@@ -876,27 +855,29 @@ public class LoginActivity extends BaseActivity {
 
 		@Override
 		public void run() {
-			// 重启RFID模块
-			// mRFIDOp.reset();
-			// SystemClock.sleep(200);
+			haveTaskRunning = true;
 			byte[] id = null;
 			int count = 0;
 			stoped = false;
 			while ((id == null)) {
 				if (stoped || 50 < count++) {
 					mHandler.sendEmptyMessage(READ_RFID_FAULTED);
+					RFIDOperation.getInstance().closeRF();
+					haveTaskRunning = false;
 					return;
 				}
 				if (0 == count % 5) {
 					mHandler.sendEmptyMessage(READING_RFID);
 				}
 				// 认证读卡操作, 激活操作
-				id = mRFIDOp.activatecard();
+				id = RFIDOperation.getInstance().findCard();
 				SystemClock.sleep(50);
 			}
 			mUserId = ArrayUtils.bytes2HexString(id);
 			// mUserId = StaticString.userId.substring(0, 8);
 			mHandler.sendEmptyMessage(READ_RFID_SUCCESS);
+			RFIDOperation.getInstance().closeRF();
+			haveTaskRunning = false;
 			LogsUtil.d(TAG, "scanning stop");
 		}
 	}
@@ -938,6 +919,8 @@ public class LoginActivity extends BaseActivity {
 	private class LoginTask implements Runnable {
 		@Override
 		public void run() {
+			haveTaskRunning = true;
+			LogsUtil.w(TAG, LoginTask.class.getSimpleName() + " run");
 			StaticString.userId = mTvUser.getText().toString().trim();
 			StaticString.password = mEtPsw.getText().toString().trim();
 			mSocketConn.communication(1);
@@ -946,6 +929,8 @@ public class LoginActivity extends BaseActivity {
 			} else {
 				mHandler.sendEmptyMessage(MSG_TIMEOUT);
 			}
+			LogsUtil.w(TAG, LoginTask.class.getSimpleName() + " end");
+			haveTaskRunning = false;
 		}// end run()
 	}
 

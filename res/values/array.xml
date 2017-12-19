@@ -26,5 +26,16 @@
         <item>完整</item>
         <item>残损</item>
     </string-array>
+    <!-- 波特率 -->
+    <string-array name="baudrate">
+        <item>9600</item>
+        <item>14400</item>
+        <item>19200</item>
+        <item>38400</item>
+        <item>56000</item>
+        <item>57600</item>
+        <item>115200</item>
+        <item>自定义</item>
+    </string-array>
 
 </resources>

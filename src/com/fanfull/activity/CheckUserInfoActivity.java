@@ -39,8 +39,9 @@ import com.fanfull.hardwareAction.FingerManager;
 import com.fanfull.hardwareAction.FingerManager.FingerListener;
 import com.fanfull.hardwareAction.FingerPrint;
 import com.fanfull.hardwareAction.OLEDOperation;
-import com.fanfull.hardwareAction.RFIDOperation;
+import com.fanfull.op.RFIDOperation;
 import com.fanfull.socket.ReplyParser;
+import com.fanfull.socket.SendTask;
 import com.fanfull.socket.SocketConnet;
 import com.fanfull.utils.ArrayUtils;
 import com.fanfull.utils.ClickUtil;
@@ -103,9 +104,6 @@ public class CheckUserInfoActivity extends BaseActivity {
 	private Finger mFinger = null;
 	private NetFingerLoginTask mNetFingerLoginTask;
 
-	// RIFD操作
-	private RFIDOperation mRFIDOp;
-
 	private ConnectivityManager mConnManager;
 	private ProgressDialog loginDialog;
 
@@ -158,10 +156,6 @@ public class CheckUserInfoActivity extends BaseActivity {
 
 	protected void initData() {
 
-		/** 打开RFID */
-
-		mRFIDOp = RFIDOperation.getInstance();
-		// initRFID();
 		mHandler.sendEmptyMessage(OPEN_RFID_SUCCESS);
 	}
 
@@ -301,52 +295,6 @@ public class CheckUserInfoActivity extends BaseActivity {
 		}
 	};
 
-	private void startCheckInfo() {
-		mBtnLogin.setEnabled(true);
-		// 验证 用户密码
-		if (null == StaticString.information) {
-			mHandler.sendEmptyMessage(CONNECT_FAILED);
-			return;
-		}
-		if (mType == 1 && StaticString.information.startsWith("*00")) {
-			// 表示复核
-			String[] split = StaticString.information.split(" ");
-			if ("01".equals(split[1])) {
-				// 复核通过
-				StaticString.userIdcheck = split[2];
-				StaticString.againPass = true;
-				ToastUtil.showToastInCenter("验证通过");
-				mFingerInfo = true;
-				setResult(CHECK_SUCCESS_CODE);
-				finish();
-				return;
-			} else {
-				// 复核不通过
-				SoundUtils.playFailedSound();
-				StaticString.information = null;
-				Toast.makeText(CheckUserInfoActivity.this,
-						getResources().getString(R.string.login_passwd_error),
-						Toast.LENGTH_SHORT).show();
-				mEtPsw.startAnimation(mShake);
-				return;
-			}
-		}
-		// 同一个人唤醒
-		String[] split = StaticString.information.split(" ");
-		if ("01".equals(split[1])) {
-			ToastUtil.showToastInCenter("验证通过");
-			mFingerInfo = true;
-			finish();
-		} else {
-			SoundUtils.playFailedSound();
-			StaticString.information = null;
-			Toast.makeText(CheckUserInfoActivity.this,
-					getResources().getString(R.string.login_passwd_error),
-					Toast.LENGTH_SHORT).show();
-			mEtPsw.startAnimation(mShake);
-		}
-	}
-
 	private Handler mHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
@@ -354,10 +302,9 @@ public class CheckUserInfoActivity extends BaseActivity {
 
 			case READ_RFID_SUCCESS:
 				haveTaskRunning = false;
-				mTvUser.setText(StaticString.userId);
+				mTvUser.setText(StaticString.userIdcheck);
 				mEtPsw.setFocusableInTouchMode(true);
 				mEtPsw.requestFocus();
-
 				mEtPsw.setText("000000");
 				break;
 			case OPEN_RFID_SUCCESS:
@@ -403,7 +350,7 @@ public class CheckUserInfoActivity extends BaseActivity {
 				haveTaskRunning = false;
 				dismissProgressDialog();
 				SoundUtils.playFailedSound();
-
+				StaticString.userIdcheck = null;
 				connetFailue();
 				break;
 			case CONNECT_SUCCESS: /* socket连接成功 */
@@ -463,7 +410,7 @@ public class CheckUserInfoActivity extends BaseActivity {
 					mFingerPrint.startSearchFinger();
 				break;
 			case FRIGER_LOGIN_SUCCESS:// 指纹验证成功
-				mTvUser.setText(StaticString.userIdcheck);
+				mTvUser.setText(msg.obj.toString());
 				mEtPsw.setText("*****");
 				StaticString.information = null;
 
@@ -536,6 +483,53 @@ public class CheckUserInfoActivity extends BaseActivity {
 		}
 	}
 
+	private void startCheckInfo() {
+		mBtnLogin.setEnabled(true);
+		// 验证 用户密码
+		if (null == StaticString.information) {
+			mHandler.sendEmptyMessage(CONNECT_FAILED);
+			return;
+		}
+		if (mType == 1 && StaticString.information.startsWith("*00")) {
+			// 表示复核
+			String[] split = StaticString.information.split(" ");
+			if ("01".equals(split[1])) {
+				// 复核通过
+				StaticString.userIdcheck = split[2];
+				StaticString.againPass = true;
+				ToastUtil.showToastInCenter("登录验证通过");
+				mFingerInfo = true;
+				setResult(CHECK_SUCCESS_CODE);
+				LogsUtil.d(TAG, "userIdcheck:" + split[2]);
+				finish();
+				return;
+			} else {
+				// 复核不通过
+				SoundUtils.playFailedSound();
+				StaticString.information = null;
+				Toast.makeText(CheckUserInfoActivity.this,
+						getResources().getString(R.string.login_passwd_error),
+						Toast.LENGTH_SHORT).show();
+				mEtPsw.startAnimation(mShake);
+				return;
+			}
+		}
+		// 同一个人唤醒
+		String[] split = StaticString.information.split(" ");
+		if ("01".equals(split[1])) {
+			ToastUtil.showToastInCenter("验证通过");
+			mFingerInfo = true;
+			finish();
+		} else {
+			SoundUtils.playFailedSound();
+			StaticString.information = null;
+			Toast.makeText(CheckUserInfoActivity.this,
+					getResources().getString(R.string.login_passwd_error),
+					Toast.LENGTH_SHORT).show();
+			mEtPsw.startAnimation(mShake);
+		}
+	}
+
 	private void login() {
 		if (TextUtils.isEmpty(mTvUser.getText())) {
 			SoundUtils.playFailedSound();
@@ -565,9 +559,9 @@ public class CheckUserInfoActivity extends BaseActivity {
 		}
 		SoundUtils.playDropSound();
 		// 在子线程中 进行 网络连接
-		haveTaskRunning = true;
 		mBtnLogin.setEnabled(false);
 		showProgressDialog();
+		haveTaskRunning = true;
 		ThreadPoolFactory.getNormalPool().execute(mNetTask);
 
 	}
@@ -657,6 +651,30 @@ public class CheckUserInfoActivity extends BaseActivity {
 		builder.show();
 	}
 
+	private void showProgressDialog() {
+		if (null == loginDialog) {
+			loginDialog = new ProgressDialog(CheckUserInfoActivity.this);
+			loginDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			loginDialog.setTitle("正在验证••••");
+			loginDialog.setIndeterminate(false);
+			loginDialog.setCancelable(true);
+			loginDialog.setCanceledOnTouchOutside(true);
+			loginDialog.setOnCancelListener(new OnCancelListener() {
+				@Override
+				public void onCancel(DialogInterface dialog) {
+					mNetTask.stop();
+				}
+			});
+		}
+		loginDialog.show();
+	}
+
+	private void dismissProgressDialog() {
+		if (loginDialog != null && loginDialog.isShowing()) {
+			loginDialog.dismiss();
+		}
+	}
+
 	public boolean onTouchEvent(android.view.MotionEvent event) {
 		InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 		imm.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), 0);// 当用户点击页面空白处，软键盘自动消失
@@ -719,30 +737,6 @@ public class CheckUserInfoActivity extends BaseActivity {
 		super.onDestroy();
 	}
 
-	private void showProgressDialog() {
-		if (null == loginDialog) {
-			loginDialog = new ProgressDialog(CheckUserInfoActivity.this);
-			loginDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			loginDialog.setTitle("正在验证••••");
-			loginDialog.setIndeterminate(false);
-			loginDialog.setCancelable(true);
-			loginDialog.setCanceledOnTouchOutside(true);
-			loginDialog.setOnCancelListener(new OnCancelListener() {
-				@Override
-				public void onCancel(DialogInterface dialog) {
-					mNetTask.stop();
-				}
-			});
-		}
-		loginDialog.show();
-	}
-
-	private void dismissProgressDialog() {
-		if (loginDialog != null && loginDialog.isShowing()) {
-			loginDialog.dismiss();
-		}
-	}
-
 	class ReadRFIDTask implements Runnable {
 		private boolean stoped;
 
@@ -752,7 +746,7 @@ public class CheckUserInfoActivity extends BaseActivity {
 
 		@Override
 		public void run() {
-			// 重启RFID模块
+			haveTaskRunning = true;
 			byte[] id = null;
 			int count = 0;
 			stoped = false;
@@ -765,7 +759,7 @@ public class CheckUserInfoActivity extends BaseActivity {
 					mHandler.sendEmptyMessage(READING_RFID);
 				}
 				// 认证读卡操作, 激活操作
-				id = mRFIDOp.activatecard();
+				id = RFIDOperation.getInstance().findCard();
 				SystemClock.sleep(20);
 			}
 			String checkerId = ArrayUtils.bytes2HexString(id).substring(0, 8);
@@ -779,8 +773,13 @@ public class CheckUserInfoActivity extends BaseActivity {
 				mHandler.sendEmptyMessage(CHECK_USER_INFO);
 				return;
 			}
+//			Message msg = mHandler.obtainMessage();
+//			msg.what = READ_RFID_SUCCESS;
+//			msg.obj = checkerId;
+//			mHandler.sendMessage(msg);
 			StaticString.userIdcheck = checkerId;
 			mHandler.sendEmptyMessage(READ_RFID_SUCCESS);
+			haveTaskRunning = false;
 		}
 	}
 
@@ -829,9 +828,9 @@ public class CheckUserInfoActivity extends BaseActivity {
 			for (int i = 0; i < 2; i++) {
 				if (mType == 0) {
 					// 同一个人唤醒
-					mSocketConn.communication(1);
+					mSocketConn.communication(SendTask.CODE_LOGIN);
 				} else {
-					mSocketConn.communication(0);
+					mSocketConn.communication(SendTask.CODE_LOGIN_CHECK);
 				}
 				if (ReplyParser.waitReply()) {
 					// 连接成功
@@ -869,13 +868,16 @@ public class CheckUserInfoActivity extends BaseActivity {
 				if (!ReplyParser.waitReplyShort()) {
 					continue;
 				}
-				if ("01".equals(StaticString.information.split(" ")[1])) {
-					LogsUtil.d(TAG,
-							"finger 复核:"
-									+ StaticString.information.split(" ")[6]);
-					StaticString.userIdcheck = StaticString.information
-							.split(" ")[6];
+				
+				String[] split = StaticString.information
+						.split(" ");
+				if ("01".equals(split[1])) {
+					StaticString.userIdcheck = split[6];
 					mHandler.sendEmptyMessage(FRIGER_LOGIN_SUCCESS);
+//					Message msg = mHandler.obtainMessage();
+//					msg.what = FRIGER_LOGIN_SUCCESS;
+//					msg.obj = split[6];
+//					mHandler.sendMessage(msg);
 					return;
 				} else {
 					// 重新搜索 用户不可用等其他原因

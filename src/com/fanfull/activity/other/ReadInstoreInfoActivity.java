@@ -25,15 +25,12 @@ import com.android.adapter.ViewHolder;
 import com.fanfull.base.BaseActivity;
 import com.fanfull.contexts.StaticString;
 import com.fanfull.factory.ThreadPoolFactory;
-import com.fanfull.factory.ThreadPoolProxy;
 import com.fanfull.fff.R;
 import com.fanfull.hardwareAction.OLEDOperation;
-import com.fanfull.hardwareAction.RFIDOperation;
 import com.fanfull.operation.BagOperation;
 import com.fanfull.operation.NFCBagOperation;
 import com.fanfull.socket.ReplyParser;
 import com.fanfull.socket.SocketConnet;
-import com.fanfull.utils.ArrayUtils;
 import com.fanfull.utils.LogsUtil;
 import com.fanfull.utils.SoundUtils;
 import com.fanfull.utils.TipDialog;
@@ -216,7 +213,6 @@ public class ReadInstoreInfoActivity extends BaseActivity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		RFIDOperation.getInstance().closeRf();
 		if (OLEDOperation.enable) {
 			OLEDOperation.getInstance().close();
 		}
@@ -345,7 +341,7 @@ public class ReadInstoreInfoActivity extends BaseActivity {
 		public void run() {
 			// TODO Auto-generated method stub
 				StaticString.information = null;
-				SocketConnet.getInstance().communication(887,new String[]{mCoverInfString});
+				SocketConnet.getInstance().communication(8000,new String[]{mCoverInfString});
 				if (ReplyParser.waitReply()) {
 					if(StaticString.information.length() > 0){
 						mHandler.sendEmptyMessage(NET_SUCCESS);

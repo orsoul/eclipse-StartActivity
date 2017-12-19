@@ -22,13 +22,12 @@ import com.android.adapter.ViewHolder;
 import com.fanfull.activity.other.CheckNfcCoverBagActivity;
 import com.fanfull.activity.scan_general.ChangeBagMainActivity;
 import com.fanfull.activity.scan_general.CoverNfcNewBagActivity;
-import com.fanfull.activity.scan_general.IOStoreNfcActivity;
-import com.fanfull.activity.scan_general.OpenNfcNewBagActivity;
 import com.fanfull.activity.scan_general.QueryBagCirculationActivity;
 import com.fanfull.activity.scan_general.ScanBunchActivity;
 import com.fanfull.activity.scan_general_oldbag.CIOActivity4oldBag;
 import com.fanfull.activity.scan_general_oldbag.CheckCoverBagActivity;
 import com.fanfull.activity.scan_general_oldbag.OpenBag4OldBag;
+import com.fanfull.activity.scan_lot.LotScanActivity;
 import com.fanfull.activity.scan_lot.YkOutstoreActivity;
 import com.fanfull.base.BaseActivity;
 import com.fanfull.contexts.MyContexts;
@@ -46,37 +45,25 @@ import com.fanfull.utils.SPUtils;
 import com.fanfull.utils.SoundUtils;
 
 public class GeneralActivity extends BaseActivity {
-	/**
-	 * 封袋操作
-	 */
+	/** 封袋操作 */
 	public static final int OPERATION_LOCK_BAG = 0;
-	/**
-	 * 入库操作
-	 */
+	/** 入库操作 */
 	public static final int OPERATION_IN_STORE = 1;
-	/**
-	 * 出库操作
-	 */
+	/** 出库操作 */
 	public static final int OPERATION_OUT_STORE = 2;
-	/**
-	 * 开袋操作
-	 */
+	/** 开袋操作 */
 	public static final int OPERATION_OPEN_BAG = 3;
+	/** 查找漏扫 */
+	public static final int OPERATION_FIND_MISSING_BAG = 4;
 	/** 换袋操作 */
-	public static final int OPERATION_CHANGE_BAG = 4;
+	public static final int OPERATION_CHANGE_BAG = 5;
 	/** 袋流转查询 */
-	public static final int OPERATION_QUERY_BAG = 5;
-	/**
-	 * 验封操作
-	 */
-	public static final int OPERATION_CHECK = 6;
-	/**
-	 * 返回
-	 */
-	public static final int OPERATION_BACK = 6;
+	public static final int OPERATION_QUERY_BAG = 6;
+	/** 验封操作 */
+	public static final int OPERATION_CHECK = 7;
 
-	private final int HANDLE_RESPONSE_ERR = 7;
-	private final int MSG_REPLY_TIMEOUT = 9;
+	private final int HANDLE_RESPONSE_ERR = 90;
+	private final int MSG_REPLY_TIMEOUT = 91;
 
 	// TODO
 
@@ -266,6 +253,11 @@ public class GeneralActivity extends BaseActivity {
 			mMainList.add(item);
 
 			item = new MemberItem();
+			item.name = "查找漏袋";
+			item.nameEnglish = "Find Missing";
+			mMainList.add(item);
+			
+			item = new MemberItem();
 			item.name = "换袋操作";
 			item.nameEnglish = "Change operation";
 			mMainList.add(item);
@@ -273,11 +265,6 @@ public class GeneralActivity extends BaseActivity {
 			item = new MemberItem();
 			item.name = "袋流转查询";
 			item.nameEnglish = "Query operation";
-			mMainList.add(item);
-
-			item = new MemberItem();
-			item.name = "返回";
-			item.nameEnglish = "Go Back";
 			mMainList.add(item);
 
 			// MemberItem item0 = new MemberItem();
@@ -425,8 +412,10 @@ public class GeneralActivity extends BaseActivity {
 								CIOActivity4oldBag.class);
 					} else {
 						// 未启用遥控
+//						intent = new Intent(getApplicationContext(),
+//								IOStoreNfcActivity.class);
 						intent = new Intent(getApplicationContext(),
-								IOStoreNfcActivity.class);
+								CoverNfcNewBagActivity.class);
 					}
 				} else if ("*38".equals(split[0])) {// 后置天线出库, 手动输入表单
 					intent = new Intent(getApplicationContext(),
@@ -495,8 +484,10 @@ public class GeneralActivity extends BaseActivity {
 						intent = new Intent(GeneralActivity.this,
 								OpenBag4OldBag.class);
 					} else {
-						intent = new Intent(GeneralActivity.this,
-								OpenNfcNewBagActivity.class);
+//						intent = new Intent(GeneralActivity.this,
+//								OpenNfcNewBagActivity.class);
+						intent = new Intent(getApplicationContext(),
+								CoverNfcNewBagActivity.class);
 					}
 
 					intent.putExtra("flag", false);
@@ -507,6 +498,7 @@ public class GeneralActivity extends BaseActivity {
 				}
 
 				intent.putExtra(MyContexts.KEY_OPERATION_TYPE, mOperationType);
+				intent.putExtra(TYPE_OP.KEY_TYPE, mPickOp);
 				startActivity(intent);
 				break;
 			case HANDLE_RESPONSE_ERR:
@@ -545,15 +537,9 @@ public class GeneralActivity extends BaseActivity {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
-			// 点击 返回
-			if (position == OPERATION_BACK) {
-				onBackPressed();
-				return;
-			}
-
 			// 判断是否 需要复核
 			if (null == StaticString.userIdcheck
-					&& SPUtils.getBoolean(MyContexts.KEY_CHECK_LOGIN, false)
+					&& SPUtils.getBoolean(MyContexts.KEY_CHECK_LOGIN, true)
 					&& !SPUtils.getBoolean(MyContexts.KEY_USE_OLDBAG_ENABLE,
 							false)) {
 				mLastClickPos = position;
@@ -618,10 +604,17 @@ public class GeneralActivity extends BaseActivity {
 			case OPERATION_OPEN_BAG:
 				Log.d("case 4", "id:" + id + "开袋操作");
 				taskID = 51;// 查询开袋任务
+				mPickOp = TYPE_OP.OPEN_BAG;
 				break;
 			case OPERATION_CHANGE_BAG:
 				intent = new Intent(getApplicationContext(),
 						ChangeBagMainActivity.class);
+				startActivity(intent);
+				return;
+			case OPERATION_FIND_MISSING_BAG:
+				intent = new Intent(getApplicationContext(),
+						LotScanActivity.class);
+				intent.putExtra(TYPE_OP.KEY_TYPE, TYPE_OP.FIND_MISSING_BAG);
 				startActivity(intent);
 				return;
 			}

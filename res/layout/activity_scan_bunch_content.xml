@@ -77,17 +77,6 @@
             android:textColor="#ffffff"
             android:textSize="70sp" />
 
-        <TextView
-            android:id="@+id/tv_scanbunch_activity_lock"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="5dp"
-            android:drawableTop="@drawable/button_lock"
-            android:text="锁定批" 
-            android:textColor="@color/sliverwhite"/>
-
     </RelativeLayout>
 
     <com.orsoul.view.MyProgressBar

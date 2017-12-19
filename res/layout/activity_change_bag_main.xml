@@ -13,14 +13,25 @@
         title:showImage="true" />
 
     <Button
-        android:id="@+id/btn_changebag_go_open"
+        android:id="@+id/btn_changebag_go_findout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
         android:background="@drawable/button"
         android:ems="4"
-        android:text="@string/fanfull_change_bag_reason"
+        android:text="@string/fanfull_change_bag_findout"
+        android:textSize="16sp" />
+    
+    <Button
+        android:id="@+id/btn_changebag_go_open"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/button"
+        android:ems="4"
+        android:text="@string/fanfull_change_bag_open"
         android:textSize="16sp" />
 
     <Button
@@ -31,7 +42,7 @@
         android:layout_marginTop="40dp"
         android:background="@drawable/button"
         android:maxEms="4"
-        android:text="@string/fanfull_change_bag_check_info"
+        android:text="@string/fanfull_change_bag_change"
         android:textSize="16sp" />
 
 </LinearLayout>

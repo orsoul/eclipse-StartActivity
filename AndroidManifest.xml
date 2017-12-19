@@ -499,5 +499,4 @@
 
         <service android:name="com.mvp.center.ConnectService" />
     </application>
-
 </manifest>

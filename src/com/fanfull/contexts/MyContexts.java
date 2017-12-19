@@ -142,10 +142,16 @@ public interface MyContexts {
 	 * 天线柜 工作模式: 0锁模式， 1锁或标牌，2锁与标牌
 	 */
 	String KEY_DOOR_MODLE = "KEY_DOOR_MODLE";
-	/**
-	 * 灭屏后，手持自动关机 的等待时间，单位 ： 分钟
-	 */
+	/** 灭屏后，手持自动关机 的等待时间，单位 ： 分钟 */
 	String KEY_SHUTDOWN_DELAY = "KEY_SHUTDOWN_DELAY";
+	/** 选择波特率的位置 */
+	String KEY_BAUDRATE_POS = "KEY_BAUDRATE_POS";
+	/** 波特率的值 */
+	String KEY_BAUDRATE_VALUE = "KEY_BAUDRATE_VALUE";
+	/** 串口模块是否启用 */
+	String KEY_SERIAL_ENABLE = "KEY_SERIAL_ENABLE";
+	/** wifi模块是否启用 */
+	String KEY_WIFI_ENABLE = "KEY_WIFI_ENABLE";
 	
 	/*对话框 提示信息*/
 	/**

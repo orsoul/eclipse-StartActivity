@@ -8,9 +8,11 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
+import com.fanfull.activity.scan_lot.LotScanActivity;
 import com.fanfull.base.BaseActivity;
 import com.fanfull.contexts.MyContexts;
 import com.fanfull.contexts.StaticString;
+import com.fanfull.contexts.TYPE_OP;
 import com.fanfull.fff.R;
 import com.fanfull.utils.LogsUtil;
 import com.fanfull.utils.ToastUtil;
@@ -32,6 +34,8 @@ public class ChangeBagMainActivity extends BaseActivity {
 		setContentView(R.layout.activity_change_bag);
 		
 		ll1 = (ViewGroup) findViewById(R.id.change_bag_main);
+		
+		ll1.findViewById(R.id.btn_changebag_go_findout).setOnClickListener(this);
 		ll1.findViewById(R.id.btn_changebag_go_open).setOnClickListener(this);
 		ll1.findViewById(R.id.btn_changebag_go_change).setOnClickListener(this);
 		
@@ -42,6 +46,8 @@ public class ChangeBagMainActivity extends BaseActivity {
 		((CheckBox) ll2.findViewById(R.id.checkBox3)).setOnCheckedChangeListener(listener);
 		((CheckBox) ll2.findViewById(R.id.checkBox4)).setOnCheckedChangeListener(listener);
 		((CheckBox) ll2.findViewById(R.id.checkBox5)).setOnCheckedChangeListener(listener);
+		((CheckBox) ll2.findViewById(R.id.checkBox6)).setOnCheckedChangeListener(listener);
+		
 		ll2.findViewById(R.id.change_bag_reason_btn_quit).setOnClickListener(this);
 		ll2.findViewById(R.id.change_bag_reason_btn_ok).setOnClickListener(this);
 		
@@ -59,6 +65,11 @@ public class ChangeBagMainActivity extends BaseActivity {
 	public void onClick(View v) {
 		Intent intent = null;
 		switch (v.getId()) {
+		case R.id.btn_changebag_go_findout:
+			intent = new Intent(this, LotScanActivity.class);
+			intent.putExtra(TYPE_OP.KEY_TYPE, TYPE_OP.FIND_MISSING_BAG);
+			startActivity(intent);
+			break;
 		case R.id.btn_changebag_go_open:
 			intent = new Intent(this, OpenNfcNewBagActivity.class);
 			startActivity(intent);
@@ -134,6 +145,14 @@ public class ChangeBagMainActivity extends BaseActivity {
 					mReasonCode &= 0xEF;
 				}
 				StaticString.reason = "04";
+				break;
+			case R.id.checkBox6:
+				if (isChecked) {
+					mReasonCode |= 0x20;
+				} else {
+					mReasonCode &= 0xDF;
+				}
+				StaticString.reason = "05";
 				break;
 			}
 			LogsUtil.d(TAG, "mReason : " + Integer.toBinaryString(mReasonCode));
