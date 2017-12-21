@@ -104,9 +104,11 @@ public class HandPresenter implements Presenter {
 		ThreadPoolFactory.getNormalPool().execute(mScantask);
 
 	}
+
 	WriteScreenTask task = null;
 	String moneyTotal;
 	int bagNum;
+
 	@Override
 	public void writeScreen(String moneyTotal, int bagNum) {
 		System.out.println(moneyTotal + " " + bagNum);
@@ -124,19 +126,19 @@ public class HandPresenter implements Presenter {
 				+ version + " " + series);
 		SimpleDateFormat dataFormat = new SimpleDateFormat("yyyyMMddhhmmss");
 		String date = dataFormat.format(new Date());
-		task = new WriteScreenTask(mRefreshScreenView, bagType,
-				moneyType, "0", 0, version, 1, "", "RH01", series, date);
+		task = new WriteScreenTask(mRefreshScreenView, bagType, moneyType, "0",
+				0, version, 1, "", pileName, series, time);
 		ThreadPoolFactory.getNormalPool().execute(task);
 	}
 
 	@Override
 	public void light() {
-		if(task !=null && task.mTid !=null){
-			ThreadPoolFactory.getNormalPool().execute(new LightTask(task.mTid));	
-		}else{
-			ThreadPoolFactory.getNormalPool().execute(new LightTask(""));	
+		if (task != null && task.mTid != null) {
+			ThreadPoolFactory.getNormalPool().execute(new LightTask(task.mTid));
+		} else {
+			ThreadPoolFactory.getNormalPool().execute(new LightTask(""));
 		}
-		
+
 	}
 
 	@Override
@@ -160,15 +162,14 @@ public class HandPresenter implements Presenter {
 						boolean isSuccess = (Boolean) object1.get("success");
 						if (isSuccess) {
 
-							System.out
-									.println(object1.get("result").toString());
+							System.out.println(object1.get("result").toString());
 							JSONObject object = new JSONObject(object1.get(
 									"result").toString());
-							pileID = ""+(Integer) object.get("pileID");
+							pileID = "" + (Integer) object.get("pileID");
 							pileName = (String) object.get("pileName");
 							time = (String) object.get("time");
 							series = (String) object.get("series");
-							
+
 							mHandler.post(new Runnable() {
 
 								@Override
@@ -208,66 +209,81 @@ public class HandPresenter implements Presenter {
 			postError("网络未连接");
 		}
 	}
-	String pileID, pileName, time,  moneyType, moneyModel, bagModel,series;
+
+	String pileID, pileName, time, moneyType, moneyModel, bagModel, series;
+
 	public void insert() {
-		PileInfo pileInfo = new PileInfo();
-		pileInfo.setBagNum(0);
-		if (pileID.contains(".0")) {
-			int s = (int) Double.parseDouble(pileID);
-			pileID = String.valueOf(s);
+		try {
+			PileInfo pileInfo = new PileInfo();
+			pileInfo.setBagNum(0);
+			if (pileID.contains(".0")) {
+				int s = (int) Double.parseDouble(pileID);
+				pileID = String.valueOf(s);
+			}
+			pileInfo.setPileID(pileID);
+			pileInfo.setPileName(pileName);
+			if (moneyModel.equals("清分")) {
+				moneyModel = "已清分";
+			} else if (moneyModel.equals("复点")) {
+				moneyModel = "已复点";
+			}
+			pileInfo.setMoneyType(moneyType + "|" + moneyModel);
+			pileInfo.setBagType(bagModel);
+			pileInfo.setRefresh_flag(0);
+			pileInfo.setScreenNum(0);
+			pileInfo.setTotalAmount("0");
+			pileInfo.setSeries(series);
+			pileInfo.setUpdate_time(DateUtils.getFormatDate());
+			pileInfo.setTime(time);
+			pileInfo.setSerialNum("null");
+			PileInfoDao dao = DBService.getService().getPileInfoDao();
+			dao.insert(pileInfo);
+
+			ScreenInfo screenInfo = new ScreenInfo();
+			screenInfo.setInit(true);
+			screenInfo.setIsUse(true);
+			screenInfo.setPileID(pileID);
+			screenInfo.setRefresh_flag(0);
+			screenInfo.setUpdate_time(DateUtils.getFormatDate());
+			screenInfo.setScreenID(task.mTid);
+			screenInfo.setSerialNum("null");
+			Log.d("", screenInfo.toString());
+			ScreenInfoDao screenDao = DBService.getService().getScreenInfoDao();
+			screenDao.insertOrReplace(screenInfo);
+		} catch (Exception e) {
+			e.printStackTrace();
+			postError("操作错误,请重新操作");
 		}
-		pileInfo.setPileID(pileID);
-		pileInfo.setPileName(pileName);
-		if (moneyModel.equals("清分")) {
-			moneyModel = "已清分";
-		} else if (moneyModel.equals("复点")) {
-			moneyModel = "已复点";
-		}
-		pileInfo.setMoneyType(moneyType + "|" + moneyModel);
-		pileInfo.setBagType(bagModel);
-		pileInfo.setRefresh_flag(0);
-		pileInfo.setScreenNum(0);
-		pileInfo.setTotalAmount("0");
-		pileInfo.setSeries(series);
-		pileInfo.setUpdate_time(DateUtils.getFormatDate());
-		pileInfo.setTime(time);
-		pileInfo.setSerialNum("null");
-		PileInfoDao dao = DBService.getService().getPileInfoDao();
-		dao.insert(pileInfo);
-		
-		ScreenInfo screenInfo = new ScreenInfo();
-		screenInfo.setInit(true);
-		screenInfo.setIsUse(true);
-		screenInfo.setPileID(pileID);
-		screenInfo.setRefresh_flag(0);
-		screenInfo.setUpdate_time(DateUtils.getFormatDate());
-		screenInfo.setScreenID(task.mTid);
-		screenInfo.setSerialNum("");
-		ScreenInfoDao screenDao = DBService.getService().getScreenInfoDao();
-		screenDao.insert(screenInfo);
 	}
-	
-	public void update(){
-		ScreenInfoDao screenDao = DBService.getService().getScreenInfoDao();
-		QueryBuilder<ScreenInfo> screenInfoQuery = screenDao.queryBuilder()
-				.where(ScreenInfoDao.Properties.ScreenID.eq(task.mTid));
-		List<ScreenInfo> screenInfoList = screenInfoQuery.list();
-		String pileID = null;
-		if(screenInfoList!= null && screenInfoList.size()!=0){
-			ScreenInfo screenInfo = screenInfoList.get(0);
-			pileID = screenInfo.getPileID();
-			screenInfo.setRefresh_flag(value.getRefreshNumber());
-			screenDao.update(screenInfo);
-		}
-		PileInfoDao dao = DBService.getService().getPileInfoDao();
-		QueryBuilder<PileInfo> pileInfoQuery = dao.queryBuilder()
-				.where(PileInfoDao.Properties.PileID.eq(pileID));
-		List<PileInfo> pileInfoList = pileInfoQuery.list();
-		if(pileInfoList != null && pileInfoList.size()!=0){
-			PileInfo pileInfo = pileInfoList.get(0);
-			pileInfo.setBagNum(this.bagNum);
-			pileInfo.setTotalAmount(this.moneyTotal);
-			dao.update(pileInfo);
+
+	public void update() {
+		try {
+			ScreenInfoDao screenDao = DBService.getService().getScreenInfoDao();
+			QueryBuilder<ScreenInfo> screenInfoQuery = screenDao.queryBuilder()
+					.where(ScreenInfoDao.Properties.ScreenID.eq(task.mTid));
+			List<ScreenInfo> screenInfoList = screenInfoQuery.list();
+			String pileID = null;
+			if (screenInfoList != null && screenInfoList.size() != 0) {
+				ScreenInfo screenInfo = screenInfoList.get(0);
+				pileID = screenInfo.getPileID();
+				screenInfo.setRefresh_flag(value.getRefreshNumber());
+				screenInfo.setUpdate_time(DateUtils.getFormatDate());
+				screenDao.update(screenInfo);
+			}
+			PileInfoDao dao = DBService.getService().getPileInfoDao();
+			QueryBuilder<PileInfo> pileInfoQuery = dao.queryBuilder().where(
+					PileInfoDao.Properties.PileID.eq(pileID));
+			List<PileInfo> pileInfoList = pileInfoQuery.list();
+			if (pileInfoList != null && pileInfoList.size() != 0) {
+				PileInfo pileInfo = pileInfoList.get(0);
+				pileInfo.setBagNum(this.bagNum);
+				pileInfo.setTotalAmount(this.moneyTotal);
+				pileInfo.setUpdate_time(DateUtils.getFormatDate());
+				dao.update(pileInfo);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			postError("操作错误,请重新操作");
 		}
 	}
 

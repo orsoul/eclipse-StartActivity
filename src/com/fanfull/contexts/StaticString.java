@@ -4,7 +4,7 @@ public class StaticString {
 	/**
 	 * ip0
 	 */
-	public static String IP0 = "192.168.11.179";
+	public static String IP0 = "192.168.18.100";
 	/**
 	 * 端口
 	 */

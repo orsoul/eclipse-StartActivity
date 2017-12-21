@@ -65,7 +65,7 @@ public class PileCreateOneActivity extends BaseActivity implements View, CallBac
 	private DialogUtil mDiaUtil = new DialogUtil(this);
 	
 	private Button btn_pile_create_1;
-	private Map<String, Integer> storeMap;
+	private Map<String, Integer> storeMap = new HashMap<String, Integer>();
 	private ArrayList<String> storeList;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -82,11 +82,10 @@ public class PileCreateOneActivity extends BaseActivity implements View, CallBac
 			}
 		});
 		findView();
-		mDiaUtil.showProgressDialog();
-		mPileCreateOnePresenter.getPileStore(StaticString.userId);
+		mDiaUtil.showProgressDialog("正在验证权限...");
 		mPileCreateOnePresenter.getPilePermission(StaticString.userId);
 		
-	}	
+	}
 	private void findView() {
 		// TODO Auto-generated method stub
 		lv_list = (ListView) findViewById(R.id.pile_one_List);
@@ -123,6 +122,9 @@ public class PileCreateOneActivity extends BaseActivity implements View, CallBac
 				msg.what = MSG_PERMISSION_YES;
 			}
 			msg.obj = resultInfo;
+			mDiaUtil.dismissProgressDialog();
+			mDiaUtil.showProgressDialog("权限验证成功，获取库房列表");
+			mPileCreateOnePresenter.getPileStore(StaticString.userId);
 		}
 		//msg.what = MSG_PILEPERMISSION_SUCCES;
 		
@@ -148,6 +150,7 @@ public class PileCreateOneActivity extends BaseActivity implements View, CallBac
 			// TODO Auto-generated method stub
 			switch (msg.what) {
 			case MSG_NULL_STORAGE:
+				mDiaUtil.dismissProgressDialog();
 				LogsUtil.e(msg.obj.toString());
 				mDiaUtil.showDialogFinishActivity(msg.obj.toString());
 				break;
@@ -261,9 +264,6 @@ public class PileCreateOneActivity extends BaseActivity implements View, CallBac
 		}
 		
 	}
-	public void showPermissionDialog(Context context,PermissionInfo permissionInfo){
-		
-	}
 	@Override
 	public void onFailure(String error) {
 		// TODO Auto-generated method stub
@@ -317,7 +317,24 @@ public class PileCreateOneActivity extends BaseActivity implements View, CallBac
 		// TODO Auto-generated method stub
 		if(storeMap!=null){
 			this.storeMap = storeMap;
+			if(storeList != null){
+				storeList.clear();
+			}else{
+				storeList = new ArrayList<String>();
+			}
+			
+			for (String key : storeMap.keySet()) {
+				storeList.add(key);
+			}
+			if(storeadapter == null){
+				storeadapter = new ContentAdapter(PileCreateOneActivity.this, storeList,PileCreateOneActivity.this);
+				lv_list.setAdapter(storeadapter);
+			}else{
+				storeadapter.notifyDataSetChanged();
+			}
+			
 			mDiaUtil.dismissProgressDialog();
+			
 		}else{
 			SoundUtils.playFailedSound();
 			mDiaUtil.dismissProgressDialog();

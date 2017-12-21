@@ -6,6 +6,7 @@ import java.util.Date;
 
 import android.os.Handler;
 import android.os.SystemClock;
+import android.util.Log;
 
 import com.entity.RefreshScreen;
 import com.fanfull.hardwareAction.UHFOperation;
@@ -14,7 +15,7 @@ import com.fanfull.utils.SoundUtils;
 import com.mvp.refreshscreen.RefreshScreenContract.View;
 
 public class WriteScreenTask implements Runnable {
-
+	private final String TAG = this.getClass().getSimpleName();
 	private String moneyType;
 	private String model;
 	private String moneyTotal;
@@ -134,7 +135,7 @@ public class WriteScreenTask implements Runnable {
 	}
 
 	private void init() {
-		System.out.println("测试" + model);
+		Log.d(TAG, "写入类型"+model);
 		if (model.equals("残损|已复点")) {
 			model = "01";
 		} else if (model.equals("残损|未复点")) {
@@ -154,6 +155,7 @@ public class WriteScreenTask implements Runnable {
 		} else if(model.equals("完整|原封")){
 			model = "09";
 		}
+		Log.d(TAG, "转化结果："+model);
 
 		if (moneyType.contains("1角")) {
 			moneyType = "01";

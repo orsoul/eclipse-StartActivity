@@ -61,6 +61,7 @@ import com.fanfull.utils.SoundUtils;
 import com.fanfull.utils.TipDialog;
 import com.fanfull.utils.ToastUtil;
 import com.fanfull.utils.WiFiUtil;
+import com.mvp.center.ConnectService;
 import com.orsoul.view.IPEditText;
 
 /**
@@ -146,6 +147,13 @@ public class LoginActivity extends BaseActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		// 启动屏幕亮灭监听
+		// Intent intent = new Intent(LoginActivity.this,
+		// SrceenOnOffService.class);
+		// startService(intent);
+		Intent intent = new Intent(this, ConnectService.class);
+		startService(intent);
 
 		mHandler = new Handler(new MyHandlerCallback());
 		mDiaUtil = new DialogUtil(this);

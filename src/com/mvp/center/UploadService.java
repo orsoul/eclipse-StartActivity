@@ -56,7 +56,7 @@ public class UploadService extends Service {
 	}
 
 	private Net mNet = Net.getInstance();
-	private AlertDialog dialog;
+	//private AlertDialog dialog;
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		TimerTask task = new TimerTask() {
@@ -64,7 +64,7 @@ public class UploadService extends Service {
 			public void run() {
 				System.out.println("数据上传检测开始");
 				if (mNet.isWifiConnected()) {
-					AlertDialog.Builder builder = new AlertDialog.Builder(
+					/*AlertDialog.Builder builder = new AlertDialog.Builder(
 							getApplicationContext());
 					dialog = builder
 							.setMessage("正在上传数据")
@@ -81,7 +81,7 @@ public class UploadService extends Service {
 					dialog.setCanceledOnTouchOutside(false);// 点击屏幕不消失
 					if (!dialog.isShowing()) {// 此时提示框未显示
 						dialog.show();
-					}
+					}*/
 					upload1();
 					SystemClock.sleep(1000 * 2);
 					upload2();
@@ -96,7 +96,7 @@ public class UploadService extends Service {
 		return super.onStartCommand(intent, flags, startId);
 	}
 
-	private void upload1() {
+	public void upload1() {
 		File file = FileUtils.createFile("commitFile");
 		BufferedReader reader = null;
 		String temp = null;
@@ -119,9 +119,9 @@ public class UploadService extends Service {
 						System.out.println("接收数据：" + msg);
 						Gson gson = new Gson();
 						Response response = new Response();
-						if (response.isSuccess()) {
+						//if (response.isSuccess()) {
 							FileUtils.deleteFile("commitFile");
-						}
+						//}
 					}
 
 					@Override
@@ -143,7 +143,7 @@ public class UploadService extends Service {
 		}
 	}
 
-	private void upload2() {
+	public void upload2() {
 		final BagInfoDao mBagInfoDao = DBService.getService().getBagInfoDao();
 		final PileInfoDao mPileInfoDao = DBService.getService()
 				.getPileInfoDao();
@@ -176,6 +176,11 @@ public class UploadService extends Service {
 
 		List<BagInfo> bagInfoList = bagInfoQuery.list();
 		List<PileInfo> pileInfoList = pileInfoQuery.list();
+		//TODO:Debug
+		for(PileInfo i:pileInfoList){
+			i.setTime("1");
+		}
+		
 		List<ScreenInfo> screenInfoList = screenInfoQuery.list();
 		List<TrayInfo> trayInfoList = trayInfoQuery.list();
 		if (bagInfoList.size() != 0 || pileInfoList.size() != 0
@@ -192,22 +197,22 @@ public class UploadService extends Service {
 
 				@Override
 				public void onSuccess(String msg) {
-					dialog.dismiss();
+					//dialog.dismiss();
 					Gson gson = new Gson();
 					Response response = gson.fromJson(msg, Response.class);
 					if (response.isSuccess()) {
 						if (!inkScreen) {
-							mBagInfoDao.deleteAll();
+							/*mBagInfoDao.deleteAll();
 							mPileInfoDao.deleteAll();
 							mScreenInfoDao.deleteAll();
-							mTrayInfoDao.deleteAll();
+							mTrayInfoDao.deleteAll();*/
 						}
 					}
 				}
 
 				@Override
 				public void onFailure() {
-					dialog.dismiss();
+					//dialog.dismiss();
 					// System.out.println("暂无网络");
 				}
 			});
