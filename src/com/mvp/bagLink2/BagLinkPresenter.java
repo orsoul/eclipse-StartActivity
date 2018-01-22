@@ -17,12 +17,9 @@ import com.entity.BagInfo;
 import com.entity.PileInfo;
 import com.entity.Response;
 import com.entity.TrayInfo;
-import com.fanfull.base.BaseApplication;
-import com.fanfull.contexts.MyContexts;
 import com.fanfull.factory.ThreadPoolFactory;
 import com.fanfull.utils.DateUtils;
 import com.fanfull.utils.FileUtils;
-import com.fanfull.utils.SPUtils;
 import com.fanfull.utils.WiFiUtil;
 import com.google.gson.Gson;
 import com.mvp.BaseListener;
@@ -43,8 +40,6 @@ public class BagLinkPresenter implements Presenter {
 		this.mBagLinkView = view;
 		mNet = Net.getInstance();
 		mDb = DBService.getService();
-		isOffline = SPUtils.getBoolean(BaseApplication.getContext(),
-				MyContexts.INK_SCREEN_DOWNLOAD, false);
 	}
 
 	private String trayBagID;
@@ -136,15 +131,12 @@ public class BagLinkPresenter implements Presenter {
 
 					if ((list.get(0).getPileID() == null)
 							|| (list.get(0).getPileID().equals("null"))) {
+						isOffline = true;
 						mHandler.post(new Runnable() {
 
 							@Override
 							public void run() {
-								if(!isOffline){
-									mBagLinkView.scanPileBagSuccess(null);	
-								}else{
-									mBagLinkView.scanPileBagFailure("扫描到的不是堆袋");	
-								}
+								mBagLinkView.scanPileBagSuccess(null);
 							}
 						});
 						
@@ -206,9 +198,10 @@ public class BagLinkPresenter implements Presenter {
 	@Override
 	public void link() {
 		if (isOffline) {
-			localLink();
-		} else {
+			isOffline = false;
 			saveInfo();
+		} else {
+			localLink();
 		}
 	}
 
@@ -218,7 +211,6 @@ public class BagLinkPresenter implements Presenter {
 		List<BagInfo> bagInfoList = bagInfoQuery.list();
 		for (int i = 0; i < bagInfoList.size(); i++) {
 			bagInfoList.get(i).setPileID(pileID);
-			bagInfoList.get(i).setUpdate_time(DateUtils.getFormatDate());
 		}
 		mDb.getBagInfoDao().updateInTx(bagInfoList); // 查询托盘数据用来更新堆数据
 		/*QueryBuilder<TrayInfo> trayInfoQuery = mDb.getTrayInfoDao()
@@ -256,15 +248,12 @@ public class BagLinkPresenter implements Presenter {
 
 						if ((list.get(0).getPileID() == null)
 								|| (list.get(0).getPileID().equals("null"))) {
+							isOffline = true;
 							mHandler.post(new Runnable() {
 
 								@Override
 								public void run() {
-									if(!isOffline){
-										mBagLinkView.scanPileBagSuccess(null);	
-									}else{
-										mBagLinkView.scanPileBagFailure("扫描到的不是堆袋");	
-									}
+									mBagLinkView.scanPileBagSuccess(null);
 								}
 							});
 							return;

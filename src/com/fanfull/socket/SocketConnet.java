@@ -1,12 +1,14 @@
 package com.fanfull.socket;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Arrays;
+
+import android.os.SystemClock;
 
 import com.fanfull.contexts.StaticString;
 import com.fanfull.utils.ArrayUtils;
@@ -15,13 +17,20 @@ import com.fanfull.utils.LogsUtil;
 /**
  * @ClassName: SocketConnet
  * @Description: socket连接
- * @author Keung
- * @date 2014-8-15 上午09:12:56
  */
 public class SocketConnet implements Runnable {
+	/** 通讯消息字段 分隔符:空格 */
+	public static final String CH_SPLIT = " ";
+	/** 发送消息 的 头标识:$ */
+	public static final String CH_SEND_HEAD = "$";
+	/** 接收消息 的 头标识:* */
+	public static final String CH_RECEIVE_HEAD = "*";
+	/** 接收、发送消息的 尾标识:# */
+	public static final String CH_END = "#";
+
 	private final String TAG = SocketConnet.class.getSimpleName();
+
 	private static boolean enable;
-	
 
 	public static boolean isEnable() {
 		return enable;
@@ -32,12 +41,8 @@ public class SocketConnet implements Runnable {
 	}
 
 	private Socket sSocket = null;
-	private DataOutputStream dout = null;
 	private OutputStream out = null;
 	private InputStream in = null;
-
-	private SendTask mSendTask = null;
-	// private RecieveTask mRecieveTask = null;
 
 	private Thread mRecThread;
 	private TimeoutThread mTimeoutThread;
@@ -64,7 +69,9 @@ public class SocketConnet implements Runnable {
 	}
 
 	public boolean isConnect() {
-		return -1 != mConnNum;
+		// return -1 != mConnNum;
+		return (null != sSocket) && (sSocket.isConnected()) && (-1 != mConnNum)
+				&& (!sSocket.isInputShutdown());
 	}
 
 	/**
@@ -74,7 +81,9 @@ public class SocketConnet implements Runnable {
 	public void setRecieveListener(RecieveListener recListener) {
 		LogsUtil.d(TAG, "recListener:" + recListener);
 		mRecListener = recListener;
-		mTimeoutThread.setRecieveListener(recListener);
+		if (null != mTimeoutThread) {
+			mTimeoutThread.setRecieveListener(recListener);
+		}
 	}
 
 	/**
@@ -117,34 +126,39 @@ public class SocketConnet implements Runnable {
 
 	public boolean connect(Socket socket) {
 		if (null == socket) {
+			mConnNum = -1;
 			return false;
 		}
-		int tmpConnNum = mConnNum;
 		try {
 			sSocket = socket;
 			out = sSocket.getOutputStream();
 			in = sSocket.getInputStream();
 		} catch (IOException e) {
-			tmpConnNum = -1;
 			LogsUtil.s("Socket.getOutputStream() faile");
 			// 连接失败
+			if (null != mRecListener) {
+				mRecListener.onConnect(null, -1);
+			}
+			mConnNum = -1;
 			return false;
 		}
 
-		dout = new DataOutputStream(out);
-		mSendTask = new SendTask(dout);
-
-		// mRecieveTask = new RecieveTask(in);
-		// recieveThread = new Thread(mRecieveTask);
 		mRecThread = new Thread(this);
 		mRecThread.start();
 		mTimeoutThread = new TimeoutThread();
+		mTimeoutThread.setRecieveListener(mRecListener);
 		mTimeoutThread.start();
 
 		// ThreadPoolFactory.getNormalPool().execute(printTask);
-		LogsUtil.d(TAG, "socket conn success ip: " + sSocket.getInetAddress()
-				+ " Prot:" + sSocket.getPort());
-		mConnNum = tmpConnNum;
+		String serverIp = ((InetSocketAddress) sSocket.getRemoteSocketAddress())
+				.getAddress().getHostAddress();
+		int port = sSocket.getPort();
+		LogsUtil.d(TAG, "socket conn success serverIp: " + serverIp + " Prot: "
+				+ port);
+		SystemClock.sleep(50);// 等待 TimeoutThread 的充分运行？
+		if (null != mRecListener) {
+			mRecListener.onConnect(serverIp, port);
+		}
 		return true;
 	}
 
@@ -216,43 +230,63 @@ public class SocketConnet implements Runnable {
 	}
 
 	/**
-	 * @param int taskid 通信类型
-	 * @description: socket通信, 在新线程中 向服务器发送数据
+	 * 向服务端发送信息
+	 * 
+	 * @param isWait4Recieve
+	 *            是否等待服务端回复;设为false对回复不进行计时
+	 * @param taskid
+	 *            通讯编号
+	 * @param info
+	 *            通讯参数
+	 * @return 信息发送成功返回true
+	 */
+	public boolean communication(boolean isWait4Recieve, int taskid,
+			String... info) {
+		count++;
+		setCommNum(count);
+		StaticString.information = null;
+		boolean sendSuccess = send(SendTask.getInfo(taskid,
+				getIntString(count), info));
+		if (sendSuccess && isWait4Recieve) {
+			mTimeoutThread.startTime();
+		}
+		return sendSuccess;
+	}
+
+	/**
+	 * 向服务端发送信息,对回复进行计时
+	 * 
+	 * @param taskid
+	 *            通讯编号
+	 * @param info
+	 *            通讯参数
+	 * @return 信息发送成功返回true
+	 */
+	public boolean communication(int taskid, String... info) {
+		return communication(true, taskid, info);
+	}
+
+	/**
+	 * 向服务端发送信息,对回复进行计时
+	 * 
+	 * @param taskid
+	 *            通讯编号
+	 * @return 信息发送成功返回true
 	 */
 	public boolean communication(int taskid) {
-//		if (null == mSendTask) {
-//			return;
-//		}
-//		count++;
-//		mSendTask.setProperty(taskid, getIntString(count));// 设置S的值
-//		StaticString.information = null;
-//		setCommNum(count);//
-//		ThreadPoolFactory.getNormalPool().execute(mSendTask);
-//		mTimeoutThread.startTime();
 		return communication(taskid, null);
 	}
 
 	/**
-	 * @param int taskid 通信类型
-	 * @description: socket通信, 在新线程中 向服务器发送数据
+	 * @param data
+	 *            待发送数据
+	 * @return 数据发送成功返回true
 	 */
-	public boolean communication(int taskid, String... info) {
-		count++;
-		setCommNum(count);
-		StaticString.information = null;
-		boolean sendSuccess = send(SendTask.getInfo(taskid, getIntString(count), info));
-		if (sendSuccess) {
-			mTimeoutThread.startTime();
-		}
-		return sendSuccess;
-//		mSendTask.setProperty(taskid, getIntString(count), info);// 设置S的值
-//		ThreadPoolFactory.getNormalPool().execute(mSendTask);
-	}
 	public boolean send(byte[] data) {
 		if (null == data || null == out || !isConnect()) {
 			return false;
 		}
-		
+
 		try {
 			out.write(data);
 			out.flush();
@@ -261,14 +295,25 @@ public class SocketConnet implements Runnable {
 			e.printStackTrace();
 			return false;
 		}
-		
+
 	}
+
+	/**
+	 * @param text
+	 *            待发送字符串，按utf-8解码后发送
+	 * @return 数据发送成功返回true
+	 */
 	public boolean send(String text) {
 		if (null == text) {
 			return false;
 		}
-		return send(text.getBytes());
+		try {
+			return send(text.getBytes("UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			return false;
+		}
 	}
+
 	/**
 	 * 
 	 * @Description: 关闭网络连接
@@ -295,10 +340,6 @@ public class SocketConnet implements Runnable {
 			if (out != null) {
 				out.close();
 				out = null;
-			}
-			if (dout != null) {
-				dout.close();
-				dout = null;
 			}
 			if (sSocket != null) {
 				sSocket.close();
@@ -379,9 +420,17 @@ public class SocketConnet implements Runnable {
 			} // end while()
 		} catch (Exception e) {
 			e.printStackTrace();
-			LogsUtil.e(TAG, "Exception 断开连接");
+		}
+		if (null != mTimeoutThread) {
+			mTimeoutThread.stopThread();
+		}
+		if (null != sSocket) {
 			close();
 		}
+		if (null != mRecListener) {
+			mRecListener.onDisconnect();
+		}
+		LogsUtil.e(TAG, "连接断开");
 		LogsUtil.w(TAG, "receiveThread finish");
 	}
 }

@@ -175,13 +175,18 @@ public class OutStoreTaskInputerView extends LinearLayout {
 	}
 
 	/**
-	 * @param text
-	 * 设置 描述信息
+	 * @return 控件文本，如：佰圆
 	 */
-	public void setDesc(Object text) {
+	public CharSequence getText() {
+		return mCb.getText();
+	}
+	/**
+	 * 设置 控件显示 文本
+	 * @param text
+	 */
+	public void setText(Object text) {
 		mCb.setText(String.valueOf(text));
 	}
-
 	/**
 	 * @param num
 	 * 设置 编辑框内 数字

@@ -151,6 +151,7 @@ public class BaseActivity extends Activity implements View.OnClickListener {
 	protected void clickTwiceFinish() {
 		if (ClickUtil.isFastDoubleClick(2500)) {
 			finish();
+//			onBackPressed();
 		} else {
 			ToastUtil.showToastInCenter(getResources().getString(
 					R.string.text_click_again_leave));

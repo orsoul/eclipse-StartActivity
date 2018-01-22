@@ -9,9 +9,15 @@ package com.fanfull.socket;
 public abstract class RecieveListenerAbs implements RecieveListener {
 
 	@Override
-	public void onRecieve(byte[] data, int len) {
+	public void onConnect(String serverIp,  int serverPort) {
 		// TODO Auto-generated method stub
 
+	}
+	
+	@Override
+	public void onRecieve(byte[] data, int len) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override

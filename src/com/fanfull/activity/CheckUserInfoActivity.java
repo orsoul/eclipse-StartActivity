@@ -438,21 +438,6 @@ public class CheckUserInfoActivity extends BaseActivity {
 	};
 
 	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		/*
-		 * 修改 back键的默认事件
-		 */
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			if (mType == 1) {
-				// 复核 //不用退出整个进程
-				mFingerInfo = true;
-			}
-			finish();
-		}
-		return true;// 事件拦截
-	}
-
-	@Override
 	public void onClick(View v) {
 		// TODO
 		switch (v.getId()) {
@@ -465,18 +450,19 @@ public class CheckUserInfoActivity extends BaseActivity {
 			login();
 			break;
 		case R.id.btn_checkinfo_cancel:
-			if (mType == LOGIN_AGAIN) {
-				mFingerInfo = true;
-				if (!ClickUtil.isFastDoubleClick(2500)) {
-					ToastUtil.showToastInCenter("未进行复核，再次点击退出程序");
-				} else {
-					sendBroadcast(new Intent(MyContexts.ACTION_EXIT_APP));
-					finish();
-				}
-			} else {
-				// 复核 //不用退出整个进程
-				finish();
-			}
+			onBackPressed();
+//			if (mType == LOGIN_AGAIN) {
+//				mFingerInfo = true;
+//				if (!ClickUtil.isFastDoubleClick(2500)) {
+//					ToastUtil.showToastInCenter("未进行复核，再次点击退出程序");
+//				} else {
+//					sendBroadcast(new Intent(MyContexts.ACTION_EXIT_APP));
+//					finish();
+//				}
+//			} else {
+//				// 复核 //不用退出整个进程
+//				finish();
+//			}
 			break;
 		default:
 			break;
@@ -675,6 +661,21 @@ public class CheckUserInfoActivity extends BaseActivity {
 		}
 	}
 
+	@Override
+	public void onBackPressed() {
+		if (mType == LOGIN_AGAIN) {
+			mFingerInfo = true;
+			if (!ClickUtil.isFastDoubleClick(2500)) {
+				ToastUtil.showToastInCenter("未进行复核，再次点击退出程序");
+			} else {
+				sendBroadcast(new Intent(MyContexts.ACTION_EXIT_APP));
+				finish();
+			}
+		} else {
+			// 复核 //不用退出整个进程
+			finish();
+		}
+	}
 	public boolean onTouchEvent(android.view.MotionEvent event) {
 		InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 		imm.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), 0);// 当用户点击页面空白处，软键盘自动消失

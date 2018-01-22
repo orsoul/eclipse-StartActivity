@@ -2,6 +2,7 @@ package com.fanfull.op;
 
 import android.os.SystemClock;
 
+import com.fanfull.utils.ArrayUtils;
 import com.fanfull.utils.LogsUtil;
 import com.hardware.Hardware;
 
@@ -74,6 +75,17 @@ abstract class BaseOperation {
 	 */
 	protected int runCmd(byte[] cmd, byte[] buf) {
 		return runCmd(cmd, buf, GAP);
+	}
+	protected String bytes2HexString(byte[] bArray, int start, int end) {
+		return ArrayUtils.bytes2HexString(bArray, start, end);
+	}
+
+	protected String bytes2HexString(byte[] bArray) {
+		return ArrayUtils.bytes2HexString(bArray);
+	}
+
+	protected static byte[] hexString2Bytes(String hexString) {
+		return ArrayUtils.hexString2Bytes(hexString);
 	}
 	/**
 	 * 初始化模块

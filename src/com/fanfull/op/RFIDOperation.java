@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import android.os.SystemClock;
 
-import com.fanfull.utils.ArrayUtils;
 import com.fanfull.utils.LogsUtil;
 
 /**
@@ -14,7 +13,7 @@ public class RFIDOperation extends BaseOperation {
 	/** 最近一次寻卡 得到的 uid */
 	public static byte[] sLastUid;
 	/** M1卡操作对象，定义静态的，单例模式 */
-	private static RFIDOperation instance = new RFIDOperation();
+	private static RFIDOperation instance;
 	/** 选择串口 */
 	private final String[] CHOOSED_SERIAL = { "/dev/ttyUSB0", "/dev/ttyUSB1" };
 	/** 选择波特率 */
@@ -59,14 +58,17 @@ public class RFIDOperation extends BaseOperation {
 			(byte) 0x01, (byte) 0xA2, (byte) 0x07, (byte) 0x44, (byte) 0x33,
 			(byte) 0x22, (byte) 0x11, (byte) 0x98, (byte) 0x00 };
 	/** 关闭RFID电源 */
-	private final static byte[] CMD_CLOSE_RFID = new byte[] { (byte) 0x00, (byte) 0x00, (byte) 0xFF,
-		(byte) 0x04, (byte) 0xFC, (byte) 0xD4, (byte) 0x32,
-		(byte) 0x01, (byte) 0x00, (byte) 0xF9, (byte) 0x00 };
+	private final static byte[] CMD_CLOSE_RFID = new byte[] { (byte) 0x00,
+			(byte) 0x00, (byte) 0xFF, (byte) 0x04, (byte) 0xFC, (byte) 0xD4,
+			(byte) 0x32, (byte) 0x01, (byte) 0x00, (byte) 0xF9, (byte) 0x00 };
 
 	private RFIDOperation() {
 	}
 
 	public static RFIDOperation getInstance() {
+		if (null == instance) {
+			instance = new RFIDOperation();
+		}
 		return instance;
 	}
 
@@ -75,27 +77,9 @@ public class RFIDOperation extends BaseOperation {
 		return 0 <= open(false) && wakeup();
 	}
 
-	/**
-	 * 新RFID模块代码 替换老代码过程 临时用来 打开 RFID模块； 如果之前老代码已经打开RFID模块，只取其fd；
-	 * 
-	 * @param isReinit
-	 * @return
-	 */
-	public boolean openTemp(boolean isReinit) {
-		boolean isOpen = com.fanfull.hardwareAction.RFIDOperation.getInstance()
-				.isOpen();
-		if (isOpen) {
-			this.fd = com.fanfull.hardwareAction.RFIDOperation.getInstance().fd;
-			LogsUtil.d(TAG, "get fd : " + fd);
-			return true;
-		} else {
-			return openAndWakeup();
-		}
-	}
-
 	@Override
 	public int open(boolean isReinit) {
-		
+
 		if (isOpen() && !isReinit) {
 			LogsUtil.d(TAG, "open() : openned");
 			return 0;
@@ -105,9 +89,9 @@ public class RFIDOperation extends BaseOperation {
 		HARDWARE.openGPIO();
 		HARDWARE.setGPIO(0, 5);
 
-		SystemClock.sleep(500);
+		SystemClock.sleep(600);
 		fd = HARDWARE.openSerialPort(CHOOSED_SERIAL[0], CHOOSED_BUAD, 8, 1);
-		LogsUtil.d(TAG, "open() fd: " + fd);
+		LogsUtil.d(TAG, "RFID open() fd: " + fd);
 
 		return fd;
 	}
@@ -130,11 +114,13 @@ public class RFIDOperation extends BaseOperation {
 		HARDWARE.close(fd);
 		LogsUtil.d(TAG, "close:" + fd);
 		fd = -1;
-//		instance = null;
-//		sLastUid = null;
+		// instance = null;
+		// sLastUid = null;
 	}
+
 	/**
 	 * 关闭 RFID电源，节省耗电
+	 * 
 	 * @return 成功返回 true
 	 */
 	public boolean closeRF() {
@@ -146,6 +132,7 @@ public class RFIDOperation extends BaseOperation {
 
 		return (buf[0] == (byte) 0x00 && buf[11] == (byte) 0xD5 && buf[12] == (byte) 0x33);
 	}
+
 	/**
 	 * 验证回复的信息的前六位是否准确
 	 * 
@@ -193,7 +180,9 @@ public class RFIDOperation extends BaseOperation {
 	 */
 	public boolean wakeup() {// 激活,唤醒操作
 		byte buf[] = new byte[15];
+		// HARDWARE.setGPIO(0, 5);
 		int runCmd = runCmd(CMD_WAKEUP, buf);
+		// HARDWARE.setGPIO(1, 5);
 		LogsUtil.d(TAG, "wakeup() runCmd 15: " + runCmd);
 
 		boolean reVal = (checkFirst6Data(buf) && buf[6] == (byte) 0x00
@@ -206,39 +195,41 @@ public class RFIDOperation extends BaseOperation {
 	}
 
 	/**
-		 * @return byte[] 返回类型 字节数组数据，即卡号，M1卡长度4个字节，NFC卡长度7个字节
-		 * 
-		 * @exception
-		 * @Description: 寻卡操作. 可对 M1 和 NFC 进行操作。
-		 */
-		public byte[] findCard() {
-			byte[] reVal = null;
-	
-			byte[] buf = new byte[30];
-			int runCmd = runCmd(CMD_FINDCARD, buf);
-			LogsUtil.d(TAG, "findCard() runCmd 25 28: " + runCmd);
-	
-			if (checkFirst6Data(buf)) {
-				if (buf[18] == 0x04 && 25 == runCmd) {
-					// M1
-					reVal = new byte[] { buf[22], buf[21], buf[20], buf[19] };
-					sLastUid = reVal;
-				} else if (buf[18] == 0x07 && 28 == runCmd) {
-					// NFC
-					reVal = new byte[] { buf[19], buf[20], buf[21], buf[22],
-							buf[23], buf[24], buf[25] };
-	//				reVal = new byte[] { buf[25], buf[24], buf[23], buf[22],
-	//						buf[21], buf[20], buf[19] };
-					sLastUid = reVal;
-				}
-				LogsUtil.d(TAG, "uid:" + ArrayUtils.bytes2HexString(reVal));
-			} else {
-				LogsUtil.d(TAG, "findCard() check failed");
+	 * @return byte[] 返回类型 字节数组数据，即卡号，M1卡长度4个字节，NFC卡长度7个字节
+	 * 
+	 * @exception
+	 * @Description: 寻卡操作. 可对 M1 和 NFC 进行操作。
+	 */
+	public byte[] findCard() {
+		byte[] reVal = null;
+
+		byte[] buf = new byte[30];
+		// HARDWARE.setGPIO(0, 5);
+		int runCmd = runCmd(CMD_FINDCARD, buf);
+		// HARDWARE.setGPIO(1, 5);
+		LogsUtil.d(TAG, "findCard() runCmd 25 28: " + runCmd);
+
+		if (checkFirst6Data(buf)) {
+			if (buf[18] == 0x04 && 25 == runCmd) {
+				// M1
+				reVal = new byte[] { buf[22], buf[21], buf[20], buf[19] };
+				sLastUid = reVal;
+			} else if (buf[18] == 0x07 && 28 == runCmd) {
+				// NFC
+				reVal = new byte[] { buf[19], buf[20], buf[21], buf[22],
+						buf[23], buf[24], buf[25] };
+				// reVal = new byte[] { buf[25], buf[24], buf[23], buf[22],
+				// buf[21], buf[20], buf[19] };
+				sLastUid = reVal;
 			}
-			// LogsUtil.d(TAG, "findCard() uid: " +
-			// ArrayUtils.bytesToHexString(reVal));
-			return reVal;
+			LogsUtil.d(TAG, "uid:" + bytes2HexString(reVal));
+		} else {
+			LogsUtil.d(TAG, "findCard() check failed");
 		}
+		// LogsUtil.d(TAG, "findCard() uid: " +
+		// ArrayUtil.bytesToHexString(reVal));
+		return reVal;
+	}
 
 	/**
 	 * 读取任意长度数据,读取长度由 缓存数组dataBuf 确定.
@@ -295,8 +286,6 @@ public class RFIDOperation extends BaseOperation {
 					return false;//
 				}
 				int runCmd = runCmd(CMD_NFC_READ, buf);
-				LogsUtil.d(TAG, "readNFCInTime(" + (sa + j * 4)
-						+ ") runCmd 32: " + runCmd);
 				if (checkFirst6Data(buf) && buf[12] == 0x41 && buf[13] == 0x00) {
 					int len = 16;
 					if (dataBuf.length - dsa < 16) {
@@ -306,12 +295,13 @@ public class RFIDOperation extends BaseOperation {
 						dataBuf[dsa] = buf[i + 14];
 						dsa++;
 					}
-					String str = ArrayUtils.bytes2HexString(dataBuf);
-					LogsUtil.d(TAG, "readDataFromNFC(" + (sa + j * 4) + ") data:"
-							+ str);
+					LogsUtil.d(TAG, "readNFCInTime(" + (sa + j * 4)
+							+ ") assum 32:" + runCmd + " - 读取成功");
 					break;
 				} else {
-					LogsUtil.d(TAG, "readNFCInTime(" + (sa + j * 4) + ") 读取失败 :");
+					LogsUtil.d(TAG, "readNFCInTime(" + (sa + j * 4)
+							+ ") assum 32:" + runCmd + " - 读取失败:"
+							+ bytes2HexString(dataBuf));
 				}
 
 			}// end while()
@@ -362,7 +352,7 @@ public class RFIDOperation extends BaseOperation {
 
 		int writeTimes = (data.length + 4 - 1) / 4;
 		LogsUtil.d(TAG, writeTimes + " writeNFCInTime(" + (sa) + ") :"
-				+ ArrayUtils.bytes2HexString(data));
+				+ bytes2HexString(data));
 
 		byte[] buf = new byte[32];
 		reVal = true;
@@ -379,7 +369,7 @@ public class RFIDOperation extends BaseOperation {
 					CMD_NFC_WRITE[10 + j] = 0;// 写入数据的长度不被4整除,末尾填充0
 				}
 				// LogsUtil.d(TAG, "for[" + (sa + i) + "," + j + "]: "
-				// + ArrayUtils.bytesToHexString(CMD_NFC_WRITE, 10, 11 + j));
+				// + bytesToHexString(CMD_NFC_WRITE, 10, 11 + j));
 			}
 
 			CMD_NFC_WRITE[CMD_NFC_WRITE.length - 2] = getCheckBit(
@@ -391,18 +381,18 @@ public class RFIDOperation extends BaseOperation {
 				}
 				Arrays.fill(buf, (byte) 0);
 				int runCmd = runCmd(CMD_NFC_WRITE, buf);
-				LogsUtil.d(TAG, "write (" + (sa + i) + ") runCmd 32: " + runCmd);
 				if (checkFirst6Data(buf) && buf[6] == (byte) 0x00
 						&& buf[7] == (byte) 0x00 && buf[8] == (byte) 0xff
 						&& buf[9] == (byte) 0x03 && buf[10] == (byte) 0xfd
 						&& buf[11] == (byte) 0xd5 && buf[12] == (byte) 0x41
 						&& buf[13] == (byte) 0x00 && buf[14] == (byte) 0xea
 						&& buf[15] == (byte) 0x00) {
-					LogsUtil.d(TAG, "write (" + (sa + i) + ") 写入成功");
+					LogsUtil.d(TAG, "write(" + (sa + i) + ") assum 16:"
+							+ runCmd + "-写入成功");
 					break;
 				} else {
-					LogsUtil.d(TAG, "write (" + (sa + i) + ") 写入失败 :"
-							+ ArrayUtils.bytes2HexString(buf, 0, runCmd));
+					LogsUtil.d(TAG, "write(" + (sa + i) + ") - 写入失败："
+							+ bytes2HexString(buf, 0, runCmd));
 				}
 			}// end while
 
@@ -437,16 +427,16 @@ public class RFIDOperation extends BaseOperation {
 		CMD_M1_AUTHKEY[18] = uid[1];
 		CMD_M1_AUTHKEY[19] = uid[0];
 		// CMD_AUTHKEY[20] = getCheckNumber(15, CMD_AUTHKEY);// 校验位
-	
+
 		// CMD_AUTHKEY.length - 2：倒数第2位为 校验位
 		// CMD_AUTHKEY.length - 7：CMD_AUTHKEY[5~倒数第3位] 为需要计算的数据
 		CMD_M1_AUTHKEY[CMD_M1_AUTHKEY.length - 2] = getCheckBit(
 				CMD_M1_AUTHKEY.length - 7, CMD_M1_AUTHKEY);// 校验位
-	
+
 		byte[] buf = new byte[32];
 		int runCmd = runCmd(CMD_M1_AUTHKEY, buf);
 		LogsUtil.d(TAG, "CMD_AUTHKEY runCmd: " + runCmd);
-	
+
 		return (16 == runCmd && checkFirst6Data(buf) && buf[6] == (byte) 0x00
 				&& buf[7] == (byte) 0x00 && buf[8] == (byte) 0xff
 				&& buf[9] == (byte) 0x03 && buf[10] == (byte) 0xfd
@@ -469,15 +459,15 @@ public class RFIDOperation extends BaseOperation {
 	 * @return 读取成功返回 true
 	 */
 	public boolean readM1(int blockNum, byte[] dataBuf, long runTime, byte[] uid) {
-	
+
 		long time = System.currentTimeMillis();
-	
+
 		boolean reVal = false;
-	
+
 		if (null == dataBuf || dataBuf.length == 0 || 16 < dataBuf.length) {
 			return reVal;
 		}
-	
+
 		boolean isAuth = false;
 		do {
 			// 认证步骤
@@ -489,18 +479,18 @@ public class RFIDOperation extends BaseOperation {
 		if (!isAuth) {
 			return reVal;
 		}
-	
+
 		// 00 00 ff 05 fb D4 40 01 30 06 B5 00 //读第7块
 		CMD_M1_READ[9] = (byte) blockNum;
-	
+
 		// CMD_NFC_READ[10] = getCheckNumber(5, CMD_NFC_READ); // 计算校验位
 		// CMD_AUTHKEY.length - 2：倒数第2位为 校验位
 		// CMD_AUTHKEY.length - 7：CMD_AUTHKEY[5~倒数第3位] 为需要计算的数据
 		CMD_M1_READ[CMD_M1_READ.length - 2] = getCheckBit(
 				CMD_M1_READ.length - 7, CMD_M1_READ); // 计算校验位
-	
+
 		byte[] buf = new byte[32];
-	
+
 		do {
 			int runCmd = runCmd(CMD_M1_READ, buf);
 			LogsUtil.d(TAG, "readM1 runCmd 32: " + runCmd);
@@ -529,7 +519,7 @@ public class RFIDOperation extends BaseOperation {
 	 * @return true 写入
 	 */
 	public boolean writeM1(int blockID, String data, long runTime, byte[] uid) {
-		return writeM1(blockID, ArrayUtils.hexString2Bytes(data), runTime, uid);
+		return writeM1(blockID, hexString2Bytes(data), runTime, uid);
 	}
 
 	/**

@@ -67,10 +67,10 @@ public class NetReceiver extends BroadcastReceiver {
 	}
 
 	private Net mNet = Net.getInstance();
-	//private AlertDialog dialog;
+	private AlertDialog dialog;
 
 	public void upload() {
-		/*AlertDialog.Builder builder = new AlertDialog.Builder(
+		AlertDialog.Builder builder = new AlertDialog.Builder(
 				BaseApplication.getContext());
 		dialog = builder.setMessage("正在上传数据...")
 				.setPositiveButton("确定", new DialogInterface.OnClickListener() {
@@ -83,7 +83,7 @@ public class NetReceiver extends BroadcastReceiver {
 		dialog.setCanceledOnTouchOutside(false);// 点击屏幕不消失
 		if (!dialog.isShowing()) {// 此时提示框未显示
 			dialog.show();
-		}*/
+		}
 
 		Thread thread = new Thread(new Runnable() {
 
@@ -139,7 +139,7 @@ public class NetReceiver extends BroadcastReceiver {
 							lastInfo.addAll(info);
 							update();
 						} else {
-							//dialog.dismiss();
+							dialog.dismiss();
 						}
 					}
 
@@ -224,18 +224,18 @@ public class NetReceiver extends BroadcastReceiver {
 						lastInfo.addAll(info);
 						update();
 					} else {
-						//dialog.dismiss();
+						dialog.dismiss();
 					}
 				}
 
 				@Override
 				public void onFailure() {
-					//dialog.dismiss();
+					dialog.dismiss();
 					// System.out.println("暂无网络");
 				}
 			});
 		} else {
-			//dialog.dismiss();
+			dialog.dismiss();
 		}
 	}
 
@@ -249,7 +249,7 @@ public class NetReceiver extends BroadcastReceiver {
 
 						@Override
 						public void onSuccess(String msg) {
-						//	dialog.dismiss();
+							dialog.dismiss();
 							Gson gson = new Gson();
 							Response response = gson.fromJson(msg,
 									Response.class);
@@ -288,7 +288,7 @@ public class NetReceiver extends BroadcastReceiver {
 						}
 					});
 		} else {
-			//dialog.dismiss();
+			dialog.dismiss();
 		}
 	}
 

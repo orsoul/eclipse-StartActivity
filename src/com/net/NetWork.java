@@ -41,17 +41,14 @@ public class NetWork {
 				HttpURLConnection connection = null;
 				InputStream is = null;
 				try {
-					LogsUtil.d(url);
 					//URL url = new URL(urlPath + "?" + param);
 					connection = (HttpURLConnection) url.openConnection();
-					/*connection.setConnectTimeout(5*1000);
-					connection.setReadTimeout(5*1000);*/
+					connection.setConnectTimeout(5*1000);
+					connection.setReadTimeout(5*1000);
 					connection.setUseCaches(true);
 					connection.setRequestMethod("GET");
 					connection.connect();
-					int code = connection.getResponseCode();
-					LogsUtil.i("响应码："+code);
-					if(code == 200 || code ==201){
+					if(connection.getResponseCode() == 200){
 						is = connection.getInputStream();
 						String path = "/data/data/com.fanfull.fff/";
 						Log.i("path", path);
@@ -80,9 +77,8 @@ public class NetWork {
 					}
 					
 				} catch (Exception e) {
-					e.printStackTrace();
 					postFailure(listener);
-					
+					e.printStackTrace();
 				} finally {
 					if (connection != null) {
 						connection.disconnect();
@@ -108,10 +104,10 @@ public class NetWork {
 				InputStream is = null;
 				try {
 					
-					LogsUtil.d(url);
+					LogsUtil.e(url);
 					connection = (HttpURLConnection) url.openConnection();
-					connection.setConnectTimeout(5*1000);
-					connection.setReadTimeout(5*1000);
+					/*connection.setConnectTimeout(2*1000);
+					connection.setReadTimeout(2*1000);*/
 					connection.setUseCaches(true);
 					connection.setRequestMethod("GET");
 					connection.connect();

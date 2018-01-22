@@ -1,31 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.fanfull.fff"
+    android:sharedUserId="android.uid.system"
+    android:installLocation="auto"
     android:versionCode="2"
-    android:versionName="v1.1.4" >
+    android:versionName="v1.1.6" >
 
     <!-- android:sharedUserId="android.uid.system" -->
-    <uses-permission android:name="android.permission.SHUTDOWN" />
 
     <uses-sdk
         android:minSdkVersion="10"
-        android:targetSdkVersion="10" />
+        android:targetSdkVersion="19" />
 
     <permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
 
-    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <!-- 网络相关 -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+    <!-- 自动关机 -->
+    <uses-permission android:name="android.permission.SHUTDOWN" />
 
     <!-- 判断Activity是否在前台需要 -->
     <uses-permission android:name="android.permission.GET_TASKS" />
+
     <!-- 熄屏亮屏  android.Manifest.permission.DEVICE_POWER -->
 
     <application
@@ -37,7 +42,11 @@
         <activity
             android:name="com.fanfull.activity.StartActivity"
             android:label="@string/app_name" >
-            
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name="com.fanfull.activity.LoginActivity"
@@ -163,45 +172,24 @@
         <activity
             android:name="com.fanfull.activity.scan_lot.LotMainActivity"
             android:label="@string/app_name"
-            android:launchMode="singleTask" >
+            android:launchMode="standard" >
         </activity>
-
-        <!-- 批量 任务 -->
-        <activity
-            android:name="com.fanfull.task.LotInOutStoreTask"
-            android:label="@string/app_name"
-            android:launchMode="singleTask" >
-        </activity>
-
-        <!-- 批量清点 -->
-        <activity
-            android:name="com.fanfull.activity.LotCount"
-            android:label="@string/app_name"
-            android:launchMode="singleTask" >
-        </activity>
-        <!-- 批量入库 -->
+        <!-- 批量扫描 -->
         <activity
             android:name="com.fanfull.activity.scan_lot.LotScanActivity"
             android:label="@string/app_name"
             android:launchMode="standard" >
         </activity>
-        <!-- 批量出库 -->
+        <!-- 遥控入库 -->
         <activity
-            android:name="com.fanfull.activity.scan_lot.LotOutBank"
+            android:name="com.fanfull.activity.scan_lot.YkInstoreActivity"
             android:label="@string/app_name"
-            android:launchMode="singleTask" >
+            android:launchMode="standard" >
         </activity>
-        <!-- 扫描旧条码 -->
+        <!-- 遥控出库  android:theme="@style/Act_Transparent" -->
         <activity
-            android:name="com.fanfull.activity.changebag.OldBarView"
-            android:label="@string/app_name"
-            android:launchMode="singleTask" >
-        </activity>
-        <!-- 重新封袋 -->
-        <activity
-            android:name="com.fanfull.activity.changebag.RecoverView"
-            android:label="@string/app_name"
-            android:launchMode="singleTask" >
+            android:name="com.fanfull.activity.scan_lot.YkOutstoreActivity"
+            android:launchMode="standard" >
         </activity>
         <!-- 扫捆设置页面 -->
         <activity
@@ -353,12 +341,7 @@
             android:launchMode="singleTask" >
         </activity>
 
-        <!-- 遥控界面-25 -->
-        <activity
-            android:name="com.fanfull.activity.scan_lot.YkInstoreActivity"
-            android:label="@string/app_name"
-            android:launchMode="standard" >
-        </activity>
+        
 
         <!-- 出库处理 -->
         <activity
@@ -381,13 +364,6 @@
         <!-- android:theme="@style/Act_Transparent" -->
 
 
-        <!-- 遥控出库 -->
-        <activity
-            android:name="com.fanfull.activity.scan_general.YkOutstoreActivityctivity"
-            android:launchMode="singleTask"
-            android:theme="@style/Act_Transparent" >
-        </activity>
-
         <!-- 复制EPC -->
         <activity
             android:name="com.fanfull.activity.other.CopyEpcActivity"
@@ -397,11 +373,6 @@
         <activity
             android:name="com.mvp.center.CenterActivity"
             android:launchMode="singleTask" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name="com.mvp.baglink.BagLinkActivity"
@@ -465,11 +436,6 @@
                 <category android:name="android.intent.category.HOME" />
             </intent-filter>
         </receiver>
-        <receiver android:name="com.mvp.center.NetReceiver" >
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-            </intent-filter>
-        </receiver>
 
         <activity
             android:name="com.fanfull.activity.scan_general.QueryBagCirculationActivity"
@@ -496,7 +462,11 @@
         <activity
             android:name="com.mvp.hand.RefreshScreenActivity"
             android:launchMode="singleTask" />
-
-        <service android:name="com.mvp.center.ConnectService" />
+        <activity
+            android:name="com.fanfull.activity.setting.SettingTransferActivity"
+            android:label="@string/title_activity_setting_transfer"
+            android:launchMode="singleTask" >
+        </activity>
     </application>
+
 </manifest>

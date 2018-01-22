@@ -59,6 +59,9 @@ public class RefreshScreenPresenter implements Presenter {
 						mRefreshScreenView.scanBagSuccess(bagID);
 					}
 				});
+				/*if (screenID != null) {
+					getPileInfo();
+				}*/
 			}
 
 			@Override
@@ -95,6 +98,9 @@ public class RefreshScreenPresenter implements Presenter {
 						mRefreshScreenView.scanScreenSuccess(screenID);
 					}
 				});
+				if (bagID != null) {
+					getPileInfo();
+				}
 			}
 
 			@Override
@@ -115,10 +121,10 @@ public class RefreshScreenPresenter implements Presenter {
 	 * 写屏信息
 	 */
 	@Override
-	public void writeScreen(PileInfo info) {
+	public void writeScreen() {
 		if (pileInfo != null) {
 			WriteScreenTask task = new WriteScreenTask(mRefreshScreenView,
-					pileInfo.getBagType(), pileInfo.getMoneyType()+"|"+pileInfo.getMoneyModel(),
+					pileInfo.getBagType(), pileInfo.getMoneyType(),
 					pileInfo.getTotalAmount(), pileInfo.getBagNum(),
 					pileInfo.getRefresh_flag(), 1, screenID,
 					pileInfo.getPileName(), pileInfo.getSeries(),
@@ -129,7 +135,7 @@ public class RefreshScreenPresenter implements Presenter {
 
 	private PileInfo pileInfo;
 
-	public void getPileInfo() {
+	private void getPileInfo() {
 		if (mNet.isWifiConnected()) {
 			String[] keys = { "bagID", "screenID" };
 			String[] values = { bagID, screenID };
@@ -158,54 +164,51 @@ public class RefreshScreenPresenter implements Presenter {
 
 				@Override
 				public void onFailure() {
-					localFind();
+					postError("网络错误");
 				}
 			});
 		} else {
-			localFind();
-		}
-	}
+			QueryBuilder<BagInfo> bagInfoQuery = mDb.getBagInfoDao()
+					.queryBuilder()
+					.where(BagInfoDao.Properties.BagID.eq(bagID));
+			List<BagInfo> bagInfoList = bagInfoQuery.list();
+			if (bagInfoList.size() != 0) {
+				BagInfo bagInfo = bagInfoList.get(0);
 
-	private void localFind(){
-		QueryBuilder<BagInfo> bagInfoQuery = mDb.getBagInfoDao()
-				.queryBuilder()
-				.where(BagInfoDao.Properties.BagID.eq(bagID));
-		List<BagInfo> bagInfoList = bagInfoQuery.list();
-		if (bagInfoList.size() != 0) {
-			BagInfo bagInfo = bagInfoList.get(0);
+				QueryBuilder<ScreenInfo> screenInfoQuery = mDb
+						.getScreenInfoDao().queryBuilder()
+						.where(ScreenInfoDao.Properties.ScreenID.eq(screenID));
+				List<ScreenInfo> screenInfoList = screenInfoQuery.list();
+				if (screenInfoList.size() != 0) {
+					ScreenInfo screenInfo = screenInfoList.get(0);
 
-			QueryBuilder<ScreenInfo> screenInfoQuery = mDb
-					.getScreenInfoDao().queryBuilder()
-					.where(ScreenInfoDao.Properties.ScreenID.eq(screenID));
-			List<ScreenInfo> screenInfoList = screenInfoQuery.list();
-			if (screenInfoList.size() != 0) {
-				ScreenInfo screenInfo = screenInfoList.get(0);
+					if (!bagInfo.getPileID().equals(screenInfo.getPileID())) {
+						postError("屏位置错误");
+					} else {
+						String pileID = bagInfo.getPileID();
+						QueryBuilder<PileInfo> pileInfoQuery = mDb
+								.getPileInfoDao()
+								.queryBuilder()
+								.where(PileInfoDao.Properties.PileID.eq(pileID));
+						pileInfo = pileInfoQuery.list().get(0);
+						mHandler.post(new Runnable() {
 
-				if (!bagInfo.getPileID().equals(screenInfo.getPileID())) {
-					postError("屏位置错误");
+							@Override
+							public void run() {
+								mRefreshScreenView.refreshData(pileInfo);
+							}
+						});
+					}
 				} else {
-					String pileID = bagInfo.getPileID();
-					QueryBuilder<PileInfo> pileInfoQuery = mDb
-							.getPileInfoDao()
-							.queryBuilder()
-							.where(PileInfoDao.Properties.PileID.eq(pileID));
-					pileInfo = pileInfoQuery.list().get(0);
-					mHandler.post(new Runnable() {
-
-						@Override
-						public void run() {
-							mRefreshScreenView.refreshData(pileInfo);
-						}
-					});
+					postError("数据同步异常");
 				}
 			} else {
 				postError("数据同步异常");
 			}
-		} else {
-			postError("数据同步异常");
+
 		}
 	}
-	
+
 	@Override
 	public void light() {
 		ThreadPoolFactory.getNormalPool().execute(new LightTask(screenID));
