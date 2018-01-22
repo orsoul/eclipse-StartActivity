@@ -184,6 +184,7 @@ public class PickDoorActivity extends BaseActivity {
 		if (null == mListView || null == mCurrentAdapter || pos < 0) {
 			return;
 		}
+
 		mListView.setSelection(0);
 		mCurrentAdapter.setSection(0);
 		mCurrentAdapter.notifyDataSetChanged();

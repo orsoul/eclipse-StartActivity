@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -25,8 +24,8 @@ import com.fanfull.contexts.TYPE_OP;
 import com.fanfull.factory.ThreadPoolFactory;
 import com.fanfull.fff.R;
 import com.fanfull.hardwareAction.OLEDOperation;
-import com.fanfull.hardwareAction.UHFOperation;
 import com.fanfull.op.RFIDOperation;
+import com.fanfull.op.UHFOperation;
 import com.fanfull.socket.RecieveListener;
 import com.fanfull.socket.RecieveListenerAbs;
 import com.fanfull.socket.ReplyParser;
@@ -159,31 +158,33 @@ public class YkInstoreActivity extends BaseActivity {
 			mDiaUtil.showProgressDialog();
 
 			// 等待线程, 超时未得到回复 退出
-//			ThreadPoolFactory.getNormalPool().execute(new Runnable() {
-//				@Override
-//				public void run() {
-//					SystemClock.sleep(5000);
-//					if (mDiaUtil.progressDialogIsShowing()) {
-//						YkInstoreActivity.this.runOnUiThread(new Runnable() {
-//							@Override
-//							public void run() {
-//								mDiaUtil.dismissProgressDialog();
-//								ToastUtil.showToastInCenter("天线柜未准备好");
-//								finish();
-//							}
-//						});
-//					}// end if
-//				}
-//			});
+			// ThreadPoolFactory.getNormalPool().execute(new Runnable() {
+			// @Override
+			// public void run() {
+			// SystemClock.sleep(5000);
+			// if (mDiaUtil.progressDialogIsShowing()) {
+			// YkInstoreActivity.this.runOnUiThread(new Runnable() {
+			// @Override
+			// public void run() {
+			// mDiaUtil.dismissProgressDialog();
+			// ToastUtil.showToastInCenter("天线柜未准备好");
+			// finish();
+			// }
+			// });
+			// }// end if
+			// }
+			// });
 		} else if (1 == SocketConnet.getInstance().getConnectedDoorNum()) {
 			findView();
 			mVTitle.setText(TEXT_IN_STORE_2);
 			mStepPointer = STEP_IN_START_2;
 			OLEDOperation.getInstance().showTextOnOled("按确认键开始", "完整券入库");
+			mBtnHandScan.setText("摆动");
 		} else if (2 == SocketConnet.getInstance().getConnectedDoorNum()) {
 			findView();
 			mVTitle.setText(TEXT_IN_STORE_3);
 			mStepPointer = STEP_IN_START_3;
+			mBtnHandScan.setText("摆动");
 			OLEDOperation.getInstance().showTextOnOled("按确认键开始", "残损券入库");
 		} else {
 			findView();
@@ -291,8 +292,8 @@ public class YkInstoreActivity extends BaseActivity {
 				// 预扫描
 				Intent intent = new Intent(YkInstoreActivity.this,
 						LotScanActivity.class);
-//				intent.putExtra(MyContexts.KEY_OPERATION_TYPE,
-//						LotScanActivity.TYPE_PRE_SCAN);
+				// intent.putExtra(MyContexts.KEY_OPERATION_TYPE,
+				// LotScanActivity.TYPE_PRE_SCAN);
 				// startActivity(intent);
 				intent.putExtra(TYPE_OP.KEY_TYPE, mOptype);
 				startActivityForResult(intent, LotScanActivity.TYPE_PRE_SCAN);
@@ -307,7 +308,7 @@ public class YkInstoreActivity extends BaseActivity {
 				startActivityForResult(intent, LotScanActivity.TYPE_MEND_SCAN);
 			} else {
 				SocketConnet.getInstance().communication(
-						SendTask.CODE_YK_RESET_IN);
+						SendTask.CODE_YK_SWING_IN);
 				waitReply(v.getId(), MSG_YK_REPLY);
 			}
 
@@ -410,6 +411,7 @@ public class YkInstoreActivity extends BaseActivity {
 
 	@Override
 	protected void onDestroy() {
+		UHFOperation.getInstance().close();
 		OLEDOperation.getInstance().close();
 		super.onDestroy();
 	}
@@ -453,13 +455,13 @@ public class YkInstoreActivity extends BaseActivity {
 					new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface arg0, int arg1) {
-							mDiaUtil.showProgressDialog();
 							mDiaUtil.setProgressDialogCancelListener(new DialogInterface.OnCancelListener() {
 								@Override
 								public void onCancel(DialogInterface dialog) {
 									sacnningPallet = false;
 								}
 							});
+							mDiaUtil.showProgressDialog("正在扫描袋锁...");
 							scanSalver();
 						}
 					});
@@ -649,11 +651,12 @@ public class YkInstoreActivity extends BaseActivity {
 				Message msg = mHandler.obtainMessage();
 				msg.what = MSG_SCAN_BAGID_FAILED;
 				byte[] bagIdBuf = new byte[12];
-				if (RFIDOperation.getInstance().readNFCInTime(0x4, bagIdBuf, 1000, null)) {
+				if (RFIDOperation.getInstance().readNFCInTime(0x4, bagIdBuf,
+						1000, null)) {
 					msg.obj = bagIdBuf;
 					msg.what = MSG_SCAN_BAGID_SUCCESS;
 				}
-				
+
 				mHandler.sendMessage(msg);
 				// mDiaUtil.dismissProgressDialog();
 				haveTaskRunning = false;
@@ -682,19 +685,43 @@ public class YkInstoreActivity extends BaseActivity {
 			@Override
 			public void run() {
 				haveTaskRunning = true;
-				UHFOperation uhfOperation = UHFOperation.getInstance();
-				sacnningPallet = true;
-				for (int i = 0; i < 60 && sacnningPallet; i++) {
-					if (uhfOperation.findOne()) {
-						StaticString.YK_BAGID = ArrayUtils
-								.bytes2HexString(uhfOperation.mEPC);
-						SocketConnet.getInstance().communication(
-								SendTask.CODE_YK_START_IN);
-						waitReply(R.id.btn_yk_go, MSG_YK_REPLY);
-						break;
+				UHFOperation.getInstance().open(false);
+				if (UHFOperation.getInstance().readUHFInTime(
+						UHFOperation.MB_EPC, 0x02, UHFOperation.sEPC, 4000)) {
+
+					StaticString.YK_BAGID = ArrayUtils
+							.bytes2HexString(UHFOperation.sEPC);
+					mDiaUtil.setProgressDialogTitle("正在通讯...");
+					if (SocketConnet.getInstance().communication(
+							SendTask.CODE_YK_START_IN)) {
+						YkInstoreActivity.this.runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								waitReply(R.id.btn_yk_go, MSG_YK_REPLY);
+							}
+						});
+					} else {
+						ToastUtil.showToastOnUiThreadInCenter("指令发送失败",
+								YkInstoreActivity.this);
 					}
-					SystemClock.sleep(50);
+				} else {
+					ToastUtil.showToastOnUiThreadInCenter("未读到数据",
+							YkInstoreActivity.this);
 				}
+
+				// UHFOperation uhfOperation = UHFOperation.getInstance();
+				// sacnningPallet = true;
+				// for (int i = 0; i < 60 && sacnningPallet; i++) {
+				// if (uhfOperation.findOne()) {
+				// StaticString.YK_BAGID = ArrayUtils
+				// .bytes2HexString(uhfOperation.mEPC);
+				// SocketConnet.getInstance().communication(
+				// SendTask.CODE_YK_START_IN);
+				// waitReply(R.id.btn_yk_go, MSG_YK_REPLY);
+				// break;
+				// }
+				// SystemClock.sleep(50);
+				// }
 				mDiaUtil.dismissProgressDialog();
 				haveTaskRunning = false;
 			}
@@ -868,7 +895,8 @@ public class YkInstoreActivity extends BaseActivity {
 			case MSG_SCAN_BAGID_SUCCESS:
 				LogsUtil.d(TAG, "MSG_SCAN_BAGID_SUCCESS");
 				mDiaUtil.dismissProgressDialog();
-				StaticString.bagid = ArrayUtils.bytes2HexString((byte[]) msg.obj);
+				StaticString.bagid = ArrayUtils
+						.bytes2HexString((byte[]) msg.obj);
 				SocketConnet.getInstance().communication(
 						SendTask.CODE_QUERY_SALVER_INFO,
 						new String[] { StaticString.bagid }); // 查询 混托盘 信息
@@ -997,7 +1025,7 @@ public class YkInstoreActivity extends BaseActivity {
 				// 全自动 天线
 				Message msg = mHandler.obtainMessage();
 				msg.obj = recString;
-//				msg.what = MSG_DOOR_READY_AUTO;
+				// msg.what = MSG_DOOR_READY_AUTO;
 				msg.what = MSG_DOOR_READY;
 				mHandler.sendMessage(msg);
 			}

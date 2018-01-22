@@ -49,7 +49,7 @@ public class CenterActivity extends BaseActivity implements OnClickListener,
 		mPresenter = new CenterPresenter(this);
 		//mPresenter.getPermission();
 	}
-	private boolean isPause = true;
+	private boolean isPause = false;
 	
 	
 	public static final String CONNECTIVITY_CHANGE_ACTION = "android.net.conn.CONNECTIVITY_CHANGE";
@@ -57,9 +57,7 @@ public class CenterActivity extends BaseActivity implements OnClickListener,
 	@Override
 	protected void onStart() {
 		if(isPause){
-			sync.setImageResource(R.drawable.coverbag_checked_failed);
-			mDiaUtil.showProgressDialog("更新数据中");
-			mPresenter.checkSyncStatus(this);
+			mPresenter.checkSyncStatus(this);	
 			isPause = false;
 		}
 		super.onStart();
@@ -139,6 +137,8 @@ public class CenterActivity extends BaseActivity implements OnClickListener,
 		mDiaUtil.dismissProgressDialog();
 		if (response.isSuccess()) {
 			refresh_flag = false;
+			sync.setImageResource(R.drawable.coverbag_checked_failed);
+			mDiaUtil.showProgressDialog("更新数据中");
 			mPresenter.download();	
 		} else {
 			sync.setImageResource(R.drawable.coverbag_checked);

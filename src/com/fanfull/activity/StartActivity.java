@@ -62,6 +62,8 @@ public class StartActivity extends Activity {
 		TextView tvVersionName = (TextView) findViewById(R.id.tv_start_activity_versionname);
 		tvVersionName.setText(BaseApplication.getVersionName());
 
+		// 多道天线
+		SPUtils.putBoolean(MyContexts.KEY_LOT_DOOR, false);
 		// wifi 是否启用
 		boolean wifiEnable = SPUtils.getBoolean(MyContexts.KEY_WIFI_ENABLE,
 				true);
@@ -162,16 +164,16 @@ public class StartActivity extends Activity {
 					}
 				}
 				if (3 <= i) {
-					ToastUtil.showToastInCenter(getResources().getString(
-							R.string.text_init_rfid_failed));
+					ToastUtil.showToastOnUiThreadInCenter(getResources().getString(
+							R.string.text_init_rfid_failed), StartActivity.this);
 					finish();
 					return;
 				}
 
 				if (SerialPortOperation.isEnable()) {
 					if (!SerialPortOperation.open(false)) {
-						ToastUtil.showToastInCenter(getResources().getString(
-								R.string.text_init_serial_failed));
+						ToastUtil.showToastOnUiThreadInCenter(getResources().getString(
+								R.string.text_init_serial_failed), StartActivity.this);
 					}
 				}
 

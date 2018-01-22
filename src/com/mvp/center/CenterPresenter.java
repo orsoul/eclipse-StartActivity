@@ -11,7 +11,6 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.util.Log;
 
 import com.db.BagInfoDao;
@@ -73,10 +72,6 @@ public class CenterPresenter implements Presenter {
 						mCenterView.syncStatus(response);
 					}
 				});
-				UploadService service = new UploadService();
-				service.upload1();
-				SystemClock.sleep(1000 * 2);
-				service.upload2();
 			}
 
 			@Override
@@ -84,7 +79,6 @@ public class CenterPresenter implements Presenter {
 				postError("网络错误");
 			}
 		});
-		
 	}
 
 	@Override

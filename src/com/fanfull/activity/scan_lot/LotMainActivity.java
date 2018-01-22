@@ -15,7 +15,6 @@ import com.fanfull.base.BaseActivity;
 import com.fanfull.contexts.MyContexts;
 import com.fanfull.contexts.StaticString;
 import com.fanfull.contexts.TYPE_OP;
-import com.fanfull.factory.ThreadPoolFactory;
 import com.fanfull.fff.R;
 import com.fanfull.socket.RecieveListenerAbs;
 import com.fanfull.socket.SendTask;
@@ -28,10 +27,7 @@ import com.fanfull.utils.ToastUtil;
 import com.fanfull.utils.ViewUtil;
 
 /**
- * @date 16/6-2015 14:15
- * @author lenovo
- * @describe 批量扫描主页面
- * @describe 包含3个页面 ，批量入库，批量出库，批量清点
+ * 批量扫描选择界面
  */
 public class LotMainActivity extends BaseActivity {
 
@@ -43,19 +39,24 @@ public class LotMainActivity extends BaseActivity {
 	private String info = null;
 
 	private static final int MSG_REPLY = 0;
-	private static final int MSG_NO_TASK = 1;
 
-	private static final int MSG_HAVE_TASK_OUT = 3;
-	private static final int MSG_NO_TASK_OUT = 4;
-	private static final int MSG_TIMEOUT_TASK_OUT = 5;
+	private static final int MSG_TIMEOUT_OUT = 5;
 
-	private final int CHECK_LOGIN_REQUEST_CODE = 9999;
+	/** 从 复核登录 回来 */
+	public static final int REQUEST_CODE_CHECK_LOGIN = 9999;
+	/** 从 选择 天线 回来 */
+	public static final int REQUEST_CODE_PICK_DOOR = 9998;
+	/** 从 后置天线回来 */
+	public static final int REQUEST_CODE_POST_DOOR = 9997;
 
 	private int mInStoreType;
 
 	private View mClickView;
 	// private boolean isChecked;
 	private MyReciever mReciever;
+	
+	private int mDoorNum;
+	private int mSendCmd;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -126,7 +127,7 @@ public class LotMainActivity extends BaseActivity {
 			intent = new Intent(getApplicationContext(),
 					CheckUserInfoActivity.class);
 			// startActivity(intent);
-			startActivityForResult(intent, CHECK_LOGIN_REQUEST_CODE);
+			startActivityForResult(intent, REQUEST_CODE_CHECK_LOGIN);
 			return;
 		}
 
@@ -134,7 +135,6 @@ public class LotMainActivity extends BaseActivity {
 
 		switch (v.getId()) {
 		case R.id.btn_lot_scan_in_door:// 天线柜入库
-
 			if (SPUtils.getBoolean(MyContexts.KEY_PRESCAN_ENABLE, false)) {
 				mInStoreType = TYPE_OP.IN_STORE_DOOR_PRE;// 启用 预扫描
 			} else {
@@ -145,13 +145,27 @@ public class LotMainActivity extends BaseActivity {
 				// 启用了多道天线柜, 选择天线柜
 				intent = new Intent(this, PickDoorActivity.class);
 				intent.putExtra(TYPE_OP.KEY_TYPE, TYPE_OP.IN_STORE_DOOR);
-				startActivityForResult(intent, TYPE_OP.IN_STORE_DOOR);
+				startActivityForResult(intent, REQUEST_CODE_PICK_DOOR);
 				return;
 			}
 
 			mDiaUtil.showProgressDialog();
 			SocketConnet.getInstance()
 					.communication(SendTask.CODE_IN_STORE_NEW);
+			break;
+		case R.id.btn_lot_scan_out_door:// 天线柜出库
+			mInStoreType = TYPE_OP.OUT_STORE_DOOR;
+			if (SPUtils.getBoolean(MyContexts.KEY_LOT_DOOR, false)) {
+				// 启用了多道天线柜， 选择天线柜
+				intent = new Intent(this, PickDoorActivity.class);
+				intent.putExtra(TYPE_OP.KEY_TYPE, TYPE_OP.OUT_STORE_DOOR);
+				startActivityForResult(intent, REQUEST_CODE_PICK_DOOR);
+				return;
+			}
+			mDiaUtil.showProgressDialog();
+			SocketConnet.getInstance().communication(
+					SendTask.CODE_OUT_STORE_NEW);
+			// ToastUtil.showToastInCenter("功能完善中，敬请期待");
 			break;
 		case R.id.btn_lot_scan_in_hand:// 手持批量入库
 			mInStoreType = TYPE_OP.IN_STORE_HAND_LOT;
@@ -159,19 +173,6 @@ public class LotMainActivity extends BaseActivity {
 			mDiaUtil.showProgressDialog();
 			SocketConnet.getInstance()
 					.communication(SendTask.CODE_IN_STORE_NEW);
-			break;
-		case R.id.btn_lot_scan_out_door:// 天线柜出库
-
-			//ToastUtil.showToastInCenter("功能完善中，敬请期待");
-
-			mInStoreType = TYPE_OP.OUT_STORE_DOOR;
-			if (SPUtils.getBoolean(MyContexts.KEY_LOT_DOOR, false)) {
-				// 启用了多道天线柜， 选择天线柜
-				intent = new Intent(this, PickDoorActivity.class);
-				intent.putExtra(TYPE_OP.KEY_TYPE, TYPE_OP.OUT_STORE_DOOR);
-				startActivityForResult(intent, TYPE_OP.OUT_STORE_DOOR);
-				return;
-			}
 			break;
 		case R.id.btn_lot_scan_out_hand:// 手持批量出库
 			mInStoreType = TYPE_OP.OUT_STORE_HAND_LOT;
@@ -200,29 +201,50 @@ public class LotMainActivity extends BaseActivity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		LogsUtil.d(TAG, "resultCode:" + resultCode);
+		LogsUtil.d(TAG, "requestCode:" + requestCode);
 
 		// 1. 从复核登录 回来
-		if (CHECK_LOGIN_REQUEST_CODE == requestCode) {
+		if (REQUEST_CODE_CHECK_LOGIN == requestCode) {
 			if (CheckUserInfoActivity.CHECK_SUCCESS_CODE == resultCode) {
 				// isChecked = true;
 				onClick(mClickView);
 			}
 			return;
+		} else if ((REQUEST_CODE_POST_DOOR == requestCode) || (REQUEST_CODE_POST_DOOR ==resultCode)) {
+			// 2. 从 后置天线 回来
+			LogsUtil.d(TAG, "从 后置天线 回来");
+//			SocketConnet.getInstance().connect(0);
+			SocketConnet.getInstance().setRecieveListener(mReciever);
+			mDoorNum = 0;
+			mDiaUtil.showProgressDialog("正在恢复连接到 前置服务");
+			
+			if (SocketConnet.getInstance().isConnect()) {
+				LogsUtil.d(TAG, "Socket isConnected");
+				SocketConnet.getInstance().close();
+			} else {
+				new Thread() {
+					public void run() {
+						SocketConnet.getInstance().connect(0);
+					};
+				}.start();
+			}
+			return;
 		}
 
-		// 2. 从选择 天线门回来
+		LogsUtil.d(TAG, "从 选择天线 回来");
+		// 3. 从选择 天线门回来
 		// isChecked = true;
-		final int operationType;
 		final int doorNum;
-		if (TYPE_OP.IN_STORE_DOOR == requestCode) {
-			operationType = SendTask.CODE_IN_STORE_NEW;
+		if (TYPE_OP.IN_STORE_DOOR == mInStoreType
+				|| TYPE_OP.IN_STORE_DOOR_PRE == mInStoreType) {
+			mSendCmd = SendTask.CODE_IN_STORE_NEW;
 			doorNum = resultCode;
-		} else if (TYPE_OP.OUT_STORE_DOOR == requestCode) {
-			operationType = SendTask.CODE_OUT_STORE;
+		} else if (TYPE_OP.OUT_STORE_DOOR == mInStoreType) {
+			mSendCmd = SendTask.CODE_OUT_STORE_NEW;
 			doorNum = resultCode + 1;
 		} else {
 			doorNum = -1;
-			operationType = -1;
+			mSendCmd = -1;
 		}
 
 		switch (doorNum) {
@@ -232,32 +254,50 @@ public class LotMainActivity extends BaseActivity {
 			SocketConnet.getInstance().setRecieveListener(mReciever);
 			int connectedDoorNum = SocketConnet.getInstance()
 					.getConnectedDoorNum();
-			LogsUtil.d(TAG, connectedDoorNum + "  doornum:" + doorNum);
+			LogsUtil.d(TAG, connectedDoorNum + "  doornum 0~2:" + doorNum);
 
 			// 如果 已经与 所选择的天线连接, 直接通讯
-			if (doorNum == SocketConnet.getInstance().getConnectedDoorNum()) {
-				SocketConnet.getInstance().communication(operationType);
+			if (doorNum == connectedDoorNum) {
+				SocketConnet.getInstance().communication(mSendCmd);
 				return;
 			}
 
 			// 切换天线 并 通讯
-			mDiaUtil.showProgressDialog();
-			ThreadPoolFactory.getNormalPool().execute(new Runnable() {
-				@Override
-				public void run() {
-					// 切换天线
-					if (SocketConnet.getInstance().connect(doorNum)) {
-						// 切换天线 成功, 进行通讯
-						SocketConnet.getInstance().communication(operationType);
-					} else {
-						// 切换天线 失败, 进行提示
-						mDiaUtil.dismissProgressDialog();
-						ToastUtil.showToastOnUiThreadInCenter("连接第 "
-								+ (doorNum + 1) + " 道天线失败,请检测网络!",
-								LotMainActivity.this);
-					}
-				}
-			});
+			mDoorNum = doorNum;
+			mDiaUtil.showProgressDialog("正在连接到" + (doorNum + 1) + "号 天线柜");
+			if (SocketConnet.getInstance().isConnect()) {
+				LogsUtil.d(TAG, "Socket isConnected");
+				SocketConnet.getInstance().close();
+			} else {
+				new Thread() {
+					public void run() {
+						SocketConnet.getInstance().connect(doorNum);
+					};
+				}.start();
+			}
+			
+//			ThreadPoolFactory.getNormalPool().execute(new Runnable() {
+//				@Override
+//				public void run() {
+//					// 切换天线
+//					if (SocketConnet.getInstance().connect(doorNum)) {
+//						// 切换天线 成功, 进行通讯
+//						if (!SocketConnet.getInstance().communication(taskType)) {
+//							mDiaUtil.dismissProgressDialog();
+//							ToastUtil.showToastOnUiThreadInCenter("发送数据失败",
+//									LotMainActivity.this);
+//						} else {
+//							SocketConnet.getInstance().setRecieveListener(mReciever);
+//						}
+//					} else {
+//						// 切换天线 失败, 进行提示
+//						mDiaUtil.dismissProgressDialog();
+//						ToastUtil.showToastOnUiThreadInCenter("连接第 "
+//								+ (doorNum + 1) + " 道天线失败,请检测网络!",
+//								LotMainActivity.this);
+//					}
+//				}
+//			});
 			break;
 		default:
 			super.onActivityResult(requestCode, resultCode, data);
@@ -309,6 +349,8 @@ public class LotMainActivity extends BaseActivity {
 		super.onDestroy();
 	}
 
+	private String mBankListJsonStr;
+
 	private class HandlerCallback implements Handler.Callback {
 		public boolean handleMessage(Message msg) {
 			mBtnInHand.setEnabled(true);
@@ -319,7 +361,7 @@ public class LotMainActivity extends BaseActivity {
 				recievStr = (String) msg.obj;
 			}
 
-			Intent intent;
+			Intent intent = null;
 			switch (msg.what) {
 			case MSG_REPLY:
 				mDiaUtil.dismissProgressDialog();
@@ -331,6 +373,38 @@ public class LotMainActivity extends BaseActivity {
 				}
 
 				String[] split = recievStr.split(" ");
+
+				/* 处理后置天线的回复 */
+				if (SocketConnet.getInstance().getConnectedDoorNum() != 0) {
+					if ("*38".equals(split[0])) {
+						
+						if (!"00".equals(split[1])) {
+							ToastUtil.showToastInCenter(" 天线柜未准备好");
+							return true;
+						}
+						
+						if (TYPE_OP.IN_STORE_DOOR == mInStoreType) {
+							// 后置天线 入库
+							mInStoreType = TYPE_OP.IN_STORE_DOOR_POST;
+							intent = new Intent(getApplicationContext(),
+									YkInstoreActivity.class);
+							intent.putExtra(MyContexts.KEY_BANK_LIST, split[1]);
+						} else if (TYPE_OP.OUT_STORE_DOOR == mInStoreType) {
+							// 后置天线 出库
+							mInStoreType = TYPE_OP.OUT_STORE_DOOR_POST;
+							intent = new Intent(getApplicationContext(),
+									YkOutstoreActivity.class);
+							intent.putExtra(MyContexts.KEY_BANK_LIST, split[2]);
+						} else {
+							return true;
+						}
+						intent.putExtra(TYPE_OP.KEY_TYPE, mInStoreType);
+						startActivityForResult(intent, REQUEST_CODE_POST_DOOR);
+					}
+					return true;
+				}
+
+				/* 处理 前置的回复 */
 				if (("*08".equals(split[0]) || "*28".equals(split[0]))
 						&& (0 == SocketConnet.getInstance()
 								.getConnectedDoorNum())) { // 有任务或批: 08任务 28批
@@ -350,18 +424,24 @@ public class LotMainActivity extends BaseActivity {
 						// 手持批量出库
 						intent = new Intent(getApplicationContext(),
 								LotScanActivity.class);
-					} else if (TYPE_OP.IN_STORE_DOOR == mInStoreType) {
-						// 门式入库
-						intent = new Intent(getApplicationContext(),
-								YkInstoreActivity.class);
-					} else {
+					} else if (TYPE_OP.IN_STORE_HAND_LOT == mInStoreType) {
 						// 手持批量入库
 						intent = new Intent(getApplicationContext(),
 								LotScanActivity.class);
+					} else if (TYPE_OP.OUT_STORE_DOOR == mInStoreType) {
+						// 门式出库
+						intent = new Intent(getApplicationContext(),
+								YkOutstoreActivity.class);
+						// intent.putExtra(MyContexts.KEY_BANK_LIST,
+						// mBankListJsonStr);
+					} else {
+						// 门式入库
+						intent = new Intent(getApplicationContext(),
+								YkInstoreActivity.class);
 					}
 				} else if ("*1000".equals(split[0]) && "02".equals(split[1])
 						&& "04".equals(split[2])) {
-					// *1000 02 04 01
+					// *1000 02 04 01 天线柜切换扫描模式
 					if ("00".equals(split[3])) {
 						ToastUtil.showToastInCenter("进入“锁”模式");
 					} else if ("01".equals(split[3])) {
@@ -375,27 +455,36 @@ public class LotMainActivity extends BaseActivity {
 				} else {
 					return true;
 				}
-				StaticString.pinumber = split[1];
+
 				intent.putExtra(TYPE_OP.KEY_TYPE, mInStoreType);
-				startActivity(intent);
+
+				if (TYPE_OP.IN_STORE_DOOR_POST == mInStoreType
+						|| TYPE_OP.OUT_STORE_DOOR_POST == mInStoreType) {
+//					startActivityForResult(intent, REQUEST_CODE_POST_DOOR);
+					return true;
+				} else {
+					StaticString.pinumber = split[1];
+					startActivity(intent);
+				}
 
 				break;
-			case MSG_NO_TASK:
-				intent = new Intent(getApplicationContext(),
-						LotScanActivity.class);
-				// intent.putExtra("KEY_PLAN_SCAN", 28);
-				startActivity(intent);
-				break;
-			case MSG_HAVE_TASK_OUT:
-				intent = new Intent(LotMainActivity.this, InStorePickTask.class);// 有任务进入任务列表
-				intent.putExtra("flag", true);// 判断是否存在任务
-				intent.putExtra(MyContexts.KEY_OPERATION_TYPE, 2);// 1表示批量入库
-																	// 2表示批量出库
-				startActivity(intent);
-				break;
-			case MSG_TIMEOUT_TASK_OUT:
+			case MSG_TIMEOUT_OUT:
+				
+				
+				if (SocketConnet.getInstance().getConnectedDoorNum() != 0) {
+					mDoorNum = 0;
+					SocketConnet.getInstance().close();
+//					if (!SocketConnet.getInstance().connect(0)) {
+//						mDiaUtil.showDialog("切换回前置失败");
+//						SoundUtils.playFailedSound();
+//						return true;
+//					}
+				}
+				
 				mDiaUtil.dismissProgressDialog();
-				mDiaUtil.showDialog(getResources().getString(
+//				mDiaUtil.showDialog(getResources().getString(
+//						R.string.text_recieve_timeout));
+				ToastUtil.showToastInCenter(getResources().getString(
 						R.string.text_recieve_timeout));
 				SoundUtils.playFailedSound();
 				break;
@@ -408,6 +497,30 @@ public class LotMainActivity extends BaseActivity {
 
 	private class MyReciever extends RecieveListenerAbs {
 		@Override
+		public void onConnect(String serverIp,  int serverPort) {
+			// TODO Auto-generated method stub
+			
+			if (StaticString.IP1.equals(serverIp) || StaticString.IP2.equals(serverIp)) {
+				// 切换天线 成功, 进行通讯
+				if (!SocketConnet.getInstance().communication(mSendCmd)) {
+					mDiaUtil.dismissProgressDialog();
+					ToastUtil.showToastOnUiThreadInCenter("发送数据失败",
+							LotMainActivity.this);
+				}
+				
+				return;
+			}
+			
+			
+			mDiaUtil.dismissProgressDialog();
+			if (null == serverIp) {
+				ToastUtil.showToastOnUiThreadInCenter("重连前置服务失败",
+						LotMainActivity.this);
+			}
+
+		}
+		
+		@Override
 		public void onRecieve(String recString) {
 			Message msg = mHandler.obtainMessage();
 			msg.obj = recString;
@@ -417,7 +530,18 @@ public class LotMainActivity extends BaseActivity {
 
 		@Override
 		public void onTimeout() {
-			mHandler.sendEmptyMessage(MSG_TIMEOUT_TASK_OUT);
+			mHandler.sendEmptyMessage(MSG_TIMEOUT_OUT);
+		}
+		
+		@Override
+		public void onDisconnect() {
+			// TODO Auto-generated method stub
+//			mDiaUtil.dismissProgressDialog();
+			new Thread() {
+				public void run() {
+					SocketConnet.getInstance().connect(mDoorNum);
+				};
+			}.start();
 		}
 	}
 }

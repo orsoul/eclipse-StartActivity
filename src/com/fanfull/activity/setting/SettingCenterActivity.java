@@ -43,7 +43,6 @@ public class SettingCenterActivity extends BaseActivity {
 	private ViewSettingItem mVCheckSmallSrceen;
 	private ViewSettingItem mVDoor;
 	private ViewSettingItem mVCheckLogin;
-	private ViewSettingItem mInkScreen;
 
 	private TextView mIpSettingtv;
 	private TextView mPowerSettingtv;
@@ -53,6 +52,7 @@ public class SettingCenterActivity extends BaseActivity {
 	private TextView mReadLogView;
 
 	private int mCurrentFocus = 0;
+	private TextView mTvTransfer;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -93,14 +93,6 @@ public class SettingCenterActivity extends BaseActivity {
 		mVDoor = (ViewSettingItem) findViewById(R.id.v_setting_check_lot_door);
 		mVDoor.setCheckedChangedListener(listener);
 		mVDoor.setChecked(openLotDoor);
-		
-		//离线模式
-		boolean inkScreen = SPUtils.getBoolean(getApplicationContext(),
-				MyContexts.INK_SCREEN_DOWNLOAD, false);
-		mInkScreen = (ViewSettingItem) findViewById(R.id.v_setting_ink_screen);
-		mInkScreen.setChecked(inkScreen);
-		mInkScreen.setCheckedChangedListener(listener);
-		
 		// 登录复核
 		boolean checkLogin = SPUtils.getBoolean(MyContexts.KEY_CHECK_LOGIN,
 				true);
@@ -126,15 +118,17 @@ public class SettingCenterActivity extends BaseActivity {
 		mPowerSettingtv = (TextView) findViewById(R.id.tv_setting_item_set_power);
 		mInitSettingtv = (TextView) findViewById(R.id.tv_setting_item_init_bag);
 		mFingerSettingtv = (TextView) findViewById(R.id.tv_setting_item_manager_friger);
+		mTvTransfer = (TextView) findViewById(R.id.tv_setting_item_transfer);
 		mShutdownTv = (TextView) findViewById(R.id.tv_setting_item_shutdown);
 		mReadLogView = (TextView) findViewById(R.id.tv_setting_item_manager_log);
 
-		mReadLogView.setOnClickListener(this);
+		mInitSettingtv.setOnClickListener(this);
 		mIpSettingtv.setOnClickListener(this);
 		mPowerSettingtv.setOnClickListener(this);
-		mInitSettingtv.setOnClickListener(this);
-		mShutdownTv.setOnClickListener(this);
 		mFingerSettingtv.setOnClickListener(this);
+		mTvTransfer.setOnClickListener(this);
+		mShutdownTv.setOnClickListener(this);
+		mReadLogView.setOnClickListener(this);
 
 		// 隐藏功能 复制EPC
 		mReadLogView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -202,6 +196,11 @@ public class SettingCenterActivity extends BaseActivity {
 		case R.id.tv_setting_item_shutdown:
 			intent = new Intent(SettingCenterActivity.this,
 					SettingShutDownActivity.class);
+			startActivity(intent);
+			break;
+		case R.id.tv_setting_item_transfer:
+			intent = new Intent(SettingCenterActivity.this,
+					SettingTransferActivity.class);
 			startActivity(intent);
 			break;
 		case R.id.tv_setting_item_manager_log:
@@ -379,19 +378,15 @@ public class SettingCenterActivity extends BaseActivity {
 				}
 				break;
 			case R.id.v_setting_check_login: // 登录复核
-				SPUtils.putBoolean(MyContexts.KEY_CHECK_LOGIN, isChecked);
-				if (isChecked) {
-					StaticString.userIdcheck = null;
-				} else {
-					StaticString.userIdcheck = StaticString.userId;
-				}
+//				SPUtils.putBoolean(MyContexts.KEY_CHECK_LOGIN, isChecked);
+//				if (isChecked) {
+//					StaticString.userIdcheck = null;
+//				} else {
+//					StaticString.userIdcheck = StaticString.userId;
+//				}
 				break;
 			case R.id.v_setting_check_bunch:// 扫捆
 				SPUtils.putBoolean(MyContexts.KEY_SCAN_BUNCH, isChecked);
-				break;
-			case R.id.v_setting_ink_screen:
-				SPUtils.putBoolean(getApplicationContext(),
-						MyContexts.INK_SCREEN_DOWNLOAD, isChecked);
 				break;
 			}
 		}

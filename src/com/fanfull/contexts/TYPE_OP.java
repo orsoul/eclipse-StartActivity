@@ -23,6 +23,8 @@ public interface TYPE_OP {
 	int IN_STORE_HAND = 24;
 	/** 手持 老袋入库 */
 	int IN_STORE_OLD_BAG = 25;
+	/** 后置天线柜 入库，目前只用于青岛 */
+	int IN_STORE_DOOR_POST = 26;
 	
 	/** 天线柜出库 */
 	int OUT_STORE_DOOR = 31;
@@ -32,6 +34,8 @@ public interface TYPE_OP {
 	int OUT_STORE_HAND = 33;
 	/** 手持出库，老袋 */
 	int OUT_STORE_OLD_BAG = 34;
+	/** 后置天线柜出库，目前只用于青岛 35 */
+	int OUT_STORE_DOOR_POST = 35;
 	
 	/** 开袋 */
 	int OPEN_BAG = 41;

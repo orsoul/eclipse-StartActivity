@@ -64,21 +64,14 @@ public class MainActivity extends BaseActivity {
 		Intent intent = null;
 		switch (v.getId()) {
 		case R.id.btn_main_general_scan:// 一般扫描
-			intent = new Intent(this, GeneralActivity.class);// General.class
+			intent = new Intent(this, GeneralActivity.class);
 			startActivity(intent);
-		//	finish();
-			// 一般扫描
 			break;
-		case R.id.btn_main_lot_scan:
-			// 批量扫描
-			intent = new Intent(this, LotMainActivity.class);// LotScanActivity,LotScan
+		case R.id.btn_main_lot_scan: // 批量扫描
+			intent = new Intent(this, LotMainActivity.class);
 			startActivity(intent);
-		//	finish();
 			break;
-		case R.id.btn_main_check:
-//			intent = new Intent(this, NfcEmptyBagManagerActivity.class);// EnableBagActivity,LotScan
-//			startActivity(intent);
-			
+		case R.id.btn_main_check:// 库内管理
 			intent = new Intent(this, CenterActivity.class);
 			startActivity(intent);
 			//ToastUtil.showToastInCenter("功能测试中，敬请期待");
@@ -86,7 +79,6 @@ public class MainActivity extends BaseActivity {
 		case R.id.btn_main_setting:
 			intent = new Intent(this, SettingCenterActivity.class);// 设置页面
 			startActivity(intent);
-//			finish();
 			break;
 		
 		default:

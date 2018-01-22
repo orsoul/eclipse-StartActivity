@@ -2,7 +2,6 @@ package com.fanfull.activity.scan_general;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -12,6 +11,7 @@ import org.json.JSONObject;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.SparseArray;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -23,21 +23,21 @@ import com.fanfull.contexts.MyContexts;
 import com.fanfull.entity.BankInfoBean;
 import com.fanfull.factory.ThreadPoolFactory;
 import com.fanfull.fff.R;
-import com.fanfull.op.RFIDOperation;
 import com.fanfull.op.RFIDReadTask;
 import com.fanfull.socket.RecieveListenerAbs;
 import com.fanfull.socket.SendTask;
 import com.fanfull.socket.SocketConnet;
+import com.fanfull.utils.AESCoder;
 import com.fanfull.utils.ArrayUtils;
 import com.fanfull.utils.DateUtils;
 import com.fanfull.utils.DialogUtil;
 import com.fanfull.utils.LogsUtil;
 import com.fanfull.utils.SPUtils;
-import com.fanfull.utils.ToastUtil;
 import com.fanfull.utils.ViewUtil;
 
 /**
  * 袋流转 查询。
+ * 
  * @step1 扫描NFC中封签事件码
  * @step2 上传事件码 并 下拉流转记录进行显示
  * 
@@ -53,10 +53,13 @@ public class QueryBagCirculationActivity extends BaseActivity {
 	private final int MSG_GET_BAG_CIRCULATION = 3;
 	/** 扫描NFC封签事件码 */
 	private final int MSG_SCAN_EVENT_CODE = 4;
+	/** 扫描NFC中的TID */
+	private final int MSG_SCAN_NFC_TID = 5;
 
 	private JSONObject mBankCodeJson;
 	private JSONArray mJsonArray;
-	private HashMap<Integer, String> map;
+	/** key为功能号，value为功能名称 */
+	private SparseArray<String> map;
 	private List<BankInfoBean> mBankInfoBeanList = new ArrayList<BankInfoBean>();
 
 	private ListView mListview;
@@ -65,28 +68,20 @@ public class QueryBagCirculationActivity extends BaseActivity {
 	private ReadNFCTask mReadNFCtNfcTask;
 	/** 封签事件码 30byte */
 	private byte[] mEventCodeBuf;
+	/** NFC中保存的锁片tid 6byte */
+	private byte[] mPieceTid;
 	private Button btnScan;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
-		boolean openTemp = RFIDOperation.getInstance().openTemp(false);
-		if (!openTemp) {
-			ToastUtil.showToastInCenter(getResources().getString(
-					R.string.text_init_rfid_failed));
-			return;
-		}
-
 		mDiaUtil = new DialogUtil(this);
 		mHandler = new Handler(new MyHandlerCallback());
 
 		/* 设置 读取NFC */
-		mEventCodeBuf = new byte[30];// 
+		mEventCodeBuf = new byte[30];//
+		mPieceTid = new byte[6];//
 		mReadNFCtNfcTask = new ReadNFCTask();
-		mReadNFCtNfcTask.setDataBuf(mEventCodeBuf);
-		mReadNFCtNfcTask.setSa(0x30); // 封签事件码 存储地址
-		mReadNFCtNfcTask.setRunTime(4000);
-		mReadNFCtNfcTask.setMsgWhat(MSG_SCAN_EVENT_CODE);
 
 		mRecieveListener = new MyReceiver();
 		SocketConnet.getInstance().setRecieveListener(mRecieveListener);
@@ -154,7 +149,8 @@ public class QueryBagCirculationActivity extends BaseActivity {
 
 	private void initMap() {
 		if (null == map) {
-			map = new HashMap<Integer, String>();
+//			map = new HashMap<Integer, String>();
+			map = new SparseArray<String>();
 			map.put(1, "封袋");
 			map.put(2, "入库");
 			map.put(3, "出库");
@@ -163,6 +159,7 @@ public class QueryBagCirculationActivity extends BaseActivity {
 			map.put(6, "开袋");
 			map.put(7, "封入");
 			map.put(8, "出开");
+			map.put(9, "接收");
 		}
 	}
 
@@ -172,26 +169,30 @@ public class QueryBagCirculationActivity extends BaseActivity {
 
 		for (int i = 0; i < mJsonArray.length(); i++) {
 
+			int keyFuncNum = 0;
+			String keyBankCode = "";
+			String bankName = "";
+			String time = "";
 			try {
 				JSONObject jsonObj = mJsonArray.getJSONObject(i);
-				int keyFuncNum = jsonObj.getInt("function");
-				String keyBankCode = jsonObj.getString("organcode");
-				String time = jsonObj.getString("time");
-				Date date = DateUtils.parseString2Date(time, "yyyyMMddHHmmss");// 服务端 返回的 时间 格式
-				time = DateUtils.getStringTime(date, DateUtils.FORMAT_NORMAL);
-
-				BankInfoBean bankInfoBean = new BankInfoBean();
-
-				bankInfoBean.setTvNum(map.get(keyFuncNum));
-				bankInfoBean
-						.setTvBankName(mBankCodeJson.getString(keyBankCode));
-				bankInfoBean.setTvInfo(time);
-
-				mBankInfoBeanList.add(bankInfoBean);
+				keyFuncNum = jsonObj.getInt("function");
+				keyBankCode = jsonObj.getString("organcode");
+				time = jsonObj.getString("time");
+				bankName = mBankCodeJson.getString(keyBankCode);
 			} catch (JSONException e) {
 				e.printStackTrace();
-				mBankInfoBeanList.clear();
 			}
+			
+			BankInfoBean bankInfoBean = new BankInfoBean();
+
+			bankInfoBean.setTvNum(map.get(keyFuncNum));
+			bankInfoBean
+					.setTvBankName(bankName);
+			Date date = DateUtils.parseString2Date(time, "yyyyMMddHHmmss");
+			time = DateUtils.getStringTime(date, DateUtils.FORMAT_NORMAL);
+			bankInfoBean.setTvInfo(time);
+
+			mBankInfoBeanList.add(bankInfoBean);
 		} // for()
 		LogsUtil.d(TAG, "mBankInfoBeanList size:" + mBankInfoBeanList.size());
 
@@ -202,7 +203,16 @@ public class QueryBagCirculationActivity extends BaseActivity {
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.btn_activity_circulation_scan:
-			mDiaUtil.showProgressDialog("正在扫描...");
+			// 清空 ListView
+			mBankInfoBeanList.clear();
+			mAdapter.notifyDataSetChanged();
+			
+			// 扫描 NFC中的 封签事件码
+			mDiaUtil.showProgressDialog("正在扫描事件码...");
+			mReadNFCtNfcTask.setDataBuf(mEventCodeBuf);
+			mReadNFCtNfcTask.setSa(0x30); // 封签事件码 存储地址
+			mReadNFCtNfcTask.setRunTime(4000);
+			mReadNFCtNfcTask.setMsgWhat(MSG_SCAN_EVENT_CODE);
 			ThreadPoolFactory.getNormalPool().execute(mReadNFCtNfcTask);
 			break;
 		default:
@@ -244,10 +254,17 @@ public class QueryBagCirculationActivity extends BaseActivity {
 
 				break;
 			case MSG_SCAN_EVENT_CODE:
-				LogsUtil.d(
-						TAG,
-						"MSG_SCAN_EVENT_CODE:"
-								+ ArrayUtils.bytes2HexString(mEventCodeBuf));
+				mDiaUtil.setProgressDialogTitle("正在扫描NFC中TID...");
+				mReadNFCtNfcTask.setDataBuf(mPieceTid);
+				mReadNFCtNfcTask.setSa(0x07); // 封签事件码 存储地址
+				mReadNFCtNfcTask.setRunTime(4000);
+				mReadNFCtNfcTask.setMsgWhat(MSG_SCAN_NFC_TID);
+				ThreadPoolFactory.getNormalPool().execute(mReadNFCtNfcTask);
+				break;
+			case MSG_SCAN_NFC_TID:
+				LogsUtil.d(TAG,
+						"解密前:" + ArrayUtils.bytes2HexString(mEventCodeBuf));
+				AESCoder.myEncrypt(mEventCodeBuf, mPieceTid, false);
 				// 封袋的时候在封签事件码嵌入了清分信息。 去掉清分信息，还原封签事件码
 				mEventCodeBuf[3] = (byte) (mEventCodeBuf[3] & 0x0F);
 				String eventStr = ArrayUtils.bytes2HexString(mEventCodeBuf);

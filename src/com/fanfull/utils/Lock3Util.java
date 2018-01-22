@@ -31,6 +31,14 @@ public class Lock3Util {
 	/** 启用码 4byte：已注销 EEEEEEEE注销 */
 	public static final byte[] ENABLE_CODE_DISENABLE = new byte[] {
 			(byte) 0xEE, (byte) 0xEE, (byte) 0xEE, (byte) 0xEE, };
+	/** 最低电压值 2.85v */
+	public static final double LOWEST_V = 2.85;
+	/** 双电池，使用第1个 */
+	public static final int CELL_1 = 0xC3;
+	/** 双电池，使用第2个 */
+	public static final int CELL_2 = 0x3C;
+	/** 0xFF 测试模式 */
+	public static final int DEBUG_MODE = 0xFF;
 
 	/**
 	 * @param isCover

@@ -17,9 +17,10 @@
     <ListView
         android:id="@+id/lv_in_out_store_task"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:layout_marginBottom="50dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="15dp"
         android:layout_marginTop="5dp"
+        android:layout_weight="4"
         android:cacheColorHint="#99CCCC"
         android:scrollingCache="false" >
     </ListView>
@@ -30,7 +31,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
         android:background="@drawable/button_shape"
         android:text="扫 描 袋 锁" />
 

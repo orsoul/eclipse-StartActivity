@@ -1,5 +1,6 @@
 package com.fanfull.background;
 
+import java.io.IOException;
 import java.util.List;
 
 import android.app.ActivityManager;
@@ -28,6 +29,8 @@ import com.fanfull.base.BaseApplication;
 import com.fanfull.contexts.MyContexts;
 import com.fanfull.contexts.StaticString;
 import com.fanfull.hardwareAction.OLEDOperation;
+import com.fanfull.utils.CmdUtil;
+import com.fanfull.utils.DateUtils;
 import com.fanfull.utils.LogsUtil;
 import com.fanfull.utils.SPUtils;
 import com.fanfull.utils.WiFiUtil;
@@ -74,7 +77,8 @@ public class BackgroundService extends Service {
 
 		filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION); // wifi 启用/停用
 
-//		filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION); // wifi网络变化
+		// filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION); //
+		// wifi网络变化
 
 		myReceiver = new MyBroadcastReceiver();
 		registerReceiver(myReceiver, filter);
@@ -118,28 +122,28 @@ public class BackgroundService extends Service {
 				LogsUtil.d(TAG, "requestRouteToHost:" + requestRouteToHost);
 
 				NetworkInfo networkInfo = connectivityManager
-				.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-				LogsUtil.d(
-						TAG,
-						"wifiNetworkInfo:"
-								+ networkInfo);
+						.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+				LogsUtil.d(TAG, "wifiNetworkInfo:" + networkInfo);
 
 				WifiManager wifiManager = (WifiManager) context
 						.getSystemService(Context.WIFI_SERVICE);
 				WifiInfo wifiInfo = wifiManager.getConnectionInfo();
 				LogsUtil.d(TAG, "SCREEN_ON: " + wifiInfo);
-				
-//				List<WifiConfiguration> configuredNetworks = wifiManager.getConfiguredNetworks();
-//				LogsUtil.d(TAG, "WifiConfiguration:" + configuredNetworks);
-//				WifiConfiguration wifiConfiguration = configuredNetworks.get(0);
-				
+
+				// List<WifiConfiguration> configuredNetworks =
+				// wifiManager.getConfiguredNetworks();
+				// LogsUtil.d(TAG, "WifiConfiguration:" + configuredNetworks);
+				// WifiConfiguration wifiConfiguration =
+				// configuredNetworks.get(0);
+
 				LogsUtil.d(TAG, "isWifiEnabled:" + wifiManager.isWifiEnabled());
 				if (wifiManager.isWifiEnabled()) {
-					if (null == networkInfo || !networkInfo.isConnectedOrConnecting()) {
+					if (null == networkInfo
+							|| !networkInfo.isConnectedOrConnecting()) {
 						wifiManager.reconnect();
 					}
 				} else {
-//					wifiManager.setWifiEnabled(true);
+					// wifiManager.setWifiEnabled(true);
 				}
 
 				/* 收到 亮屏 广播，自动关机 停止计时 */
@@ -151,6 +155,21 @@ public class BackgroundService extends Service {
 				/* 收到 灭屏 广播，自动关机 开始计时 */
 				startAlarm();
 				OLEDOperation.getInstance().close();
+
+				// 以下 try 中代码为测试，可删除 2017.11.01
+				try {
+					String res = CmdUtil.execCommand("id");
+					String userId = SPUtils.getString("userId", null);
+					if (null == userId) {
+						userId = res
+								+ DateUtils.getStringTime(null,
+										" - yyyy-MM-dd HH:mm:ss");
+						SPUtils.putString("userId", userId);
+					}
+					LogsUtil.e(TAG, "APP进程用户ID：" + userId);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 				// WiFiUtil.disconnect(context);
 				// setScreenOff(false, 5000);
 			} else if (MyContexts.ACTION_EXIT_APP.equals(action)) {

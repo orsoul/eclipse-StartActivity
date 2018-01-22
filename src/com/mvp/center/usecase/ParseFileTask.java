@@ -42,11 +42,10 @@ public class ParseFileTask implements Runnable{
     @Override
 	public void run() {
 		try {
-			
             Date date = new Date();
             startTime = date.getTime();
             BufferedReader reader = new BufferedReader(new InputStreamReader(
-                    new BufferedInputStream(new FileInputStream(path)),"GBK"));
+                    new BufferedInputStream(new FileInputStream(path))));
             String line = null;
             WriteDB writeDB = new WriteDB();
             new Thread(writeDB).start();
@@ -111,7 +110,6 @@ public class ParseFileTask implements Runnable{
 
     LinkedBlockingQueue queue = new LinkedBlockingQueue();
     private void writeBag(String s) throws Exception{
-    	Log.i("", "写入袋数据："+s);
         String[] list = s.split("\\|");
         BagInfo bag = new BagInfo();
         bag.setBagID(list[0]);
@@ -122,7 +120,6 @@ public class ParseFileTask implements Runnable{
     }
 
     private void writePile(String s) throws Exception{
-    	Log.i("", "写入堆数据："+s);
         String[] list = s.split("\\/");
         PileInfo pile = new PileInfo();
         pile.setPileID(list[0]);
@@ -142,7 +139,6 @@ public class ParseFileTask implements Runnable{
         queue.put(pile);
     }
     private void writeScreen(String s) throws Exception{
-    	Log.i("", "写入屏数据："+s);
         String[] list = s.split("\\|");
         ScreenInfo screen = new ScreenInfo();
 
@@ -156,7 +152,6 @@ public class ParseFileTask implements Runnable{
         queue.put(screen);
     }
     private void writeTray(String s) throws Exception{
-    	Log.i("", "写入托盘数据："+s);
         String[] list = s.split("\\|");
         TrayInfo tray = new TrayInfo();
 

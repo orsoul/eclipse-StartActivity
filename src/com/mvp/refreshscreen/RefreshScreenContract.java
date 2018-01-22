@@ -22,7 +22,7 @@ public class RefreshScreenContract {
 		
 		void scanScreen();
 		
-		void writeScreen(PileInfo info);
+		void writeScreen();
 		
 		void light();
 	}

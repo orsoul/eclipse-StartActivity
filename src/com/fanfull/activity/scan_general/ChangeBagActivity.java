@@ -53,8 +53,6 @@ public class ChangeBagActivity extends BaseActivity {
 
 		mReadRFIDTask = new ReadRFIDTask();
 
-		RFIDOperation.getInstance().openTemp(false);
-
 		// mRecieveListener = new MyRecieverListener();
 		// SocketConnet.getInstance().setRecieveListener(mRecieveListener);
 		//
